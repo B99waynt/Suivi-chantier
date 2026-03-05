@@ -22,24 +22,19 @@
     ::-webkit-scrollbar-track{background:var(--grey);}
     ::-webkit-scrollbar-thumb{background:var(--grey3);border-radius:3px;}
 
-    /* ── TOPBAR PRINCIPALE ── */
+    /* TOPBAR */
     .topbar-main{
-      .topbar-main{
-  background:var(--white);
-  border-bottom:3px solid var(--red);
-  box-shadow:var(--shadow);
-      padding:0 32px;
-      height:64px;
-      display:flex;align-items:center;
-      justify-content:space-between;
+      background:var(--white);
+      border-bottom:3px solid var(--red);
+      box-shadow:var(--shadow);
+      padding:0 32px;height:64px;
+      display:flex;align-items:center;justify-content:space-between;
       position:sticky;top:0;z-index:100;
     }
     .topbar-left{display:flex;align-items:center;gap:20px;}
     .logo{height:42px;width:auto;display:block;}
     .topbar-divider{width:1px;height:28px;background:var(--border);}
-    .topbar-project{
-      display:flex;flex-direction:column;gap:1px;
-    }
+    .topbar-project{display:flex;flex-direction:column;gap:1px;}
     .topbar-project-name{font-size:.9rem;font-weight:700;color:var(--text);}
     .topbar-project-sub{font-size:.72rem;color:var(--text2);}
     .topbar-badge{
@@ -53,11 +48,10 @@
     .topbar-right{display:flex;align-items:center;gap:10px;}
     .topbar-date{font-size:.75rem;color:var(--text3);}
 
-    /* ── STATS BAR ── */
+    /* STATS BAR */
     .statsbar{
-      .statsbar{
-  background:linear-gradient(135deg,#fff5f5 0%,var(--white) 100%);
-  border-bottom:1px solid rgba(177,32,40,.12);
+      background:linear-gradient(135deg,#fff5f5 0%,var(--white) 100%);
+      border-bottom:1px solid rgba(177,32,40,.12);
       padding:0 32px;
       display:flex;align-items:center;gap:0;
     }
@@ -77,11 +71,8 @@
     .stat-val{font-size:1.2rem;font-weight:700;color:var(--text);line-height:1;}
     .stat-lbl{font-size:.7rem;color:var(--text2);font-weight:500;}
 
-    /* ── FILTRES BAR ── */
-    .filterbar{
-      padding:16px 32px;
-      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-    }
+    /* FILTRES */
+    .filterbar{padding:16px 32px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
     .sbox{
       display:flex;align-items:center;gap:8px;
       background:var(--white);border:1.5px solid var(--border);
@@ -113,13 +104,13 @@
     .btn-imp:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(177,32,40,.4);}
     #fileInput{display:none;}
 
-    /* ── CONTENT ── */
+    /* CONTENT */
     .content{padding:0 32px 32px;}
     .tbl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
     .tbl-title{font-size:.9rem;font-weight:600;color:var(--text2);}
     .tbl-count{font-size:.75rem;color:var(--text3);background:var(--white);padding:3px 11px;border-radius:999px;font-weight:500;border:1px solid var(--border);}
 
-    /* ── TABLE ── */
+    /* TABLE */
     .tw{background:var(--white);border-radius:var(--rl);box-shadow:var(--shadow-md);overflow:hidden;border:1px solid var(--border);}
     table{width:100%;border-collapse:collapse;font-size:.85rem;}
     thead{background:var(--grey);border-bottom:1.5px solid var(--border);}
@@ -132,30 +123,25 @@
     td.l{font-size:.78rem;color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;}
     td.t{white-space:normal;max-width:280px;font-size:.86rem;font-weight:500;color:var(--text);line-height:1.4;}
 
-    /* PILLS STATUT */
     .ss{appearance:none;border:none;border-radius:999px;padding:4px 12px;font-size:.73rem;font-weight:600;cursor:pointer;font-family:inherit;outline:none;transition:opacity .15s;}
     .ss:hover{opacity:.8;}
     .saf{background:#fef2f2;color:#dc2626;}
     .sec{background:#fffbeb;color:#d97706;}
     .sok{background:#f0fdf4;color:#16a34a;}
 
-    /* PILLS PRIORITÉ */
     .sp{appearance:none;border-radius:999px;padding:3px 10px;font-size:.71rem;font-weight:600;cursor:pointer;font-family:inherit;outline:none;border:1.5px solid transparent;transition:opacity .15s;}
     .sp:hover{opacity:.8;}
     .ph{background:#fef2f2;color:#dc2626;border-color:#fca5a5;}
     .pm{background:#fffbeb;color:#d97706;border-color:#fcd34d;}
     .pb{background:var(--grey);color:var(--text3);border-color:var(--grey3);}
 
-    /* SELECT INTERVENANT */
     .si{appearance:none;background:var(--grey);border:1.5px solid var(--border);border-radius:var(--rs);padding:5px 10px;font-size:.8rem;color:var(--text2);cursor:pointer;font-family:inherit;outline:none;transition:all .15s;min-width:130px;}
     .si:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(177,32,40,.1);}
 
-    /* INPUT COMMENTAIRE */
     .ci{width:175px;background:var(--grey);border:1.5px solid var(--border);border-radius:var(--rs);padding:5px 10px;font-size:.8rem;color:var(--text2);font-family:inherit;outline:none;transition:all .15s;}
     .ci:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(177,32,40,.1);}
     .ci::placeholder{color:var(--text3);}
 
-    /* EMPTY */
     .empty{text-align:center;padding:60px 20px;color:var(--text3);}
     .empty p{font-size:.92rem;font-weight:500;color:var(--text2);margin-top:14px;}
     .empty span{font-size:.8rem;}
@@ -348,6 +334,7 @@
     $("statTerminees").textContent=ok;
     $("tblCount").textContent=total+" tâche"+(total>1?"s":"");
   }
+
   function render(){
     const list=getFiltered();
     const tb=$("tableBody");
@@ -397,7 +384,6 @@
       tb.appendChild(tr);
     });
   }
-
   async function loadDB(){
     const{data,error}=await db.from("taches_noe_clery").select("*").order("ref",{ascending:true});
     if(error){console.error(error);return;}
