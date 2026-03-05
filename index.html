@@ -1125,6 +1125,17 @@ style>
   $('drawerDateFin').value = t.date_fin || '';
   }
 
+function checkRetard(task, spanEl) {
+  const today = new Date().toISOString().split('T')[0];
+  if (task.date_fin && task.statut !== 'Terminée' && task.date_fin < today) {
+    spanEl.className = 'badge-retard';
+    spanEl.textContent = '⚠ Retard';
+  } else {
+    spanEl.textContent = '';
+    spanEl.className = '';
+  }
+}
+
   function closeDrawer(){
     document.body.classList.remove("drawer-open");
     currentTask=null;
