@@ -1436,55 +1436,80 @@
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
 
-  /* INTERVENANTS – pour l'instant local, qu'on branchera ensuite sur Supabase */
-  const intervenantsData=[
-    {nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
-    {nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
-    {nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
-    {nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
-    {nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
-    {nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
-  ];
-  function renderIntervenants(){
-    const g=document.getElementById("intervenantsGrid");
-    g.innerHTML="";
-    intervenantsData.forEach((i,idx)=>{
-      const c=document.createElement("div");
-      c.className="inter-card";
-      c.innerHTML=
-        `<div class="inter-row">
-           <span class="inter-label">Nom</span>
-           <input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-idx="${idx}">
-         </div>
-         <div class="inter-row">
-           <span class="inter-label">Rôle</span>
-           <input class="inter-input" value="${i.role||""}" data-field="role" data-idx="${idx}">
-         </div>
-         <div class="inter-row">
-           <span class="inter-label">Téléphone</span>
-           <input class="inter-input" value="${i.tel||""}" data-field="tel" data-idx="${idx}">
-         </div>
-         <div class="inter-row">
-           <span class="inter-label">Email</span>
-           <input class="inter-input" value="${i.mail||""}" data-field="mail" data-idx="${idx}">
-         </div>
-         <div class="inter-row">
-           <span class="inter-label">Note</span>
-           <input class="inter-input" value="${i.note||""}" data-field="note" data-idx="${idx}">
-         </div>`;
-      g.appendChild(c);
-    });
-    g.querySelectorAll(".inter-input").forEach(inp=>{
-      inp.addEventListener("input",e=>{
-        const idx=parseInt(e.target.getAttribute("data-idx"),10);
-        const field=e.target.getAttribute("data-field");
-        intervenantsData[idx][field]=e.target.value;
-      });
-    });
-  }
+/* INTERVENANTS – connectés à Supabase */
+    const INTER_TABLE="intervenants_clery";
+    let intervenantsData=[];
 
-  renderIntervenants();
-  loadDB();
-</script>
+    async function loadIntervenants(){
+      const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
+      if(error||!data||!data.length){
+        // Données par défaut si la table est vide ou absente
+        const defaults=[
+          {id:1,nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
+          {id:2,nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
+          {id:3,nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
+          {id:4,nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
+          {id:5,nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
+          {id:6,nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
+        ];
+        // Tenter d'insérer les données par défaut si la table existe mais est vide
+        if(!error){
+          await db.from(INTER_TABLE).insert(defaults.map(d=>({id:d.id,nom:d.nom,role:d.role,tel:d.tel,mail:d.mail,note:d.note})));
+        }
+        intervenantsData=defaults;
+      } else {
+        intervenantsData=data;
+      }
+      renderIntervenants();
+    }
+
+    async function saveIntervenant(id,field,val){
+      const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
+      if(error) console.error("Erreur save intervenant:",error);
+    }
+
+    function renderIntervenants(){
+      const g=document.getElementById("intervenantsGrid");
+      g.innerHTML="";
+      intervenantsData.forEach((i)=>{
+        const c=document.createElement("div");
+        c.className="inter-card";
+        c.innerHTML=
+          `<div class="inter-row">
+            <span class="inter-label">Nom</span>
+            <input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}">
+          </div>
+          <div class="inter-row">
+            <span class="inter-label">Rôle</span>
+            <input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}">
+          </div>
+          <div class="inter-row">
+            <span class="inter-label">Téléphone</span>
+            <input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}">
+          </div>
+          <div class="inter-row">
+            <span class="inter-label">Email</span>
+            <input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}">
+          </div>
+          <div class="inter-row">
+            <span class="inter-label">Note</span>
+            <input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}">
+          </div>`;
+        g.appendChild(c);
+      });
+      g.querySelectorAll(".inter-input").forEach(inp=>{
+        inp.addEventListener("change",async e=>{
+          const id=parseInt(e.target.getAttribute("data-id"),10);
+          const field=e.target.getAttribute("data-field");
+          const item=intervenantsData.find(x=>x.id===id);
+          if(item) item[field]=e.target.value;
+          await saveIntervenant(id,field,e.target.value);
+        });
+      });
+    }
+
+    loadIntervenants();
+    loadDB();
+    </script>
 </body>
 </html>
