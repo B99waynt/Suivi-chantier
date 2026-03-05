@@ -9,6 +9,7 @@
   <style>
     :root{
       --red:#b12028;--red-light:#fdf2f2;--red-dark:#8e1a20;
+      --orange:#f59e0b;--green:#10b981;
       --grey:#f4f5f7;--grey2:#e8eaed;--grey3:#d1d5db;
       --text:#1a1a2e;--text2:#6b7280;--text3:#9ca3af;
       --white:#ffffff;--border:#e5e7eb;
@@ -53,7 +54,7 @@
       background:linear-gradient(135deg,#fff5f5 0%,var(--white) 100%);
       border-bottom:1px solid rgba(177,32,40,.12);
       padding:0 32px;
-      display:flex;align-items:center;gap:0;
+      display:flex;align-items:center;
     }
     .stat-item{
       display:flex;align-items:center;gap:10px;
@@ -65,8 +66,8 @@
     .stat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
     .sd-all{background:var(--text3);}
     .sd-af{background:var(--red);}
-    .sd-ec{background:#f59e0b;}
-    .sd-ok{background:#10b981;}
+    .sd-ec{background:var(--orange);}
+    .sd-ok{background:var(--green);}
     .stat-info{display:flex;flex-direction:column;gap:1px;}
     .stat-val{font-size:1.2rem;font-weight:700;color:var(--text);line-height:1;}
     .stat-lbl{font-size:.7rem;color:var(--text2);font-weight:500;}
@@ -115,7 +116,11 @@
     table{width:100%;border-collapse:collapse;font-size:.85rem;}
     thead{background:var(--grey);border-bottom:1.5px solid var(--border);}
     th{padding:11px 16px;text-align:left;font-size:.68rem;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;}
-    tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+    tbody tr{
+      border-bottom:1px solid var(--border);
+      transition:background .1s, border-left .1s;
+      border-left:3px solid transparent;
+    }
     tbody tr:last-child{border-bottom:none;}
     tbody tr:hover{background:#fafbff;}
     td{padding:11px 16px;vertical-align:middle;white-space:nowrap;}
@@ -288,6 +293,12 @@
   function sCls(s){return s==="En cours"?"sec":s==="Terminée"?"sok":"saf";}
   function pCls(p){return p==="Haute"?"ph":p==="Basse"?"pb":"pm";}
 
+  function borderColor(s){
+    if(s==="En cours")return"#f59e0b";
+    if(s==="Terminée")return"#10b981";
+    return"#b12028";
+  }
+
   function renderFilters(){
     $("filterLot").innerHTML='<option value="">Tous les lots</option>';
     [...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{
@@ -352,6 +363,7 @@
 
     list.forEach(t=>{
       const tr=document.createElement("tr");
+      tr.style.borderLeft="3px solid "+borderColor(t.statut);
 
       const td1=document.createElement("td");td1.className="r";td1.textContent=t.ref;tr.appendChild(td1);
       const td2=document.createElement("td");td2.className="l";td2.textContent=t.lot;td2.title=t.lot;tr.appendChild(td2);
@@ -366,7 +378,13 @@
       const td5=document.createElement("td");
       const ss=document.createElement("select");ss.className="ss "+sCls(t.statut);
       STATUTS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.statut)o.selected=true;ss.appendChild(o);});
-      ss.addEventListener("change",async e=>{t.statut=e.target.value;ss.className="ss "+sCls(t.statut);await save(t.id,"statut",t.statut);updateStats(getFiltered());});
+      ss.addEventListener("change",async e=>{
+        t.statut=e.target.value;
+        ss.className="ss "+sCls(t.statut);
+        tr.style.borderLeft="3px solid "+borderColor(t.statut);
+        await save(t.id,"statut",t.statut);
+        updateStats(getFiltered());
+      });
       td5.appendChild(ss);tr.appendChild(td5);
 
       const td6=document.createElement("td");
