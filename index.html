@@ -68,6 +68,7 @@
       color:#f9f5ff;
       margin:0 4px 18px;
       font-weight:700;
+      text-transform:none;
       letter-spacing:.02em;
     }
     .nav-item{
@@ -130,7 +131,10 @@
     .topbar-logo img{
       height:72px;
       width:auto;
+      border-radius:0;
+      background:transparent;
       object-fit:contain;
+      box-shadow:none;
     }
     .topbar-right{
       font-size:.8rem;
@@ -527,12 +531,7 @@
       border-radius:var(--rs);
     }
 
-    /* INTERVENANTS */
-    .intervenants-header-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
+    /* INTERVENANTS (layout actuel, qu'on améliorera ensuite) */
     .intervenants-grid{
       display:grid;
       grid-template-columns:repeat(3,minmax(0,1fr));
@@ -574,20 +573,6 @@
     }
     .inter-name-input{
       font-weight:700;
-    }
-    .btn-add-interv{
-      border:none;
-      border-radius:999px;
-      padding:8px 14px;
-      background:var(--violet);
-      color:#ffffff;
-      font-size:.82rem;
-      font-weight:700;
-      cursor:pointer;
-      box-shadow:0 8px 18px rgba(124,58,237,.4);
-      display:flex;
-      align-items:center;
-      gap:6px;
     }
 
     /* DOCUMENTS */
@@ -856,13 +841,7 @@
           <div class="section-header">
             <div>
               <div class="section-title">Intervenants</div>
-              <div class="section-sub">Coordonnées et rôles (synchronisé avec Supabase)</div>
-            </div>
-            <div class="intervenants-header-actions">
-              <button id="addIntervenantBtn" class="btn-add-interv">
-                <span>+</span>
-                <span>Ajouter un intervenant</span>
-              </button>
+              <div class="section-sub">Coordonnées et rôles (édition locale)</div>
             </div>
           </div>
           <section class="intervenants-grid" id="intervenantsGrid"></section>
@@ -932,14 +911,13 @@
 <script>
   const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
   const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
-  const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); [web:151]
+  const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
   const INTERVS=["Non assigné","Techni Combles","Home Work Peinture","Pro Martins","Interelec","Tiago","HK Menuiserie"];
   const STATUTS=["À faire","En cours","Terminée"];
   const PRIOS=["Basse","Moyenne","Haute"];
   let tasks=[];
   let currentTask=null;
-  let intervenantsData=[];
   const $=id=>document.getElementById(id);
 
   /* NAVIGATION */
@@ -1038,7 +1016,7 @@
   async function save(id,field,val){
     await db.from("taches_noe_clery")
       .update({[field]:val,updated_at:new Date().toISOString()})
-      .eq("id",id); [web:127]
+      .eq("id",id);
     setDate();
   }
 
@@ -1325,7 +1303,7 @@
   async function loadDB(){
     const{data,error}=await db.from("taches_noe_clery")
       .select("*")
-      .order("ref",{ascending:true}); [web:153]
+      .order("ref",{ascending:true});
     if(error){console.error(error);return;}
     tasks=data||[];
     renderFilters();render();setDate();
@@ -1458,116 +1436,55 @@
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
 
-  /* INTERVENANTS – branchés sur Supabase */
-
-  async function loadIntervenants(){
-    const {data,error}=await db
-      .from("intervenants")
-      .select("id,nom,role,telephone,email")
-      .order("nom",{ascending:true}); [web:153]
-    if(error){
-      console.error("Erreur chargement intervenants",error);
-      intervenantsData=[];
-      renderIntervenants();
-      return;
-    }
-    intervenantsData=data||[];
-    renderIntervenants();
-  }
-
-  async function saveIntervenantField(id,field,value){
-    const {error}=await db
-      .from("intervenants")
-      .update({[field]:value,updated_at:new Date().toISOString()})
-      .eq("id",id); [web:127]
-    if(error){
-      console.error("Erreur update intervenant",error);
-      alert("Erreur enregistrement intervenant");
-      return;
-    }
-    const idx=intervenantsData.findIndex(i=>i.id===id);
-    if(idx>-1){
-      intervenantsData[idx][field]=value;
-    }
-  }
-
-  async function addIntervenant(){
-    const nouveau={
-      nom:"Nouvel intervenant",
-      role:"",
-      telephone:"",
-      email:""
-    };
-    const {data,error}=await db
-      .from("intervenants")
-      .insert(nouveau)
-      .select("id,nom,role,telephone,email")
-      .single(); [web:155]
-    if(error){
-      console.error("Erreur insert intervenant",error);
-      alert("Erreur ajout intervenant");
-      return;
-    }
-    intervenantsData.push(data);
-    renderIntervenants(data.id);
-  }
-
-  function renderIntervenants(focusId){
-    const g=$("intervenantsGrid");
+  /* INTERVENANTS – pour l'instant local, qu'on branchera ensuite sur Supabase */
+  const intervenantsData=[
+    {nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
+    {nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
+    {nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
+    {nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
+    {nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
+    {nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
+  ];
+  function renderIntervenants(){
+    const g=document.getElementById("intervenantsGrid");
     g.innerHTML="";
-    if(!intervenantsData.length){
-      g.innerHTML='<div class="empty"><p>Aucun intervenant pour l’instant</p><span>Ajoute un intervenant avec le bouton ci-dessus.</span></div>';
-      return;
-    }
-    intervenantsData.forEach((i)=>{
+    intervenantsData.forEach((i,idx)=>{
       const c=document.createElement("div");
       c.className="inter-card";
       c.innerHTML=
         `<div class="inter-row">
            <span class="inter-label">Nom</span>
-           <input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}" placeholder="Nom de l’intervenant">
+           <input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-idx="${idx}">
          </div>
          <div class="inter-row">
            <span class="inter-label">Rôle</span>
-           <input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}" placeholder="Rôle / spécialité">
+           <input class="inter-input" value="${i.role||""}" data-field="role" data-idx="${idx}">
          </div>
          <div class="inter-row">
            <span class="inter-label">Téléphone</span>
-           <input class="inter-input" value="${i.telephone||""}" data-field="telephone" data-id="${i.id}" placeholder="Téléphone">
+           <input class="inter-input" value="${i.tel||""}" data-field="tel" data-idx="${idx}">
          </div>
          <div class="inter-row">
            <span class="inter-label">Email</span>
-           <input class="inter-input" value="${i.email||""}" data-field="email" data-id="${i.id}" placeholder="Email">
+           <input class="inter-input" value="${i.mail||""}" data-field="mail" data-idx="${idx}">
+         </div>
+         <div class="inter-row">
+           <span class="inter-label">Note</span>
+           <input class="inter-input" value="${i.note||""}" data-field="note" data-idx="${idx}">
          </div>`;
       g.appendChild(c);
     });
-
     g.querySelectorAll(".inter-input").forEach(inp=>{
-      const id=inp.getAttribute("data-id");
-      const field=inp.getAttribute("data-field");
-      const handler=async(e)=>{
-        if(e.type==="keydown" && e.key!=="Enter") return;
-        if(e.type==="keydown") e.preventDefault();
-        await saveIntervenantField(id,field,e.target.value);
-      };
-      inp.addEventListener("blur",handler);
-      inp.addEventListener("keydown",handler);
+      inp.addEventListener("input",e=>{
+        const idx=parseInt(e.target.getAttribute("data-idx"),10);
+        const field=e.target.getAttribute("data-field");
+        intervenantsData[idx][field]=e.target.value;
+      });
     });
-
-    if(focusId){
-      const focusInput=g.querySelector(`.inter-input.inter-name-input[data-id="${focusId}"]`);
-      if(focusInput){
-        focusInput.focus();
-        focusInput.select();
-      }
-    }
   }
 
-  $("addIntervenantBtn").addEventListener("click",addIntervenant);
-
-  /* INIT */
+  renderIntervenants();
   loadDB();
-  loadIntervenants();
 </script>
 </body>
 </html>
