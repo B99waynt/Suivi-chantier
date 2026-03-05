@@ -1560,14 +1560,19 @@ $('drawerDateFin').addEventListener('change', async e => {
 });
 
   /* INTERVENANTS – pour l'instant local, qu'on branchera ensuite sur Supabase */
-  const intervenantsData=[
-    {nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
-    {nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
-    {nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
-    {nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
-    {nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
-    {nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
-  ];
+  /* INTERVENANTS - Supabase */
+let intervenantsData = [];
+
+async function loadIntervenants() {
+  const { data, error } = await db.from('intervenants_clery').select('*').order('id', { ascending: true });
+  if (error) { console.error(error); return; }
+  intervenantsData = data || [];
+  renderIntervenants();
+}
+
+async function saveIntervenant(id, field, value) {
+  await db.from('intervenants_clery').update({ [field]: value }).eq('id', id);
+}];
   function renderIntervenants(){
     const g=document.getElementById("intervenantsGrid");
     g.innerHTML="";
@@ -1598,16 +1603,18 @@ $('drawerDateFin').addEventListener('change', async e => {
       g.appendChild(c);
     });
     g.querySelectorAll(".inter-input").forEach(inp=>{
-      inp.addEventListener("input",e=>{
+      inp.addEventListener("input",easync =>{
         const idx=parseInt(e.target.getAttribute("data-idx"),10);
         const field=e.target.getAttribute("data-field");
         intervenantsData[idx][field]=e.target.value;
+            await saveIntervenant(intervenantsData[idx].id, field, e.target.value);
       });
     });
   }
 
   renderIntervenants();
   loadDB();
+  loadIntervenants();
 </script>
 </body>
 </html>
