@@ -80,7 +80,8 @@
     }
     .toolbar-group { display: flex; gap: 8px; flex-wrap: wrap; }
     select,
-    input[type="search"] {
+    input[type="search"],
+    input[type="file"] {
       border-radius: 999px;
       border: 1px solid #ddd;
       padding: 8px 12px;
@@ -88,6 +89,18 @@
       background: #fff;
     }
     input[type="search"] { min-width: 220px; flex: 1; }
+    .btn-import {
+      border-radius: 999px;
+      border: 2px solid var(--red-main);
+      background: var(--red-main);
+      color: white;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-import:hover { background: #8e1a1f; }
+    #fileInput { display: none; }
 
     .table-wrapper {
       background: #ffffff;
@@ -106,40 +119,6 @@
     th { font-weight: 600; color: #555; font-size: 0.85rem; }
     tbody tr:hover { background: #fafafa; }
     td.tache { white-space: normal; max-width: 320px; }
-
-    .status-pill {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .status-afaire { background: #fff4e5; color: #e65100; }
-    .status-encours { background: #fff0f6; color: #d81b60; }
-    .status-termine { background: #e6f4ea; color: #2e7d32; }
-
-    .priority {
-      font-weight: 500;
-      font-size: 0.8rem;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-    }
-    .priority-haute {
-      color: var(--red-main);
-      border-color: var(--red-main);
-      background: #fff5f5;
-    }
-    .priority-moyenne {
-      color: #ef6c00;
-      border-color: #ef6c00;
-      background: #fff3e0;
-    }
-    .priority-basse {
-      color: #607d8b;
-      border-color: #607d8b;
-      background: #eceff1;
-    }
 
     .pill-select {
       border-radius: 999px;
@@ -171,6 +150,7 @@
       input[type="search"] { width: 100%; }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="app">
@@ -209,6 +189,11 @@
 
     <div class="toolbar">
       <div class="toolbar-group">
+        <button class="btn-import" onclick="document.getElementById('fileInput').click()">
+          📂 Importer DPGF
+        </button>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" />
+
         <select id="filterStatut">
           <option value="">Tous les statuts</option>
           <option value="À faire">À faire</option>
@@ -265,53 +250,7 @@
 
     const prioriteOptions = ["Basse", "Moyenne", "Haute"];
 
-    const tasks = [
-      {
-        ref: "0.1",
-        lot: "Lot 0 - Préparation",
-        task: "Panneau - Avis de chantier",
-        intervenant: "Non assigné",
-        statut: "À faire",
-        priorite: "Moyenne",
-        commentaire: "",
-      },
-      {
-        ref: "0.10",
-        lot: "Lot 0 - Préparation",
-        task: "Sécurité personnes, véhicules, engins",
-        intervenant: "Non assigné",
-        statut: "À faire",
-        priorite: "Moyenne",
-        commentaire: "",
-      },
-      {
-        ref: "0.11",
-        lot: "Lot 0 - Préparation",
-        task: "Réparations encoches et encastrements",
-        intervenant: "Non assigné",
-        statut: "En cours",
-        priorite: "Haute",
-        commentaire: "",
-      },
-      {
-        ref: "0.12",
-        lot: "Lot 0 - Préparation",
-        task: "Respect règles de l'art (DTU et normes)",
-        intervenant: "Non assigné",
-        statut: "À faire",
-        priorite: "Moyenne",
-        commentaire: "",
-      },
-      {
-        ref: "2.1",
-        lot: "Lot 2 - Menuiseries",
-        task: "Pose volets roulants façade rue",
-        intervenant: "Techni Combles",
-        statut: "Terminée",
-        priorite: "Haute",
-        commentaire: "",
-      },
-    ];
+    let tasks = [];
 
     const tableBody = document.getElementById("tableBody");
     const statTotal = document.getElementById("statTotal");
@@ -323,20 +262,133 @@
     const filterLot = document.getElementById("filterLot");
     const filterIntervenant = document.getElementById("filterIntervenant");
     const lastUpdateSpan = document.getElementById("lastUpdate");
+    const fileInput = document.getElementById("fileInput");
 
-    function priorityClass(p) {
-      const val = (p || "").toLowerCase();
-      if (val === "haute") return "priority priority-haute";
-      if (val === "basse") return "priority priority-basse";
-      return "priority priority-moyenne";
+    function normalizeStatut(val) {
+      const v = (val || "").toLowerCase().trim();
+      if (v.includes("faire")) return "À faire";
+      if (v.includes("cours")) return "En cours";
+      if (v.includes("termin")) return "Terminée";
+      return "À faire";
     }
-    function statusClass(s) {
-      if (s === "En cours") return "status-pill status-encours";
-      if (s === "Terminée") return "status-pill status-termine";
-      return "status-pill status-afaire";
+
+    function guessPriorite(desc, remarques) {
+      const txt = ((desc || "") + " " + (remarques || "")).toLowerCase();
+      if (txt.includes("urgent") || txt.includes("priorit")) return "Haute";
+      if (txt.includes("option")) return "Basse";
+      return "Moyenne";
     }
+
+    function guessLot(ref) {
+      if (!ref) return "Lot inconnu";
+      const parts = ref.toString().split(".");
+      const num = parts[0];
+      const lotMap = {
+        "0": "Lot 0 - Préparation",
+        "1": "Lot 1 - Démolition et GO",
+        "2": "Lot 2 - Maçonnerie",
+        "3": "Lot 3 - Plomberie",
+        "4": "Lot 4 - Électricité",
+        "5": "Lot 5 - Ventilation",
+        "6": "Lot 6 - Menuiseries Ext",
+        "7": "Lot 7 - Menuiseries Int",
+        "8": "Lot 8 - Parquet",
+        "9": "Lot 9 - Peinture",
+      };
+      return lotMap[num] || "Lot " + num;
+    }
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = new Uint8Array(event.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+
+          const sheetNames = workbook.SheetNames;
+          let foundTasks = [];
+
+          sheetNames.forEach((sheetName) => {
+            const sheet = workbook.Sheets[sheetName];
+            const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            let headerRowIndex = -1;
+            for (let i = 0; i < json.length; i++) {
+              const row = json[i];
+              const firstCol = (row[0] || "").toString().toLowerCase();
+              if (firstCol.includes("rf") || firstCol.includes("réf")) {
+                headerRowIndex = i;
+                break;
+              }
+            }
+
+            if (headerRowIndex === -1) return;
+
+            const headers = json[headerRowIndex].map((h) =>
+              (h || "").toString().toLowerCase().trim()
+            );
+
+            const refIdx = headers.findIndex((h) => h.includes("rf") || h.includes("réf"));
+            const descIdx = headers.findIndex((h) =>
+              h.includes("description") || h.includes("tche")
+            );
+            const responsableIdx = headers.findIndex((h) => h.includes("responsable"));
+            const statutIdx = headers.findIndex((h) => h.includes("statut"));
+            const remarquesIdx = headers.findIndex((h) =>
+              h.includes("remarque") || h.includes("observation")
+            );
+
+            for (let i = headerRowIndex + 1; i < json.length; i++) {
+              const row = json[i];
+              const ref = row[refIdx] || "";
+              const desc = row[descIdx] || "";
+
+              if (!ref || !desc) continue;
+              if (ref.toString().includes("---")) continue;
+
+              const responsable = row[responsableIdx] || "Non assigné";
+              const statut = row[statutIdx] || "À faire";
+              const remarques = row[remarquesIdx] || "";
+
+              foundTasks.push({
+                ref: ref.toString(),
+                lot: guessLot(ref),
+                task: desc.toString(),
+                intervenant:
+                  responsable.toString().toLowerCase() === "à faire" ||
+                  responsable.toString().toLowerCase() === "faire"
+                    ? "Non assigné"
+                    : responsable.toString(),
+                statut: normalizeStatut(statut),
+                priorite: guessPriorite(desc, remarques),
+                commentaire: remarques.toString(),
+              });
+            }
+          });
+
+          if (foundTasks.length === 0) {
+            alert("Aucune tâche trouvée dans le fichier Excel.");
+            return;
+          }
+
+          tasks = foundTasks;
+          renderLotsOptions();
+          renderIntervenantFilterOptions();
+          render();
+          alert(`✅ ${tasks.length} tâches importées avec succès !`);
+        } catch (err) {
+          console.error(err);
+          alert("Erreur lors de la lecture du fichier Excel.");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
 
     function renderLotsOptions() {
+      filterLot.innerHTML = '<option value="">Tous les lots</option>';
       const lots = Array.from(new Set(tasks.map((t) => t.lot))).sort();
       lots.forEach((lot) => {
         const opt = document.createElement("option");
@@ -347,6 +399,7 @@
     }
 
     function renderIntervenantFilterOptions() {
+      filterIntervenant.innerHTML = '<option value="">Tous les intervenants</option>';
       const uniques = Array.from(new Set(tasks.map((t) => t.intervenant))).sort();
       uniques.forEach((name) => {
         if (!name) return;
@@ -426,7 +479,7 @@
         });
         selectStatut.addEventListener("change", (e) => {
           t.statut = e.target.value;
-          render(); // pour mettre à jour les stats + couleurs
+          render();
         });
         tdStatut.appendChild(selectStatut);
 
@@ -488,8 +541,6 @@
     filterLot.addEventListener("change", render);
     filterIntervenant.addEventListener("change", render);
 
-    renderLotsOptions();
-    renderIntervenantFilterOptions();
     render();
   </script>
 </body>
