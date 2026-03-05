@@ -113,7 +113,7 @@
       background:#f9fafb;
     }
 
-    /* TOPBAR */
+    /* TOPBAR (logo + date seulement) */
     .topbar{
       height:96px;
       padding:0 32px;
@@ -136,29 +136,6 @@
       object-fit:contain;
       box-shadow:none;
     }
-    .topbar-search{
-      min-width:260px;
-      max-width:420px;
-      flex:0 1 420px;
-      background:transparent;
-      border-radius:999px;
-      border:1.6px solid var(--violet);
-      padding:10px 16px;
-      display:flex;
-      align-items:center;
-      font-size:.85rem;
-      color:var(--text2);
-    }
-    .topbar-search input{
-      border:none;
-      outline:none;
-      width:100%;
-      font-family:inherit;
-      font-size:.85rem;
-      background:transparent;
-      color:var(--text2);
-    }
-    .topbar-search input::placeholder{color:var(--text3);}
     .topbar-right{
       font-size:.8rem;
       color:var(--text3);
@@ -775,9 +752,6 @@
           <div class="topbar-logo">
             <img src="technicombles_logo_small.jpg" alt="Technicombles">
           </div>
-          <div class="topbar-search">
-            <input type="text" placeholder="Recherche globale…">
-          </div>
         </div>
         <div class="topbar-right">
           <span id="lastUpdate">—</span>
@@ -1010,9 +984,10 @@
   function sCls(s){return s==="En cours"?"sec":s==="Terminée"?"sok":"saf";}
   function pCls(p){return p==="Haute"?"ph":p==="Basse"?"pb":"pm";}
   function borderColor(s){
-    if(s==="En cours")return"#f97316";
-    if(s==="Terminée")return"#16a34a";
-    return"#7c3aed";
+    if(s==="À faire")   return "#ef4444";  // rouge
+    if(s==="En cours")  return "#f97316";  // orange
+    if(s==="Terminée")  return "#16a34a";  // vert
+    return "#7c3aed";
   }
 
   function renderFilters(){
