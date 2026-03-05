@@ -216,4 +216,201 @@
       <input
         type="search"
         id="searchInput"
-        placeholder="Rechercher
+        placeholder="Rechercher une tâche, un lot, un intervenant..."
+      />
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Réf</th>
+            <th>Lot</th>
+            <th>Tâche</th>
+            <th>Intervenant</th>
+            <th>Statut</th>
+            <th>Priorité</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const intervenantsOptions = [
+      "Non assigné",
+      "Maçon",
+      "Menuisier",
+      "Plombier",
+      "Électricien",
+      "Peintre",
+      "Plaquiste",
+    ];
+
+    const tasks = [
+      {
+        ref: "0.1",
+        lot: "Lot 0 - Préparation",
+        task: "Panneau - Avis de chantier",
+        intervenant: "Non assigné",
+        statut: "À faire",
+        priorite: "Moyenne",
+      },
+      {
+        ref: "0.10",
+        lot: "Lot 0 - Préparation",
+        task: "Sécurité personnes, véhicules, engins",
+        intervenant: "Non assigné",
+        statut: "À faire",
+        priorite: "Moyenne",
+      },
+      {
+        ref: "0.11",
+        lot: "Lot 0 - Préparation",
+        task: "Réparations encoches et encastrements",
+        intervenant: "Non assigné",
+        statut: "En cours",
+        priorite: "Haute",
+      },
+      {
+        ref: "0.12",
+        lot: "Lot 0 - Préparation",
+        task: "Respect règles de l'art (DTU et normes)",
+        intervenant: "Non assigné",
+        statut: "À faire",
+        priorite: "Moyenne",
+      },
+      {
+        ref: "2.1",
+        lot: "Lot 2 - Menuiseries",
+        task: "Pose volets roulants façade rue",
+        intervenant: "Menuisier",
+        statut: "Terminée",
+        priorite: "Haute",
+      },
+    ];
+
+    const tableBody = document.getElementById("tableBody");
+    const statTotal = document.getElementById("statTotal");
+    const statAFaire = document.getElementById("statAFaire");
+    const statEnCours = document.getElementById("statEnCours");
+    const statTerminees = document.getElementById("statTerminees");
+    const searchInput = document.getElementById("searchInput");
+    const filterStatut = document.getElementById("filterStatut");
+    const filterLot = document.getElementById("filterLot");
+    const lastUpdateSpan = document.getElementById("lastUpdate");
+
+    function priorityClass(p) {
+      const val = (p || "").toLowerCase();
+      if (val === "haute") return "priority priority-haute";
+      if (val === "basse") return "priority priority-basse";
+      return "priority priority-moyenne";
+    }
+    function statusClass(s) {
+      if (s === "En cours") return "status-pill status-encours";
+      if (s === "Terminée") return "status-pill status-termine";
+      return "status-pill status-afaire";
+    }
+
+    function renderLotsOptions() {
+      const lots = Array.from(new Set(tasks.map((t) => t.lot))).sort();
+      lots.forEach((lot) => {
+        const opt = document.createElement("option");
+        opt.value = lot;
+        opt.textContent = lot;
+        filterLot.appendChild(opt);
+      });
+    }
+
+    function applyFilters() {
+      const q = searchInput.value.toLowerCase();
+      const statut = filterStatut.value;
+      const lotVal = filterLot.value;
+
+      return tasks.filter((t) => {
+        if (statut && t.statut !== statut) return false;
+        if (lotVal && t.lot !== lotVal) return false;
+        if (!q) return true;
+        const str =
+          (t.ref + t.lot + t.task + t.intervenant + t.statut + t.priorite).toLowerCase();
+        return str.includes(q);
+      });
+    }
+
+    function render() {
+      const filtered = applyFilters();
+      tableBody.innerHTML = "";
+
+      filtered.forEach((t) => {
+        const tr = document.createElement("tr");
+
+        const tdRef = document.createElement("td");
+        tdRef.textContent = t.ref;
+
+        const tdLot = document.createElement("td");
+        tdLot.textContent = t.lot;
+
+        const tdTask = document.createElement("td");
+        tdTask.textContent = t.task;
+        tdTask.className = "tache";
+
+        const tdInterv = document.createElement("td");
+        const select = document.createElement("select");
+        select.className = "intervenant-select";
+        intervenantsOptions.forEach((optVal) => {
+          const opt = document.createElement("option");
+          opt.value = optVal;
+          opt.textContent = optVal;
+          if (optVal === t.intervenant) opt.selected = true;
+          select.appendChild(opt);
+        });
+        select.addEventListener("change", (e) => {
+          t.intervenant = e.target.value;
+        });
+        tdInterv.appendChild(select);
+
+        const tdStatut = document.createElement("td");
+        tdStatut.innerHTML = `<span class="${statusClass(
+          t.statut
+        )}">${t.statut}</span>`;
+
+        const tdPriorite = document.createElement("td");
+        tdPriorite.innerHTML = `<span class="${priorityClass(
+          t.priorite
+        )}">${t.priorite}</span>`;
+
+        tr.appendChild(tdRef);
+        tr.appendChild(tdLot);
+        tr.appendChild(tdTask);
+        tr.appendChild(tdInterv);
+        tr.appendChild(tdStatut);
+        tr.appendChild(tdPriorite);
+
+        tableBody.appendChild(tr);
+      });
+
+      statTotal.textContent = filtered.length;
+      statAFaire.textContent = filtered.filter((t) => t.statut === "À faire").length;
+      statEnCours.textContent = filtered.filter((t) => t.statut === "En cours").length;
+      statTerminees.textContent = filtered.filter((t) => t.statut === "Terminée").length;
+    }
+
+    const now = new Date();
+    lastUpdateSpan.textContent = now.toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    searchInput.addEventListener("input", render);
+    filterStatut.addEventListener("change", render);
+    filterLot.addEventListener("change", render);
+
+    renderLotsOptions();
+    render();
+  </script>
+</body>
+</html>
