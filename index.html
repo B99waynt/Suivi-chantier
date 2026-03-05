@@ -841,7 +841,7 @@
           <div class="section-header">
             <div>
               <div class="section-title">Intervenants</div>
-              <div class="section-sub">Coordonnées et rôles (édition locale)</div>
+              <div class="section-sub">Coordonnées et rôles</div>
             </div>
           </div>
           <section class="intervenants-grid" id="intervenantsGrid"></section>
@@ -1437,7 +1437,7 @@
   });
 
   /* INTERVENANTS – pour l'instant local, qu'on branchera ensuite sur Supabase */
-  const intervenantsData=[
+  /* INTERVENANTS – sauvegarde Supabase */ let intervenantsData=[]; const INTERVS_DEFAULT=[
     {nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
     {nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
     {nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
@@ -1445,7 +1445,7 @@
     {nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
     {nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
   ];
-  function renderIntervenants(){
+  let interTimers={};     async function saveIntervenant(id,data){       await db.from("intervenants_clery").upsert({id,nom:data.nom,role:data.role,tel:data.tel,mail:data.mail,note:data.note},{onConflict:"id"});     }     function debounceSaveInter(id,data){       clearTimeout(interTimers[id]);       interTimers[id]=setTimeout(()=>saveIntervenant(id,data),800);     }     async function loadIntervenants(){       const{data,error}=await db.from("intervenants_clery").select("*").order("id",{ascending:true});       if(error||!data||!data.length){         const inserts=INTERVS_DEFAULT.map((d,i)=>({id:i+1,...d}));         await db.from("intervenants_clery").upsert(inserts,{onConflict:"id"});         intervenantsData=inserts;       }else{         intervenantsData=data;       }       renderIntervenants();     }     function renderIntervenants(){
     const g=document.getElementById("intervenantsGrid");
     g.innerHTML="";
     intervenantsData.forEach((i,idx)=>{
@@ -1478,12 +1478,12 @@
       inp.addEventListener("input",e=>{
         const idx=parseInt(e.target.getAttribute("data-idx"),10);
         const field=e.target.getAttribute("data-field");
-        intervenantsData[idx][field]=e.target.value;
+        intervenantsData[idx][field]=e.target.value;         debounceSaveInter(intervenantsData[idx].id,intervenantsData[idx]);
       });
     });
   }
 
-  renderIntervenants();
+  loadIntervenants();
   loadDB();
 </script>
 </body>
