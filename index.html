@@ -1599,12 +1599,11 @@ async function saveIntervenant(id, field, value) {
          <div class="inter-row">
            <span class="inter-label">Note</span>
            <input class="inter-input" value="${i.note||""}" data-field="note" data-idx="${idx}">
-         </div>`;
+         </</div>>`;
       g.appendChild(c);
     });
     g.querySelectorAll(".inter-input").forEach(inp=>{
-      inp.addEventListener("input",easync =>{
-        const idx=parseInt(e.target.getAttribute("data-idx"),10);
+    inp.addEventListener("input",async e=>{        const idx=parseInt(e.target.getAttribute("data-idx"),10);
         const field=e.target.getAttribute("data-field");
         intervenantsData[idx][field]=e.target.value;
             await saveIntervenant(intervenantsData[idx].id, field, e.target.value);
