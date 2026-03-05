@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suivi Chantier – Cléry</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <!-- Script Supabase v2 UMD -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <!-- [web:166] -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
   <style>
     :root{
       --violet:#7c3aed;
@@ -857,7 +856,7 @@
           <div class="section-header">
             <div>
               <div class="section-title">Intervenants</div>
-              <div class="section-sub">Coordonnées et rôles (Supabase)</div>
+              <div class="section-sub">Coordonnées et rôles (synchronisé avec Supabase)</div>
             </div>
             <div class="intervenants-header-actions">
               <button id="addIntervenantBtn" class="btn-add-interv">
@@ -931,12 +930,9 @@
 </div>
 
 <script>
-  // 1) Initialisation Supabase côté CDN v2
-  const SUPABASE_URL = "https://ifhvgqvmwgtyzuoyjbby.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
-
-  const { createClient } = supabase; // global fourni par le script UMD [web:161]
-  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
+  const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
+  const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); [web:151]
 
   const INTERVS=["Non assigné","Techni Combles","Home Work Peinture","Pro Martins","Interelec","Tiago","HK Menuiserie"];
   const STATUTS=["À faire","En cours","Terminée"];
@@ -1100,7 +1096,7 @@
     if(!list.length){
       tb.innerHTML=`<tr><td colspan="7"><div class="empty">
         <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" style="margin:0 auto;display:block;opacity:.25">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
         <p>Aucune tâche trouvée</p>
         <span>Modifie les filtres ou importe ton DPGF</span>
@@ -1462,7 +1458,7 @@
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
 
-  /* INTERVENANTS – Supabase */
+  /* INTERVENANTS – branchés sur Supabase */
 
   async function loadIntervenants(){
     const {data,error}=await db
