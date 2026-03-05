@@ -10,7 +10,7 @@
     :root{
       --violet:#7c3aed;
       --violet-soft:#a855f7;
-      --violet-dark:#5b21b6;
+      --violet-dark:#4c1d95;
       --bg:#f3f4f6;
       --card:#ffffff;
       --border:#e5e7eb;
@@ -65,32 +65,33 @@
       border-radius:22px 0 0 22px;
     }
     .nav-label{
-      font-size:.8rem;
-      color:#e9d5ff;
-      margin:0 4px 10px;
-      font-weight:600;
-      text-transform:uppercase;
-      letter-spacing:.06em;
+      font-size:.95rem;
+      color:#f9f5ff;
+      margin:0 4px 18px;
+      font-weight:700;
+      text-transform:none;
+      letter-spacing:.02em;
     }
     .nav-item{
       display:flex;
       align-items:center;
-      padding:9px 12px;
+      padding:10px 16px;
       border-radius:999px;
       color:#ffffff;
-      font-size:.9rem;
+      font-size:1rem;
       font-weight:700;
       cursor:pointer;
       opacity:.9;
-      transition:background .12s,opacity .12s;
+      transition:background .12s,opacity .12s,transform .08s;
     }
     .nav-item.active{
-      background:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.24);
       opacity:1;
     }
     .nav-item:hover{
-      background:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.2);
       opacity:1;
+      transform:translateX(1px);
     }
 
     .sidebar-footer{
@@ -114,10 +115,10 @@
       background:#f9fafb;
     }
 
-    /* TOPBAR BLANCHE AVEC LOGO SEUL */
+    /* TOPBAR BLANCHE AVEC LOGO MIS EN AVANT */
     .topbar{
-      height:78px;
-      padding:0 26px;
+      height:96px;
+      padding:0 32px;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -127,26 +128,27 @@
     .topbar-left{
       display:flex;
       align-items:center;
-      gap:18px;
+      gap:26px;
     }
     .topbar-logo img{
-      height:46px;
+      height:72px;
       width:auto;
-      border-radius:10px;
+      border-radius:12px;
       background:#ffffff;
       object-fit:contain;
+      box-shadow:0 8px 20px rgba(148,27,12,0.18);
     }
     .topbar-search{
-      min-width:280px;
+      min-width:260px;
       max-width:420px;
       flex:0 1 420px;
       background:transparent;
       border-radius:999px;
       border:1.6px solid var(--violet);
-      padding:8px 14px;
+      padding:10px 16px;
       display:flex;
       align-items:center;
-      font-size:.82rem;
+      font-size:.85rem;
       color:var(--text2);
     }
     .topbar-search input{
@@ -154,7 +156,7 @@
       outline:none;
       width:100%;
       font-family:inherit;
-      font-size:.82rem;
+      font-size:.85rem;
       background:transparent;
       color:var(--text2);
     }
@@ -187,12 +189,12 @@
       align-items:center;
     }
     .section-title{
-      font-size:1.1rem;
-      font-weight:700;
-      color:var(--text);
+      font-size:1.35rem;
+      font-weight:800;
+      color:var(--violet-dark);
     }
     .section-sub{
-      font-size:.8rem;
+      font-size:.85rem;
       color:var(--text3);
     }
 
@@ -214,13 +216,13 @@
     }
     .stat-card-label{
       font-size:.8rem;
-      color:var(--text3);
+      color:var(--violet-dark);
       font-weight:600;
     }
     .stat-card-value{
-      font-size:1.5rem;
-      font-weight:700;
-      color:var(--text);
+      font-size:1.6rem;
+      font-weight:800;
+      color:var(--violet-dark);
     }
     .stat-card-note{
       font-size:.75rem;
@@ -281,7 +283,11 @@
       display:flex;align-items:center;justify-content:space-between;
       gap:10px;
     }
-    .tbl-title{font-size:.92rem;font-weight:700;color:var(--text2);}
+    .tbl-title{
+      font-size:1rem;
+      font-weight:700;
+      color:var(--violet-dark);
+    }
     .tbl-count{
       font-size:.75rem;color:var(--text3);
       background:#f9fafb;
@@ -335,7 +341,7 @@
       text-align:left;
       font-size:.68rem;
       font-weight:600;
-      color:var(--text3);
+      color:var(--violet-dark);
       letter-spacing:.06em;
       text-transform:uppercase;
       white-space:nowrap;
@@ -364,11 +370,11 @@
     td.r{
       font-size:.72rem;
       font-weight:600;
-      color:var(--text3);
+      color:#6b7280;
     }
     td.l{
       font-size:.75rem;
-      color:var(--text3);
+      color:#6b7280;
       max-width:120px;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -378,7 +384,7 @@
       max-width:320px;
       font-size:.9rem;
       font-weight:600;
-      color:var(--text);
+      color:var(--violet-dark);
       line-height:1.4;
       display:flex;
       align-items:center;
