@@ -723,7 +723,56 @@
       .intervenants-grid{grid-template-columns:1fr;}
       .drawer-panel{width:100%;border-radius:18px 18px 0 0;}
     }
-  </style>
+  </
+  
+  /* DATES & RETARD */
+.date-input {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: .8rem;
+  font-family: inherit;
+  outline: none;
+  background: #f9fafb;
+  color: var(--text2);
+  cursor: pointer;
+}
+.date-input:focus {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 2px rgba(124,58,237,.16);
+  background: #fff;
+}
+.badge-retard {
+  display: inline-block;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+td.td-dates { min-width: 200px; display: flex; gap: 6px; align-items: center; }
+
+/* LOTS GRID */
+.lots-section {
+  margin-top: 6px;
+}
+.lots-section-title {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--violet-dark);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+#lotsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+style>
 </head>
 <body>
 <div class="layout">
@@ -784,6 +833,11 @@
             </div>
           </section>
 
+              <div class="panel lots-section">
+      <div class="lots-section-title">Avancement par lot</div>
+      <div id="lotsGrid"></div>
+    </div>
+
           <section class="panel">
             <div class="filterbar">
               <div class="sbox">
@@ -826,6 +880,7 @@
                     <th>Statut</th>
                     <th>Priorité</th>
                     <th>Commentaire</th>
+                                  <th>Dates</th>
                   </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -895,6 +950,14 @@
       <div class="drawer-field">
         <span class="df-label">Priorité</span>
         <span class="df-value" id="drawerPriorite"></span>
+      </div>
+            <div class="drawer-field">
+        <span class="df-label">Début prévu</span>
+        <input type="date" id="drawerDateDebut" class="date-input">
+      </div>
+      <div class="drawer-field">
+        <span class="df-label">Fin prévue</span>
+        <input type="date" id="drawerDateFin" class="date-input">
       </div>
 
       <div class="drawer-block">
@@ -1058,6 +1121,8 @@
     $("drawerStatut").textContent=t.statut;
     $("drawerPriorite").textContent=t.priorite;
     $("drawerCommentaire").value=t.commentaire||"";
+      $('drawerDateDebut').value = t.date_debut || '';
+  $('drawerDateFin').value = t.date_fin || '';
   }
 
   function closeDrawer(){
@@ -1200,7 +1265,41 @@
       td7.appendChild(ci);
       tr.appendChild(td7);
 
-      tb.appendChild(tr);
+      
+          // Colonne dates
+    const td8 = document.createElement('td');
+    td8.className = 'td-dates';
+    const today = new Date().toISOString().split('T')[0];
+
+    const ddInput = document.createElement('input');
+    ddInput.type = 'date';
+    ddInput.className = 'date-input';
+    ddInput.value = t.date_debut || '';
+    ddInput.title = 'Début prévu';
+    ddInput.addEventListener('change', async e => {
+      t.date_debut = e.target.value || null;
+      await save(t.id, 'date_debut', t.date_debut);
+    });
+    td8.appendChild(ddInput);
+
+    const dfInput = document.createElement('input');
+    dfInput.type = 'date';
+    dfInput.className = 'date-input';
+    dfInput.value = t.date_fin || '';
+    dfInput.title = 'Fin prévue';
+    dfInput.addEventListener('change', async e => {
+      t.date_fin = e.target.value || null;
+      await save(t.id, 'date_fin', t.date_fin);
+      checkRetard(t, retardSpan);
+    });
+    td8.appendChild(dfInput);
+
+    const retardSpan = document.createElement('span');
+    checkRetard(t, retardSpan);
+    td8.appendChild(retardSpan);
+
+    tr.appendChild(td8);
+tb.appendChild(tr);
     });
   }
 
@@ -1291,6 +1390,14 @@
           com.textContent=t.commentaire;
           card.appendChild(com);
         }
+            if (t.date_fin) {
+      const today = new Date().toISOString().split('T')[0];
+      const dateEl = document.createElement('div');
+      dateEl.style.cssText = 'font-size:.72rem;margin-top:4px;';
+      const isLate = t.statut !== 'Terminée' && t.date_fin < today;
+      dateEl.innerHTML = `Fin : <strong style="color:${isLate ? '#b91c1c' : '#4b5563'}">${t.date_fin}</strong>${isLate ? ' <span class="badge-retard">⚠ Retard</span>' : ''}`;
+      card.appendChild(dateEl);
+    }
 
         listEl.appendChild(card);
       });
@@ -1435,6 +1542,22 @@
     render();
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
+
+  $('drawerDateDebut').addEventListener('change', async e => {
+  if (!currentTask) return;
+  currentTask.date_debut = e.target.value || null;
+  await save(currentTask.id, 'date_debut', currentTask.date_debut);
+  render();
+  if ($('kanbanWrapper').style.display !== 'none') renderKanban();
+});
+
+$('drawerDateFin').addEventListener('change', async e => {
+  if (!currentTask) return;
+  currentTask.date_fin = e.target.value || null;
+  await save(currentTask.id, 'date_fin', currentTask.date_fin);
+  render();
+  if ($('kanbanWrapper').style.display !== 'none') renderKanban();
+});
 
   /* INTERVENANTS – pour l'instant local, qu'on branchera ensuite sur Supabase */
   const intervenantsData=[
