@@ -24,9 +24,10 @@
 
     /* ── TOPBAR PRINCIPALE ── */
     .topbar-main{
-      background:var(--white);
-      border-bottom:1px solid var(--border);
-      box-shadow:var(--shadow);
+      .topbar-main{
+  background:var(--white);
+  border-bottom:3px solid var(--red);
+  box-shadow:var(--shadow);
       padding:0 32px;
       height:64px;
       display:flex;align-items:center;
@@ -54,8 +55,9 @@
 
     /* ── STATS BAR ── */
     .statsbar{
-      background:var(--white);
-      border-bottom:1px solid var(--border);
+      .statsbar{
+  background:linear-gradient(135deg,#fff5f5 0%,var(--white) 100%);
+  border-bottom:1px solid rgba(177,32,40,.12);
       padding:0 32px;
       display:flex;align-items:center;gap:0;
     }
