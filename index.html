@@ -6,34 +6,22 @@
   <title>Suivi Chantier - Technicombles</title>
   <style>
     :root {
-      --red-main: #b12028;      /* Rouge Technicombles */
-      --red-soft: #e95151;
+      --red-main: #b12028;
       --grey-dark: #444444;
       --grey-light: #f5f5f7;
       --bg-body: #f3f4f7;
       --radius-card: 14px;
       --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.10);
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg-body);
       color: #222;
       padding: 24px;
     }
-
-    .app {
-      max-width: 1200px;
-      margin: 0 auto 40px auto;
-    }
-
-    /* HEADER ------------------------------------------------------ */
+    .app { max-width: 1200px; margin: 0 auto 40px auto; }
 
     header {
       background: #ffffff;
@@ -46,36 +34,11 @@
       margin-bottom: 24px;
       border-top: 4px solid var(--red-main);
     }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .logo {
-      height: 70px;
-      width: auto;
-    }
-
-    .title-block h1 {
-      margin: 0;
-      font-size: 1.4rem;
-      color: var(--grey-dark);
-    }
-
-    .title-block p {
-      margin: 2px 0 0 0;
-      font-size: 0.9rem;
-      color: #777;
-    }
-
-    .header-right {
-      text-align: right;
-      font-size: 0.85rem;
-      color: #777;
-    }
-
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .logo { height: 70px; width: auto; }
+    .title-block h1 { margin: 0; font-size: 1.4rem; color: var(--grey-dark); }
+    .title-block p { margin: 2px 0 0 0; font-size: 0.9rem; color: #777; }
+    .header-right { text-align: right; font-size: 0.85rem; color: #777; }
     .badge {
       display: inline-block;
       padding: 4px 10px;
@@ -85,15 +48,12 @@
       margin-bottom: 6px;
     }
 
-    /* STATS ------------------------------------------------------- */
-
     .stats {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 16px;
       margin-bottom: 20px;
     }
-
     .stat-card {
       background: #ffffff;
       border-radius: var(--radius-card);
@@ -104,25 +64,12 @@
       justify-content: space-between;
       border-left: 4px solid transparent;
     }
-
     .stat-card.total { border-left-color: var(--grey-dark); }
     .stat-card.afaire { border-left-color: var(--red-main); }
     .stat-card.encours { border-left-color: #ff9800; }
     .stat-card.terminees { border-left-color: #2e7d32; }
-
-    .stat-label {
-      font-size: 0.9rem;
-      color: #777;
-      margin-bottom: 6px;
-    }
-
-    .stat-number {
-      font-size: 1.8rem;
-      font-weight: 600;
-      color: var(--grey-dark);
-    }
-
-    /* BARRE D'OUTILS ---------------------------------------------- */
+    .stat-label { font-size: 0.9rem; color: #777; margin-bottom: 6px; }
+    .stat-number { font-size: 1.8rem; font-weight: 600; color: var(--grey-dark); }
 
     .toolbar {
       display: flex;
@@ -131,13 +78,7 @@
       align-items: center;
       margin-bottom: 10px;
     }
-
-    .toolbar-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
+    .toolbar-group { display: flex; gap: 8px; flex-wrap: wrap; }
     select,
     input[type="search"] {
       border-radius: 999px;
@@ -146,13 +87,7 @@
       font-size: 0.9rem;
       background: #fff;
     }
-
-    input[type="search"] {
-      min-width: 220px;
-      flex: 1;
-    }
-
-    /* TABLEAU ----------------------------------------------------- */
+    input[type="search"] { min-width: 220px; flex: 1; }
 
     .table-wrapper {
       background: #ffffff;
@@ -160,39 +95,17 @@
       box-shadow: var(--shadow-soft);
       overflow: hidden;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    thead {
-      background: var(--grey-light);
-    }
-
-    th,
-    td {
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead { background: var(--grey-light); }
+    th, td {
       padding: 10px 12px;
       text-align: left;
       border-bottom: 1px solid #eee;
       white-space: nowrap;
     }
-
-    th {
-      font-weight: 600;
-      color: #555;
-      font-size: 0.85rem;
-    }
-
-    tbody tr:hover {
-      background: #fafafa;
-    }
-
-    td.tache {
-      white-space: normal;
-      max-width: 320px;
-    }
+    th { font-weight: 600; color: #555; font-size: 0.85rem; }
+    tbody tr:hover { background: #fafafa; }
+    td.tache { white-space: normal; max-width: 320px; }
 
     .status-pill {
       display: inline-block;
@@ -201,21 +114,9 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
-
-    .status-afaire {
-      background: #fff4e5;
-      color: #e65100;
-    }
-
-    .status-encours {
-      background: #fff0f6;
-      color: #d81b60;
-    }
-
-    .status-termine {
-      background: #e6f4ea;
-      color: #2e7d32;
-    }
+    .status-afaire { background: #fff4e5; color: #e65100; }
+    .status-encours { background: #fff0f6; color: #d81b60; }
+    .status-termine { background: #e6f4ea; color: #2e7d32; }
 
     .priority {
       font-weight: 500;
@@ -224,23 +125,28 @@
       border-radius: 999px;
       border: 1px solid transparent;
     }
-
     .priority-haute {
       color: var(--red-main);
       border-color: var(--red-main);
       background: #fff5f5;
     }
-
     .priority-moyenne {
       color: #ef6c00;
       border-color: #ef6c00;
       background: #fff3e0;
     }
-
     .priority-basse {
       color: #607d8b;
       border-color: #607d8b;
       background: #eceff1;
+    }
+
+    .intervenant-select {
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      background: #fff;
     }
 
     @media (max-width: 900px) {
@@ -248,10 +154,8 @@
       header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .header-right { align-self: stretch; text-align: left; }
       .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      th:nth-child(2),
-      td:nth-child(2) { display: none; } /* masque la colonne Lot sur mobile */
+      th:nth-child(2), td:nth-child(2) { display: none; }
     }
-
     @media (max-width: 600px) {
       .stats { grid-template-columns: 1fr 1fr; }
       .toolbar { flex-direction: column; align-items: stretch; }
@@ -262,14 +166,9 @@
 </head>
 <body>
   <div class="app">
-    <!-- HEADER -------------------------------------------------- -->
     <header>
       <div class="header-left">
-        <img
-          src="technicombles_logo_small.jpg"
-          alt="Technicombles"
-          class="logo"
-        />
+        <img src="technicombles_logo_small.jpg" alt="Technicombles" class="logo" />
         <div class="title-block">
           <h1>Suivi des travaux – Noé Cléry</h1>
           <p>Technicombles – Aménagement des combles et rénovation</p>
@@ -281,7 +180,6 @@
       </div>
     </header>
 
-    <!-- STATS --------------------------------------------------- -->
     <div class="stats">
       <div class="stat-card total">
         <div class="stat-label">Total tâches</div>
@@ -301,7 +199,6 @@
       </div>
     </div>
 
-    <!-- BARRE D'OUTILS ------------------------------------------ -->
     <div class="toolbar">
       <div class="toolbar-group">
         <select id="filterStatut">
@@ -319,165 +216,4 @@
       <input
         type="search"
         id="searchInput"
-        placeholder="Rechercher une tâche, un lot, un responsable..."
-      />
-    </div>
-
-    <!-- TABLEAU ------------------------------------------------- -->
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Réf</th>
-            <th>Lot</th>
-            <th>Tâche</th>
-            <th>Responsable</th>
-            <th>Statut</th>
-            <th>Priorité</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <script>
-    // Données de test – tu pourras remplacer par tes vraies lignes
-    const tasks = [
-      {
-        ref: "0.1",
-        lot: "Lot 0 - Préparation",
-        task: "Panneau - Avis de chantier",
-        resp: "Non assigné",
-        statut: "À faire",
-        priorite: "Moyenne",
-      },
-      {
-        ref: "0.10",
-        lot: "Lot 0 - Préparation",
-        task: "Sécurité personnes, véhicules, engins",
-        resp: "Non assigné",
-        statut: "À faire",
-        priorite: "Moyenne",
-      },
-      {
-        ref: "0.11",
-        lot: "Lot 0 - Préparation",
-        task: "Réparations encoches et encastrements",
-        resp: "Non assigné",
-        statut: "En cours",
-        priorite: "Haute",
-      },
-      {
-        ref: "0.12",
-        lot: "Lot 0 - Préparation",
-        task: "Respect règles de l'art (DTU et normes)",
-        resp: "Non assigné",
-        statut: "À faire",
-        priorite: "Moyenne",
-      },
-      {
-        ref: "2.1",
-        lot: "Lot 2 - Menuiseries",
-        task: "Pose volets roulants façade rue",
-        resp: "Menuisier",
-        statut: "Terminée",
-        priorite: "Haute",
-      },
-    ];
-
-    const tableBody = document.getElementById("tableBody");
-    const statTotal = document.getElementById("statTotal");
-    const statAFaire = document.getElementById("statAFaire");
-    const statEnCours = document.getElementById("statEnCours");
-    const statTerminees = document.getElementById("statTerminees");
-    const searchInput = document.getElementById("searchInput");
-    const filterStatut = document.getElementById("filterStatut");
-    const filterLot = document.getElementById("filterLot");
-    const lastUpdateSpan = document.getElementById("lastUpdate");
-
-    function priorityClass(p) {
-      const val = (p || "").toLowerCase();
-      if (val === "haute") return "priority priority-haute";
-      if (val === "basse") return "priority priority-basse";
-      return "priority priority-moyenne";
-    }
-
-    function statusClass(s) {
-      if (s === "En cours") return "status-pill status-encours";
-      if (s === "Terminée") return "status-pill status-termine";
-      return "status-pill status-afaire";
-    }
-
-    function renderLotsOptions() {
-      const lots = Array.from(new Set(tasks.map((t) => t.lot))).sort();
-      lots.forEach((lot) => {
-        const opt = document.createElement("option");
-        opt.value = lot;
-        opt.textContent = lot;
-        filterLot.appendChild(opt);
-      });
-    }
-
-    function applyFilters() {
-      const q = searchInput.value.toLowerCase();
-      const statut = filterStatut.value;
-      const lotVal = filterLot.value;
-
-      return tasks.filter((t) => {
-        if (statut && t.statut !== statut) return false;
-        if (lotVal && t.lot !== lotVal) return false;
-        if (!q) return true;
-
-        const str =
-          (t.ref + t.lot + t.task + t.resp + t.statut + t.priorite).toLowerCase();
-        return str.includes(q);
-      });
-    }
-
-    function render() {
-      const filtered = applyFilters();
-      tableBody.innerHTML = "";
-
-      filtered.forEach((t) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${t.ref}</td>
-          <td>${t.lot}</td>
-          <td class="tache">${t.task}</td>
-          <td>${t.resp}</td>
-          <td><span class="${statusClass(t.statut)}">${t.statut}</span></td>
-          <td><span class="${priorityClass(t.priorite)}">${t.priorite}</span></td>
-        `;
-        tableBody.appendChild(tr);
-      });
-
-      // Stats
-      statTotal.textContent = filtered.length;
-      statAFaire.textContent = filtered.filter((t) => t.statut === "À faire").length;
-      statEnCours.textContent = filtered.filter((t) => t.statut === "En cours").length;
-      statTerminees.textContent = filtered.filter((t) => t.statut === "Terminée").length;
-    }
-
-    // Mise à jour de la date
-    const now = new Date();
-    lastUpdateSpan.textContent = now.toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    // Listeners
-    searchInput.addEventListener("input", render);
-    filterStatut.addEventListener("change", render);
-    filterLot.addEventListener("change", render);
-
-    // Initialisation
-    renderLotsOptions();
-    render();
-  </script>
-</body>
-</html>
-
+        placeholder="Rechercher
