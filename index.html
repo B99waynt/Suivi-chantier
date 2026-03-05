@@ -141,12 +141,20 @@
       background: #eceff1;
     }
 
-    .intervenant-select {
+    .pill-select {
       border-radius: 999px;
       border: 1px solid #ddd;
       padding: 4px 8px;
       font-size: 0.8rem;
       background: #fff;
+    }
+    .comment-input {
+      width: 200px;
+      max-width: 100%;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      padding: 4px 8px;
+      font-size: 0.8rem;
     }
 
     @media (max-width: 900px) {
@@ -211,6 +219,10 @@
         <select id="filterLot">
           <option value="">Tous les lots</option>
         </select>
+
+        <select id="filterIntervenant">
+          <option value="">Tous les intervenants</option>
+        </select>
       </div>
 
       <input
@@ -230,6 +242,7 @@
             <th>Intervenant</th>
             <th>Statut</th>
             <th>Priorité</th>
+            <th>Commentaire</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -240,13 +253,17 @@
   <script>
     const intervenantsOptions = [
       "Non assigné",
-      "Maçon",
-      "Menuisier",
-      "Plombier",
-      "Électricien",
-      "Peintre",
-      "Plaquiste",
+      "Techni Combles",
+      "Home Work Peinture",
+      "Pro Martins",
+      "Interelec",
+      "Tiago",
+      "HK Menuiserie",
     ];
+
+    const statutOptions = ["À faire", "En cours", "Terminée"];
+
+    const prioriteOptions = ["Basse", "Moyenne", "Haute"];
 
     const tasks = [
       {
@@ -256,6 +273,7 @@
         intervenant: "Non assigné",
         statut: "À faire",
         priorite: "Moyenne",
+        commentaire: "",
       },
       {
         ref: "0.10",
@@ -264,6 +282,7 @@
         intervenant: "Non assigné",
         statut: "À faire",
         priorite: "Moyenne",
+        commentaire: "",
       },
       {
         ref: "0.11",
@@ -272,6 +291,7 @@
         intervenant: "Non assigné",
         statut: "En cours",
         priorite: "Haute",
+        commentaire: "",
       },
       {
         ref: "0.12",
@@ -280,14 +300,16 @@
         intervenant: "Non assigné",
         statut: "À faire",
         priorite: "Moyenne",
+        commentaire: "",
       },
       {
         ref: "2.1",
         lot: "Lot 2 - Menuiseries",
         task: "Pose volets roulants façade rue",
-        intervenant: "Menuisier",
+        intervenant: "Techni Combles",
         statut: "Terminée",
         priorite: "Haute",
+        commentaire: "",
       },
     ];
 
@@ -299,6 +321,7 @@
     const searchInput = document.getElementById("searchInput");
     const filterStatut = document.getElementById("filterStatut");
     const filterLot = document.getElementById("filterLot");
+    const filterIntervenant = document.getElementById("filterIntervenant");
     const lastUpdateSpan = document.getElementById("lastUpdate");
 
     function priorityClass(p) {
@@ -323,17 +346,36 @@
       });
     }
 
+    function renderIntervenantFilterOptions() {
+      const uniques = Array.from(new Set(tasks.map((t) => t.intervenant))).sort();
+      uniques.forEach((name) => {
+        if (!name) return;
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        filterIntervenant.appendChild(opt);
+      });
+    }
+
     function applyFilters() {
       const q = searchInput.value.toLowerCase();
       const statut = filterStatut.value;
       const lotVal = filterLot.value;
+      const intervVal = filterIntervenant.value;
 
       return tasks.filter((t) => {
         if (statut && t.statut !== statut) return false;
         if (lotVal && t.lot !== lotVal) return false;
+        if (intervVal && t.intervenant !== intervVal) return false;
         if (!q) return true;
         const str =
-          (t.ref + t.lot + t.task + t.intervenant + t.statut + t.priorite).toLowerCase();
+          (t.ref +
+            t.lot +
+            t.task +
+            t.intervenant +
+            t.statut +
+            t.priorite +
+            (t.commentaire || "")).toLowerCase();
         return str.includes(q);
       });
     }
@@ -355,30 +397,65 @@
         tdTask.textContent = t.task;
         tdTask.className = "tache";
 
+        // Intervenant
         const tdInterv = document.createElement("td");
-        const select = document.createElement("select");
-        select.className = "intervenant-select";
+        const selectInterv = document.createElement("select");
+        selectInterv.className = "pill-select";
         intervenantsOptions.forEach((optVal) => {
           const opt = document.createElement("option");
           opt.value = optVal;
           opt.textContent = optVal;
           if (optVal === t.intervenant) opt.selected = true;
-          select.appendChild(opt);
+          selectInterv.appendChild(opt);
         });
-        select.addEventListener("change", (e) => {
+        selectInterv.addEventListener("change", (e) => {
           t.intervenant = e.target.value;
         });
-        tdInterv.appendChild(select);
+        tdInterv.appendChild(selectInterv);
 
+        // Statut
         const tdStatut = document.createElement("td");
-        tdStatut.innerHTML = `<span class="${statusClass(
-          t.statut
-        )}">${t.statut}</span>`;
+        const selectStatut = document.createElement("select");
+        selectStatut.className = "pill-select";
+        statutOptions.forEach((optVal) => {
+          const opt = document.createElement("option");
+          opt.value = optVal;
+          opt.textContent = optVal;
+          if (optVal === t.statut) opt.selected = true;
+          selectStatut.appendChild(opt);
+        });
+        selectStatut.addEventListener("change", (e) => {
+          t.statut = e.target.value;
+          render(); // pour mettre à jour les stats + couleurs
+        });
+        tdStatut.appendChild(selectStatut);
 
+        // Priorité
         const tdPriorite = document.createElement("td");
-        tdPriorite.innerHTML = `<span class="${priorityClass(
-          t.priorite
-        )}">${t.priorite}</span>`;
+        const selectPriorite = document.createElement("select");
+        selectPriorite.className = "pill-select";
+        prioriteOptions.forEach((optVal) => {
+          const opt = document.createElement("option");
+          opt.value = optVal;
+          opt.textContent = optVal;
+          if (optVal === t.priorite) opt.selected = true;
+          selectPriorite.appendChild(opt);
+        });
+        selectPriorite.addEventListener("change", (e) => {
+          t.priorite = e.target.value;
+        });
+        tdPriorite.appendChild(selectPriorite);
+
+        // Commentaire
+        const tdComment = document.createElement("td");
+        const inputComment = document.createElement("input");
+        inputComment.type = "text";
+        inputComment.value = t.commentaire || "";
+        inputComment.className = "comment-input";
+        inputComment.addEventListener("change", (e) => {
+          t.commentaire = e.target.value;
+        });
+        tdComment.appendChild(inputComment);
 
         tr.appendChild(tdRef);
         tr.appendChild(tdLot);
@@ -386,6 +463,7 @@
         tr.appendChild(tdInterv);
         tr.appendChild(tdStatut);
         tr.appendChild(tdPriorite);
+        tr.appendChild(tdComment);
 
         tableBody.appendChild(tr);
       });
@@ -408,8 +486,10 @@
     searchInput.addEventListener("input", render);
     filterStatut.addEventListener("change", render);
     filterLot.addEventListener("change", render);
+    filterIntervenant.addEventListener("change", render);
 
     renderLotsOptions();
+    renderIntervenantFilterOptions();
     render();
   </script>
 </body>
