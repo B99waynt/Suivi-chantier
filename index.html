@@ -3,622 +3,497 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suivi Chantier - Technicombles</title>
+  <title>Suivi Chantier – Noé Cléry</title>
+  //fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
   <style>
     :root {
-      --red-main: #b12028;
-      --grey-dark: #444444;
-      --grey-light: #f5f5f7;
-      --bg-body: #f3f4f7;
-      --radius-card: 14px;
-      --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.10);
+      --red: #c0392b; --red-light: #fdf2f2; --red-dark: #922b21;
+      --orange: #e67e22; --orange-light: #fef5ec;
+      --green: #27ae60; --green-light: #eafaf1;
+      --grey-50: #f8f9fa; --grey-100: #f1f3f5; --grey-200: #e9ecef;
+      --grey-500: #adb5bd; --grey-600: #6c757d; --grey-700: #495057;
+      --grey-800: #343a40; --grey-900: #212529;
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px;
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
     }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg-body);
-      color: #222;
-      padding: 24px;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
+      min-height: 100vh; color: var(--grey-800);
     }
-    .app { max-width: 1200px; margin: 0 auto 40px auto; }
+    .layout { display: flex; min-height: 100vh; }
 
-    header {
-      background: #ffffff;
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-soft);
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      border-top: 4px solid var(--red-main);
+    /* SIDEBAR */
+    .sidebar {
+      width: 260px; min-height: 100vh;
+      background: var(--grey-900);
+      display: flex; flex-direction: column;
+      position: fixed; left: 0; top: 0; bottom: 0;
+      z-index: 100; box-shadow: 4px 0 24px rgba(0,0,0,0.15);
     }
-    .header-left { display: flex; align-items: center; gap: 16px; }
-    .logo { height: 70px; width: auto; }
-    .title-block h1 { margin: 0; font-size: 1.4rem; color: var(--grey-dark); }
-    .title-block p { margin: 2px 0 0 0; font-size: 0.9rem; color: #777; }
-    .header-right { text-align: right; font-size: 0.85rem; color: #777; }
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--grey-light);
-      font-size: 0.8rem;
-      margin-bottom: 6px;
+    .sidebar-logo {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .sidebar-logo img { width: 130px; filter: brightness(0) invert(1); opacity: 0.9; }
+    .sidebar-logo-sub {
+      font-size: 0.7rem; font-weight: 500;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.09em; text-transform: uppercase; text-align: center;
+    }
+    .sidebar-project {
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar-project-label {
+      font-size: 0.68rem; font-weight: 600;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .sidebar-project-name { font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.3; }
+    .sidebar-project-sub { font-size: 0.76rem; color: rgba(255,255,255,0.4); margin-top: 4px; }
+    .sidebar-badge {
+      display: inline-flex; align-items: center; gap: 5px; margin-top: 10px;
+      background: rgba(192,57,43,0.2); border: 1px solid rgba(192,57,43,0.4);
+      color: #e98c84; font-size: 0.7rem; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px;
+    }
+    .sidebar-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: #e98c84; animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .sidebar-stats { padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .sidebar-stats-title {
+      font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.3);
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px;
+    }
+    .sidebar-stat {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.15s;
+    }
+    .sidebar-stat:hover { background: rgba(255,255,255,0.08); }
+    .sidebar-stat-left { display: flex; align-items: center; gap: 10px; }
+    .stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-total { background: var(--grey-500); }
+    .dot-afaire { background: var(--red); }
+    .dot-encours { background: var(--orange); }
+    .dot-terminees { background: var(--green); }
+    .sidebar-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+    .sidebar-stat-num { font-size: 1.1rem; font-weight: 700; color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding: 18px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.72rem; color: rgba(255,255,255,0.25); line-height: 1.6;
     }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: #ffffff;
-      border-radius: var(--radius-card);
-      padding: 14px 16px;
-      box-shadow: var(--shadow-soft);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-left: 4px solid transparent;
-    }
-    .stat-card.total { border-left-color: var(--grey-dark); }
-    .stat-card.afaire { border-left-color: var(--red-main); }
-    .stat-card.encours { border-left-color: #ff9800; }
-    .stat-card.terminees { border-left-color: #2e7d32; }
-    .stat-label { font-size: 0.9rem; color: #777; margin-bottom: 6px; }
-    .stat-number { font-size: 1.8rem; font-weight: 600; color: var(--grey-dark); }
+    /* MAIN */
+    .main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
 
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 10px;
-      justify-content: space-between;
+    /* TOPBAR */
+    .topbar {
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--grey-200);
+      padding: 14px 32px; display: flex; align-items: center; gap: 10px;
+      flex-wrap: wrap; position: sticky; top: 0; z-index: 50;
     }
-    .toolbar-left {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
+    .topbar-search {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--grey-100); border: 1.5px solid var(--grey-200);
+      border-radius: var(--radius-md); padding: 8px 14px;
+      flex: 1; min-width: 180px; max-width: 300px; transition: all 0.15s;
     }
-    select,
-    input[type="search"],
-    input[type="file"] {
-      border-radius: 999px;
-      border: 1px solid #ddd;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      background: #fff;
+    .topbar-search:focus-within {
+      border-color: var(--red); background: #fff;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
     }
-    input[type="search"] { min-width: 220px; flex: 1; }
+    .topbar-search input {
+      border: none; background: transparent; font-size: 0.85rem;
+      color: var(--grey-800); outline: none; width: 100%; font-family: inherit;
+    }
+    .topbar-search input::placeholder { color: var(--grey-500); }
+    .filter-select {
+      appearance: none;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236c757d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+      border: 1.5px solid var(--grey-200); border-radius: var(--radius-md);
+      padding: 8px 28px 8px 12px; font-size: 0.82rem; color: var(--grey-700);
+      cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s;
+    }
+    .filter-select:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
     .btn-import {
-      border-radius: 999px;
-      border: 2px solid var(--red-main);
-      background: var(--red-main);
-      color: white;
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      font-weight: 600;
+      display: flex; align-items: center; gap: 7px;
+      background: var(--red); color: #fff; border: none;
+      border-radius: var(--radius-md); padding: 9px 18px;
+      font-size: 0.84rem; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.15s; box-shadow: 0 2px 8px rgba(192,57,43,0.3); margin-left: auto;
     }
-    .btn-import:hover { background: #8e1a1f; }
+    .btn-import:hover { background: var(--red-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(192,57,43,0.4); }
     #fileInput { display: none; }
 
-    .table-wrapper {
-      background: #ffffff;
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    thead { background: var(--grey-light); }
-    th, td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-      white-space: nowrap;
-    }
-    th { font-weight: 600; color: #555; font-size: 0.85rem; }
-    tbody tr:hover { background: #fafafa; }
-    td.tache { white-space: normal; max-width: 320px; }
+    /* CONTENT */
+    .content { padding: 28px 32px; flex: 1; }
+    .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .table-title { font-size: 0.95rem; font-weight: 600; color: var(--grey-700); }
+    .table-count { font-size: 0.8rem; color: var(--grey-500); background: var(--grey-100); padding: 4px 12px; border-radius: 999px; font-weight: 500; }
 
-    .pill-select {
-      border-radius: 999px;
-      border: 1px solid #ddd;
-      padding: 4px 8px;
-      font-size: 0.8rem;
-      background: #fff;
+    /* TABLE */
+    .table-wrapper { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; border: 1px solid var(--grey-100); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    thead { background: var(--grey-50); border-bottom: 2px solid var(--grey-100); }
+    th { padding: 12px 16px; text-align: left; font-size: 0.7rem; font-weight: 600; color: var(--grey-500); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--grey-100); transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbfc; }
+    tbody tr:nth-child(even) { background: #fdfdfe; }
+    td { padding: 10px 16px; vertical-align: middle; white-space: nowrap; }
+    td.td-ref { font-size: 0.75rem; font-weight: 700; color: var(--grey-500); }
+    td.td-lot { font-size: 0.76rem; color: var(--grey-600); max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+    td.td-task { white-space: normal; max-width: 260px; font-size: 0.84rem; font-weight: 500; color: var(--grey-800); line-height: 1.4; }
+
+    .status-select {
+      appearance: none; border: none; border-radius: 999px;
+      padding: 4px 12px; font-size: 0.74rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; outline: none; transition: opacity 0.15s;
     }
+    .status-select:hover { opacity: 0.8; }
+    .s-afaire { background: var(--red-light); color: var(--red); }
+    .s-encours { background: var(--orange-light); color: var(--orange); }
+    .s-termine { background: var(--green-light); color: var(--green); }
+
+    .priority-select {
+      appearance: none; border-radius: 999px; padding: 3px 10px;
+      font-size: 0.72rem; font-weight: 600; cursor: pointer;
+      font-family: inherit; outline: none; border: 1.5px solid transparent; transition: opacity 0.15s;
+    }
+    .priority-select:hover { opacity: 0.8; }
+    .p-haute { background: var(--red-light); color: var(--red); border-color: var(--red); }
+    .p-moyenne { background: var(--orange-light); color: var(--orange); border-color: var(--orange); }
+    .p-basse { background: var(--grey-100); color: var(--grey-600); border-color: var(--grey-500); }
+
+    .intervenant-select {
+      appearance: none; border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm);
+      padding: 4px 10px; font-size: 0.8rem; color: var(--grey-700);
+      background: #fff; cursor: pointer; font-family: inherit; outline: none; transition: all 0.15s;
+    }
+    .intervenant-select:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+
     .comment-input {
-      width: 200px;
-      max-width: 100%;
-      border-radius: 999px;
-      border: 1px solid #ddd;
-      padding: 4px 8px;
-      font-size: 0.8rem;
+      width: 180px; border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm);
+      padding: 4px 10px; font-size: 0.8rem; color: var(--grey-700);
+      background: #fff; font-family: inherit; outline: none; transition: all 0.15s;
     }
+    .comment-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
 
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--grey-500); }
+    
+    .empty-state svg { margin-bottom: 16px; opacity: 0.3; }
+    .empty-state p { font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color: var(--grey-700); }
+    .empty-state span { font-size: 0.82rem; }
+
+    /* RESPONSIVE */
     @media (max-width: 900px) {
-      body { padding: 12px; }
-      header { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .header-right { align-self: stretch; text-align: left; }
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      th:nth-child(2), td:nth-child(2) { display: none; }
-    }
-    @media (max-width: 600px) {
-      .stats { grid-template-columns: 1fr 1fr; }
-      .toolbar { flex-direction: column; align-items: stretch; }
-      .toolbar-left { width: 100%; }
-      input[type="search"] { width: 100%; }
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .topbar { padding: 12px 16px; }
+      .content { padding: 16px; }
+      td.td-lot { display: none; }
+      th:nth-child(2) { display: none; }
     }
   </style>
-
-  <!-- XLSX pour l'import Excel -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="header-left">
-        <img src="technicombles_logo_small.jpg" alt="Technicombles" class="logo" />
-        <div class="title-block">
-          <h1>Suivi des travaux – Noé Cléry</h1>
-          <p>Technicombles – Aménagement des combles et rénovation</p>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="technicombles_logo_small.jpg" alt="Technicombles" />
+      <span class="sidebar-logo-sub">Gestion de chantier</span>
+    </div>
+    <div class="sidebar-project">
+      <div class="sidebar-project-label">Projet en cours</div>
+      <div class="sidebar-project-name">Noé Cléry</div>
+      <div class="sidebar-project-sub">Aménagement des combles<br/>et rénovation</div>
+      <div class="sidebar-badge">Chantier actif</div>
+    </div>
+    <div class="sidebar-stats">
+      <div class="sidebar-stats-title">Avancement</div>
+      <div class="sidebar-stat">
+        <div class="sidebar-stat-left">
+          <div class="stat-dot dot-total"></div>
+          <span class="sidebar-stat-label">Total tâches</span>
         </div>
+        <span class="sidebar-stat-num" id="statTotal">0</span>
       </div>
-      <div class="header-right">
-        <div class="badge">Chantier interne</div>
-        <div>Dernière mise à jour : <span id="lastUpdate"></span></div>
+      <div class="sidebar-stat">
+        <div class="sidebar-stat-left">
+          <div class="stat-dot dot-afaire"></div>
+          <span class="sidebar-stat-label">À faire</span>
+        </div>
+        <span class="sidebar-stat-num" id="statAFaire">0</span>
       </div>
-    </header>
-
-    <div class="stats">
-      <div class="stat-card total">
-        <div class="stat-label">Total tâches</div>
-        <div class="stat-number" id="statTotal">0</div>
+      <div class="sidebar-stat">
+        <div class="sidebar-stat-left">
+          <div class="stat-dot dot-encours"></div>
+          <span class="sidebar-stat-label">En cours</span>
+        </div>
+        <span class="sidebar-stat-num" id="statEnCours">0</span>
       </div>
-      <div class="stat-card afaire">
-        <div class="stat-label">À faire</div>
-        <div class="stat-number" id="statAFaire">0</div>
-      </div>
-      <div class="stat-card encours">
-        <div class="stat-label">En cours</div>
-        <div class="stat-number" id="statEnCours">0</div>
-      </div>
-      <div class="stat-card terminees">
-        <div class="stat-label">Terminées</div>
-        <div class="stat-number" id="statTerminees">0</div>
+      <div class="sidebar-stat">
+        <div class="sidebar-stat-left">
+          <div class="stat-dot dot-terminees"></div>
+          <span class="sidebar-stat-label">Terminées</span>
+        </div>
+        <span class="sidebar-stat-num" id="statTerminees">0</span>
       </div>
     </div>
+    <div class="sidebar-footer">
+      <span>Dernière mise à jour</span>
+      <span id="lastUpdate">—</span>
+    </div>
+  </aside>
 
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <button class="btn-import" id="importBtn">
-          📂 Importer DPGF
-        </button>
-        <input type="file" id="fileInput" accept=".xlsx,.xls" />
-
-        <select id="filterStatut">
-          <option value="">Tous les statuts</option>
-          <option value="À faire">À faire</option>
-          <option value="En cours">En cours</option>
-          <option value="Terminée">Terminée</option>
-        </select>
-
-        <select id="filterLot">
-          <option value="">Tous les lots</option>
-        </select>
-
-        <select id="filterIntervenant">
-          <option value="">Tous les intervenants</option>
-        </select>
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-search">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">ircle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" />
       </div>
 
-      <input
-        type="search"
-        id="searchInput"
-        placeholder="Rechercher une tâche, un lot, un intervenant..."
-      />
+      <select class="filter-select" id="filterStatut">
+        <option value="">Tous les statuts</option>
+        <option value="À faire">À faire</option>
+        <option value="En cours">En cours</option>
+        <option value="Terminée">Terminée</option>
+      </select>
+
+      <select class="filter-select" id="filterLot">
+        <option value="">Tous les lots</option>
+      </select>
+
+      <select class="filter-select" id="filterIntervenant">
+        <option value="">Tous les intervenants</option>
+      </select>
+
+      <button class="btn-import" id="importBtn">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/>e x1="12" y1="3" x2="12" y2="15"/></svg>
+        Importer DPGF
+      </button>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" />
     </div>
 
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Réf</th>
-            <th>Lot</th>
-            <th>Tâche</th>
-            <th>Intervenant</th>
-            <th>Statut</th>
-            <th>Priorité</th>
-            <th>Commentaire</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
+    <div class="content">
+      <div class="table-header">
+        <span class="table-title">Liste des tâches</span>
+        <span class="table-count" id="tableCount">0 tâche</span>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Réf</th>
+              <th>Lot</th>
+              <th>Tâche</th>
+              <th>Intervenant</th>
+              <th>Statut</th>
+              <th>Priorité</th>
+              <th>Commentaire</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // ---- CONFIG SUPABASE (tes vraies valeurs) ----
-    const SUPABASE_URL = "https://ifhvgqvmwgtyzuoyjbby.supabase.co";
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
+<script>
+  const SUPABASE_URL = "https://ifhvgqvmwgtyzuoyjbby.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const intervenantsOptions = ["Non assigné","Techni Combles","Home Work Peinture","Pro Martins","Interelec","Tiago","HK Menuiserie"];
+  const statutOptions = ["À faire","En cours","Terminée"];
+  const prioriteOptions = ["Basse","Moyenne","Haute"];
 
-    const intervenantsOptions = [
-      "Non assigné",
-      "Techni Combles",
-      "Home Work Peinture",
-      "Pro Martins",
-      "Interelec",
-      "Tiago",
-      "HK Menuiserie",
-    ];
-    const statutOptions = ["À faire", "En cours", "Terminée"];
-    const prioriteOptions = ["Basse", "Moyenne", "Haute"];
+  let tasks = [];
 
-    let tasks = []; // {id, ref, lot, task, intervenant, statut, priorite, commentaire}
+  const tableBody = document.getElementById("tableBody");
+  const searchInput = document.getElementById("searchInput");
+  const filterStatut = document.getElementById("filterStatut");
+  const filterLot = document.getElementById("filterLot");
+  const filterIntervenant = document.getElementById("filterIntervenant");
+  const importBtn = document.getElementById("importBtn");
+  const fileInput = document.getElementById("fileInput");
 
-    const tableBody = document.getElementById("tableBody");
-    const statTotal = document.getElementById("statTotal");
-    const statAFaire = document.getElementById("statAFaire");
-    const statEnCours = document.getElementById("statEnCours");
-    const statTerminees = document.getElementById("statTerminees");
-    const searchInput = document.getElementById("searchInput");
-    const filterStatut = document.getElementById("filterStatut");
-    const filterLot = document.getElementById("filterLot");
-    const filterIntervenant = document.getElementById("filterIntervenant");
-    const lastUpdateSpan = document.getElementById("lastUpdate");
-    const fileInput = document.getElementById("fileInput");
-    const importBtn = document.getElementById("importBtn");
-
-    const now = new Date();
-    lastUpdateSpan.textContent = now.toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+  function updateDate() {
+    document.getElementById("lastUpdate").textContent = new Date().toLocaleString("fr-FR", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
     });
+  }
 
-    function guessLot(ref) {
-      if (!ref) return "Lot inconnu";
-      const num = ref.toString().split(".")[0];
-      const lotMap = {
-        "0": "Lot 0 - Préparation",
-        "1": "Lot 1 - Démolition et GO",
-        "2": "Lot 2 - Maçonnerie",
-        "3": "Lot 3 - Plomberie",
-        "4": "Lot 4 - Électricité",
-        "5": "Lot 5 - Ventilation",
-        "6": "Lot 6 - Menuiseries Ext",
-        "7": "Lot 7 - Menuiseries Int",
-        "8": "Lot 8 - Parquet",
-        "9": "Lot 9 - Peinture",
-      };
-      return lotMap[num] || "Lot " + num;
-    }
+  function guessLot(ref) {
+    if (!ref) return "Lot inconnu";
+    const num = ref.toString().split(".")[0];
+    const map = {
+      "0":"Lot 0 - Préparation","1":"Lot 1 - Démolition et GO",
+      "2":"Lot 2 - Maçonnerie","3":"Lot 3 - Plomberie",
+      "4":"Lot 4 - Électricité","5":"Lot 5 - Ventilation",
+      "6":"Lot 6 - Menuiseries Ext","7":"Lot 7 - Menuiseries Int",
+      "8":"Lot 8 - Parquet","9":"Lot 9 - Peinture"
+    };
+    return map[num] || "Lot " + num;
+  }
 
-    function normalizeStatut(val) {
-      const v = (val || "").toLowerCase().trim();
-      if (v.includes("faire")) return "À faire";
-      if (v.includes("cours")) return "En cours";
-      if (v.includes("termin")) return "Terminée";
-      return "À faire";
-    }
+  function normalizeStatut(v) {
+    const s = (v||"").toLowerCase();
+    if (s.includes("cours")) return "En cours";
+    if (s.includes("termin")) return "Terminée";
+    return "À faire";
+  }
 
-    function guessPriorite(desc, remarques) {
-      const txt = ((desc || "") + " " + (remarques || "")).toLowerCase();
-      if (txt.includes("urgent") || txt.includes("priorit")) return "Haute";
-      if (txt.includes("option")) return "Basse";
-      return "Moyenne";
-    }
+  function guessPriorite(desc, rem) {
+    const t = ((desc||"")+" "+(rem||"")).toLowerCase();
+    if (t.includes("urgent")||t.includes("priorit")) return "Haute";
+    if (t.includes("option")) return "Basse";
+    return "Moyenne";
+  }
 
-    function renderLotsOptions() {
-      filterLot.innerHTML = '<option value="">Tous les lots</option>';
-      const lots = Array.from(new Set(tasks.map((t) => t.lot))).sort();
-      lots.forEach((lot) => {
-        const opt = document.createElement("option");
-        opt.value = lot;
-        opt.textContent = lot;
-        filterLot.appendChild(opt);
-      });
-    }
+  function statusClass(s) {
+    if (s === "En cours") return "s-encours";
+    if (s === "Terminée") return "s-termine";
+    return "s-afaire";
+  }
 
-    function renderIntervenantFilterOptions() {
-      filterIntervenant.innerHTML = '<option value="">Tous les intervenants</option>';
-      const uniques = Array.from(new Set(tasks.map((t) => t.intervenant))).sort();
-      uniques.forEach((name) => {
-        if (!name) return;
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        filterIntervenant.appendChild(opt);
-      });
-    }
+  function priorityClass(p) {
+    if ((p||"").toLowerCase() === "haute") return "p-haute";
+    if ((p||"").toLowerCase() === "basse") return "p-basse";
+    return "p-moyenne";
+  }
 
-    function applyFilters() {
-      const q = searchInput.value.toLowerCase();
-      const statut = filterStatut.value;
-      const lotVal = filterLot.value;
-      const intervVal = filterIntervenant.value;
+  function renderFilters() {
+    filterLot.innerHTML = '<option value="">Tous les lots</option>';
+    Array.from(new Set(tasks.map(t=>t.lot))).sort().forEach(l => {
+      const o = document.createElement("option");
+      o.value = l; o.textContent = l;
+      filterLot.appendChild(o);
+    });
+    filterIntervenant.innerHTML = '<option value="">Tous les intervenants</option>';
+    Array.from(new Set(tasks.map(t=>t.intervenant))).sort().forEach(i => {
+      if (!i) return;
+      const o = document.createElement("option");
+      o.value = i; o.textContent = i;
+      filterIntervenant.appendChild(o);
+    });
+  }
 
-      return tasks.filter((t) => {
-        if (statut && t.statut !== statut) return false;
-        if (lotVal && t.lot !== lotVal) return false;
-        if (intervVal && t.intervenant !== intervVal) return false;
-        if (!q) return true;
-        const str =
-          (t.ref +
-            t.lot +
-            t.task +
-            t.intervenant +
-            t.statut +
-            t.priorite +
-            (t.commentaire || "")).toLowerCase();
-        return str.includes(q);
-      });
-    }
+  function applyFilters() {
+    const q = searchInput.value.toLowerCase();
+    const s = filterStatut.value;
+    const l = filterLot.value;
+    const i = filterIntervenant.value;
+    return tasks.filter(t => {
+      if (s && t.statut !== s) return false;
+      if (l && t.lot !== l) return false;
+      if (i && t.intervenant !== i) return false;
+      if (!q) return true;
+      return (t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||"")).toLowerCase().includes(q);
+    });
+  }
 
-    async function updateTaskField(id, field, value) {
-      try {
-        await supabaseClient
-          .from("taches_noe_clery")
-          .update({ [field]: value, updated_at: new Date().toISOString() })
-          .eq("id", id);
-      } catch (e) {
-        console.error("Erreur update", e);
-        alert("Erreur lors de la sauvegarde Supabase.");
-      }
-    }
+  async function updateField(id, field, value) {
+    await db.from("taches_noe_clery").update({ [field]: value, updated_at: new Date().toISOString() }).eq("id", id);
+    updateDate();
+  }
 
-    function render() {
-      const filtered = applyFilters();
-      tableBody.innerHTML = "";
+  function render() {
+    const filtered = applyFilters();
+    tableBody.innerHTML = "";
 
-      filtered.forEach((t) => {
+    if (filtered.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        <p>Aucune tâche trouvée</p>
+        <span>Modifie les filtres ou importe ton DPGF</span>
+      </div></td></tr>`;
+    } else {
+      filtered.forEach(t => {
         const tr = document.createElement("tr");
 
+        // Ref
         const tdRef = document.createElement("td");
+        tdRef.className = "td-ref";
         tdRef.textContent = t.ref;
 
+        // Lot
         const tdLot = document.createElement("td");
+        tdLot.className = "td-lot";
         tdLot.textContent = t.lot;
+        tdLot.title = t.lot;
 
+        // Task
         const tdTask = document.createElement("td");
+        tdTask.className = "td-task";
         tdTask.textContent = t.task;
-        tdTask.className = "tache";
 
         // Intervenant
         const tdInterv = document.createElement("td");
-        const selectInterv = document.createElement("select");
-        selectInterv.className = "pill-select";
-        intervenantsOptions.forEach((optVal) => {
-          const opt = document.createElement("option");
-          opt.value = optVal;
-          opt.textContent = optVal;
-          if (optVal === t.intervenant) opt.selected = true;
-          selectInterv.appendChild(opt);
+        const selInterv = document.createElement("select");
+        selInterv.className = "intervenant-select";
+        intervenantsOptions.forEach(v => {
+          const o = document.createElement("option");
+          o.value = v; o.textContent = v;
+          if (v === t.intervenant) o.selected = true;
+          selInterv.appendChild(o);
         });
-        selectInterv.addEventListener("change", async (e) => {
+        selInterv.addEventListener("change", async e => {
           t.intervenant = e.target.value;
-          await updateTaskField(t.id, "intervenant", t.intervenant);
-          renderIntervenantFilterOptions();
+          await updateField(t.id, "intervenant", t.intervenant);
+          renderFilters();
         });
-        tdInterv.appendChild(selectInterv);
+        tdInterv.appendChild(selInterv);
 
         // Statut
         const tdStatut = document.createElement("td");
-        const selectStatut = document.createElement("select");
-        selectStatut.className = "pill-select";
-        statutOptions.forEach((optVal) => {
-          const opt = document.createElement("option");
-          opt.value = optVal;
-          opt.textContent = optVal;
-          if (optVal === t.statut) opt.selected = true;
-          selectStatut.appendChild(opt);
+        const selStatut = document.createElement("select");
+        selStatut.className = "status-select " + statusClass(t.statut);
+        statutOptions.forEach(v => {
+          const o = document.createElement("option");
+          o.value = v; o.textContent = v;
+          if (v === t.statut) o.selected = true;
+          selStatut.appendChild(o);
         });
-        selectStatut.addEventListener("change", async (e) => {
+        selStatut.addEventListener("change", async e => {
           t.statut = e.target.value;
-          await updateTaskField(t.id, "statut", t.statut);
-          render();
+          selStatut.className = "status-select " + statusClass(t.statut);
+          await updateField(t.id, "statut", t.statut);
+          updateStats(applyFilters());
         });
-        tdStatut.appendChild(selectStatut);
+        tdStatut.appendChild(selStatut);
 
         // Priorité
-        const tdPriorite = document.createElement("td");
-        const selectPriorite = document.createElement("select");
-        selectPriorite.className = "pill-select";
-        prioriteOptions.forEach((optVal) => {
-          const opt = document.createElement("option");
-          opt.value = optVal;
-          opt.textContent = optVal;
-          if (optVal === t.priorite) opt.selected = true;
-          selectPriorite.appendChild(opt);
+        const tdPrio = document.createElement("td");
+        const selPrio = document.createElement("select");
+        selPrio.className = "priority-select " + priorityClass(t.priorite);
+        prioriteOptions.forEach(v => {
+          const o = document.createElement("option");
+          o.value = v; o.textContent = v;
+          if (v === t.priorite) o.selected = true;
+          selPrio.appendChild(o);
         });
-        selectPriorite.addEventListener("change", async (e) => {
+        selPrio.addEventListener("change", async e => {
           t.priorite = e.target.value;
-          await updateTaskField(t.id, "priorite", t.priorite);
+          selPrio.className = "priority-select " + priorityClass(t.priorite);
+          await updateField(t.id, "priorite", t.priorite);
         });
-        tdPriorite.appendChild(selectPriorite);
-
-        // Commentaire
-        const tdComment = document.createElement("td");
-        const inputComment = document.createElement("input");
-        inputComment.type = "text";
-        inputComment.value = t.commentaire || "";
-        inputComment.className = "comment-input";
-        inputComment.addEventListener("change", async (e) => {
-          t.commentaire = e.target.value;
-          await updateTaskField(t.id, "commentaire", t.commentaire);
-        });
-        tdComment.appendChild(inputComment);
-
-        tr.appendChild(tdRef);
-        tr.appendChild(tdLot);
-        tr.appendChild(tdTask);
-        tr.appendChild(tdInterv);
-        tr.appendChild(tdStatut);
-        tr.appendChild(tdPriorite);
-        tr.appendChild(tdComment);
-
-        tableBody.appendChild(tr);
-      });
-
-      statTotal.textContent = filtered.length;
-      statAFaire.textContent = filtered.filter((t) => t.statut === "À faire").length;
-      statEnCours.textContent = filtered.filter((t) => t.statut === "En cours").length;
-      statTerminees.textContent = filtered.filter((t) => t.statut === "Terminée").length;
-    }
-
-    async function loadTasksFromSupabase() {
-      const { data, error } = await supabaseClient
-        .from("taches_noe_clery")
-        .select("*")
-        .order("ref", { ascending: true });
-
-      if (error) {
-        console.error(error);
-        alert("Erreur chargement Supabase");
-        return;
-      }
-
-      tasks = data || [];
-      renderLotsOptions();
-      renderIntervenantFilterOptions();
-      render();
-    }
-
-    async function replaceTasksInSupabase(newTasks) {
-      // on efface tout puis on insère
-      await supabaseClient.from("taches_noe_clery").delete().neq("id", 0);
-      const { error } = await supabaseClient
-        .from("taches_noe_clery")
-        .insert(
-          newTasks.map((t) => ({
-            ref: t.ref,
-            lot: t.lot,
-            task: t.task,
-            intervenant: t.intervenant,
-            statut: t.statut,
-            priorite: t.priorite,
-            commentaire: t.commentaire,
-          }))
-        );
-      if (error) {
-        console.error(error);
-        alert("Erreur lors de l’enregistrement dans Supabase");
-      }
-    }
-
-    importBtn.addEventListener("click", async () => {
-      const confirmReset = confirm(
-        "Importer le DPGF va remplacer toutes les tâches existantes dans la base.\n\nContinuer ?"
-      );
-      if (!confirmReset) return;
-      fileInput.click();
-    });
-
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const data = new Uint8Array(event.target.result);
-          const workbook = XLSX.read(data, { type: "array" });
-
-          const sheetNames = workbook.SheetNames;
-          let foundTasks = [];
-
-          sheetNames.forEach((sheetName) => {
-            const sheet = workbook.Sheets[sheetName];
-            const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-            let headerRowIndex = -1;
-            for (let i = 0; i < json.length; i++) {
-              const row = json[i];
-              const firstCol = (row[0] || "").toString().toLowerCase();
-              if (firstCol.includes("rf") || firstCol.includes("réf")) {
-                headerRowIndex = i;
-                break;
-              }
-            }
-            if (headerRowIndex === -1) return;
-
-            const headers = json[headerRowIndex].map((h) =>
-              (h || "").toString().toLowerCase().trim()
-            );
-
-            const refIdx = headers.findIndex((h) => h.includes("rf") || h.includes("réf"));
-            const descIdx = headers.findIndex((h) =>
-              h.includes("description") || h.includes("tche")
-            );
-            const responsableIdx = headers.findIndex((h) => h.includes("responsable"));
-            const statutIdx = headers.findIndex((h) => h.includes("statut"));
-            const remarquesIdx = headers.findIndex((h) =>
-              h.includes("remarque") || h.includes("observation")
-            );
-
-            for (let i = headerRowIndex + 1; i < json.length; i++) {
-              const row = json[i];
-              const ref = row[refIdx] || "";
-              const desc = row[descIdx] || "";
-              if (!ref || !desc) continue;
-              if (ref.toString().includes("---")) continue;
-
-              const responsable = row[responsableIdx] || "Non assigné";
-              const statut = row[statutIdx] || "À faire";
-              const remarques = row[remarquesIdx] || "";
-
-              foundTasks.push({
-                ref: ref.toString(),
-                lot: guessLot(ref),
-                task: desc.toString(),
-                intervenant:
-                  responsable.toString().toLowerCase() === "à faire" ||
-                  responsable.toString().toLowerCase() === "faire"
-                    ? "Non assigné"
-                    : responsable.toString(),
-                statut: normalizeStatut(statut),
-                priorite: guessPriorite(desc, remarques),
-                commentaire: remarques.toString(),
-              });
-            }
-          });
-
-          if (foundTasks.length === 0) {
-            alert("Aucune tâche trouvée dans le fichier Excel.");
-            return;
-          }
-
-          await replaceTasksInSupabase(foundTasks);
-          await loadTasksFromSupabase();
-          alert(`✅ ${tasks.length} tâches importées et sauvegardées dans Supabase.`);
-        } catch (err) {
-          console.error(err);
-          alert("Erreur lors de la lecture du fichier Excel.");
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    });
-
-    searchInput.addEventListener("input", render);
-    filterStatut.addEventListener("change", render);
-    filterLot.addEventListener("change", render);
-    filterIntervenant.addEventListener("change", render);
-
-    // Chargement initial depuis Supabase
-    loadTasksFromSupabase();
-  </script>
-</body>
-</html>
