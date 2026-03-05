@@ -11,7 +11,6 @@
       --violet:#7c3aed;
       --violet-soft:#a855f7;
       --violet-dark:#5b21b6;
-      --violet-bg:#f5f3ff;
       --bg:#f3f4f6;
       --card:#ffffff;
       --border:#e5e7eb;
@@ -65,63 +64,48 @@
       flex-direction:column;
       border-radius:22px 0 0 22px;
     }
-    .sidebar-inner{
-      background:transparent;
-      border-radius:18px;
-      display:flex;
-      flex-direction:column;
-      height:100%;
-    }
-    .sidebar-nav{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-top:8px;
-    }
     .nav-label{
-      font-size:.78rem;
+      font-size:.8rem;
       color:#e9d5ff;
-      margin:0 4px 6px;
-      font-weight:500;
+      margin:0 4px 10px;
+      font-weight:600;
       text-transform:uppercase;
-      letter-spacing:.05em;
+      letter-spacing:.06em;
     }
     .nav-item{
       display:flex;
       align-items:center;
-      gap:10px;
       padding:9px 12px;
       border-radius:999px;
-      color:#f5f3ff;
-      font-size:.86rem;
-      font-weight:600;
+      color:#ffffff;
+      font-size:.9rem;
+      font-weight:700;
       cursor:pointer;
       opacity:.9;
       transition:background .12s,opacity .12s;
     }
-    .nav-item span.label{
-      font-weight:600;
-    }
     .nav-item.active{
-      background:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.22);
       opacity:1;
     }
     .nav-item:hover{
-      background:rgba(255,255,255,.15);
+      background:rgba(255,255,255,.18);
       opacity:1;
     }
+
     .sidebar-footer{
       margin-top:auto;
       padding-top:18px;
-      border-top:1px solid rgba(255,255,255,.15);
+      border-top:1px solid rgba(255,255,255,.18);
       font-size:.8rem;
       color:#ede9fe;
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:4px;
+      font-weight:500;
     }
 
-    /* MAIN AREA */
+    /* MAIN */
     .main{
       flex:1;
       min-width:0;
@@ -130,10 +114,10 @@
       background:#f9fafb;
     }
 
-    /* TOPBAR BLANCHE AVEC LOGO */
+    /* TOPBAR BLANCHE AVEC LOGO SEUL */
     .topbar{
-      height:56px;
-      padding:0 22px;
+      height:78px;
+      padding:0 26px;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -143,36 +127,26 @@
     .topbar-left{
       display:flex;
       align-items:center;
-      gap:14px;
-    }
-    .topbar-logo{
-      display:flex;
-      align-items:center;
-      gap:10px;
+      gap:18px;
     }
     .topbar-logo img{
-      height:28px;
+      height:46px;
       width:auto;
-      border-radius:8px;
-      background:#f9fafb;
-    }
-    .topbar-logo span{
-      font-size:.98rem;
-      font-weight:700;
-      color:var(--violet-dark);
+      border-radius:10px;
+      background:#ffffff;
+      object-fit:contain;
     }
     .topbar-search{
-      margin-left:18px;
-      min-width:260px;
+      min-width:280px;
       max-width:420px;
       flex:0 1 420px;
       background:transparent;
       border-radius:999px;
-      border:1.4px solid var(--violet);
-      padding:6px 12px;
+      border:1.6px solid var(--violet);
+      padding:8px 14px;
       display:flex;
       align-items:center;
-      font-size:.8rem;
+      font-size:.82rem;
       color:var(--text2);
     }
     .topbar-search input{
@@ -180,25 +154,24 @@
       outline:none;
       width:100%;
       font-family:inherit;
-      font-size:.8rem;
+      font-size:.82rem;
       background:transparent;
       color:var(--text2);
     }
     .topbar-search input::placeholder{color:var(--text3);}
     .topbar-right{
-      font-size:.78rem;
+      font-size:.8rem;
       color:var(--text3);
     }
 
-    /* CONTENU PRINCIPAL AVEC ONGLET */
+    /* CONTENU PRINCIPAL AVEC VUES */
     .main-inner{
-      padding:16px 22px 20px;
+      padding:18px 24px 20px;
       display:flex;
       flex-direction:column;
       gap:14px;
       overflow:auto;
     }
-
     .view-section{
       display:none;
       flex-direction:column;
@@ -208,14 +181,13 @@
       display:flex;
     }
 
-    /* HEADER DE SECTION (titre) */
     .section-header{
       display:flex;
       justify-content:space-between;
       align-items:center;
     }
     .section-title{
-      font-size:1.05rem;
+      font-size:1.1rem;
       font-weight:700;
       color:var(--text);
     }
@@ -224,7 +196,7 @@
       color:var(--text3);
     }
 
-    /* CARTES STATS (vue Tâches) */
+    /* STATS (vue Tâches) */
     .stats-grid{
       display:grid;
       grid-template-columns:repeat(4,minmax(0,1fr));
@@ -255,7 +227,7 @@
       color:var(--text3);
     }
 
-    /* PANEL PRINCIPAL TÂCHES */
+    /* PANEL TÂCHES */
     .panel{
       background:var(--card);
       border-radius:20px;
@@ -304,17 +276,6 @@
       border-color:var(--violet);
       box-shadow:0 0 0 2px rgba(124,58,237,.16);
     }
-    .btn-imp{
-      display:flex;align-items:center;justify-content:center;
-      width:34px;height:34px;
-      background:var(--violet);color:#fff;border:none;
-      border-radius:999px;cursor:pointer;
-      box-shadow:0 8px 20px rgba(124,58,237,.35);
-      flex-shrink:0;margin-left:auto;
-      font-weight:700;
-      font-size:.9rem;
-    }
-    #fileInput{display:none;}
 
     .tbl-header{
       display:flex;align-items:center;justify-content:space-between;
@@ -588,7 +549,7 @@
       border-radius:var(--rs);
     }
 
-    /* VUE INTERVENANTS */
+    /* VUE INTERVENANTS – EDITABLE LOCAL */
     .intervenants-grid{
       display:grid;
       grid-template-columns:repeat(3,minmax(0,1fr));
@@ -602,22 +563,57 @@
       padding:10px 12px;
       display:flex;
       flex-direction:column;
-      gap:4px;
+      gap:6px;
     }
-    .inter-name{
-      font-size:.95rem;
+    .inter-input{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:.82rem;
+      font-family:inherit;
+      outline:none;
+    }
+    .inter-input::placeholder{color:var(--text3);}
+    .inter-input:focus{
+      border-color:var(--violet);
+      box-shadow:0 0 0 2px rgba(124,58,237,.14);
+    }
+    .inter-label{
+      font-size:.78rem;
+      color:var(--text3);
+      font-weight:500;
+    }
+    .inter-row{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+    .inter-name-input{
       font-weight:700;
-      color:var(--text);
     }
-    .inter-role{
+
+    /* VUE DOCUMENTS */
+    .doc-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:6px;
+    }
+    .btn-doc-import{
+      border:none;
+      border-radius:999px;
+      padding:8px 16px;
+      background:var(--violet);
+      color:#ffffff;
+      font-size:.85rem;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(124,58,237,.4);
+    }
+    .doc-note{
       font-size:.8rem;
       color:var(--text2);
-      font-weight:500;
-      margin-bottom:4px;
-    }
-    .inter-line{
-      font-size:.8rem;
-      color:var(--text3);
     }
 
     /* DRAWER */
@@ -752,17 +748,14 @@
   <div class="shell">
     <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="sidebar-inner">
-        <div class="nav-label">Menu</div>
-        <div class="nav-item active" data-view-btn="chantier"><span class="label">Chantier</span></div>
-        <div class="nav-item" data-view-btn="taches"><span class="label">Tâches</span></div>
-        <div class="nav-item" data-view-btn="intervenants"><span class="label">Intervenants</span></div>
-        <div class="nav-item" data-view-btn="documents"><span class="label">Documents</span></div>
+      <div class="nav-label">Menu</div>
+      <div class="nav-item active" data-view-btn="taches">Tâches</div>
+      <div class="nav-item" data-view-btn="intervenants">Intervenants</div>
+      <div class="nav-item" data-view-btn="documents">Documents</div>
 
-        <div class="sidebar-footer">
-          <span style="font-weight:600;">Technicombles</span>
-          <span>Suivi chantier Cléry – v1.0</span>
-        </div>
+      <div class="sidebar-footer">
+        <span>Suivi chantier Cléry</span>
+        <span>Technicombles – Interne</span>
       </div>
     </aside>
 
@@ -772,7 +765,6 @@
         <div class="topbar-left">
           <div class="topbar-logo">
             <img src="technicombles_logo_small.jpg" alt="Technicombles">
-            <span>Technicombles</span>
           </div>
           <div class="topbar-search">
             <input type="text" placeholder="Recherche globale…">
@@ -784,28 +776,12 @@
       </header>
 
       <div class="main-inner">
-        <!-- VUE CHANTIER (simple résumé pour l'instant) -->
-        <section class="view-section active" data-view="chantier">
-          <div class="section-header">
-            <div>
-              <div class="section-title">Chantier Cléry</div>
-              <div class="section-sub">Aménagement des combles & rénovation</div>
-            </div>
-          </div>
-          <div class="panel">
-            <p style="font-size:.9rem;color:var(--text2);">
-              Récapitulatif chantier à compléter (adresse, client, dates, contacts…).  
-              Pour l’instant, utilise surtout l’onglet <strong>Tâches</strong> et <strong>Intervenants</strong>.
-            </p>
-          </div>
-        </section>
-
         <!-- VUE TÂCHES -->
-        <section class="view-section" data-view="taches">
+        <section class="view-section active" data-view="taches">
           <div class="section-header">
             <div>
               <div class="section-title">Tâches du chantier</div>
-              <div class="section-sub">Tableau de suivi + vue Kanban</div>
+              <div class="section-sub">Tableau de suivi & vue Kanban</div>
             </div>
           </div>
 
@@ -853,8 +829,6 @@
               <select class="fsel" id="filterIntervenant">
                 <option value="">Tous intervenants</option>
               </select>
-              <button class="btn-imp" id="importBtn" title="Importer DPGF">+</button>
-              <input type="file" id="fileInput" accept=".xlsx,.xls" />
             </div>
 
             <div class="tbl-header">
@@ -892,26 +866,31 @@
           <div class="section-header">
             <div>
               <div class="section-title">Intervenants</div>
-              <div class="section-sub">Coordonnées et rôles des entreprises</div>
+              <div class="section-sub">Coordonnées et rôles (édition locale)</div>
             </div>
           </div>
 
           <section class="intervenants-grid" id="intervenantsGrid"></section>
         </section>
 
-        <!-- VUE DOCUMENTS (placeholder) -->
+        <!-- VUE DOCUMENTS -->
         <section class="view-section" data-view="documents">
           <div class="section-header">
             <div>
               <div class="section-title">Documents</div>
-              <div class="section-sub">Plans, devis, photos (à compléter)</div>
+              <div class="section-sub">Import du DPGF et pièces du chantier</div>
             </div>
           </div>
-          <div class="panel">
-            <p style="font-size:.9rem;color:var(--text2);">
-              Tu pourras utiliser cette section plus tard pour lister les documents du chantier.
-            </p>
-          </div>
+
+          <section class="panel">
+            <div class="doc-actions">
+              <button class="btn-doc-import" id="importBtn">Importer un DPGF (Excel)</button>
+              <span class="doc-note">
+                Sélectionne le fichier Excel DPGF pour mettre à jour toutes les tâches du chantier.
+              </span>
+            </div>
+            <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" />
+          </section>
         </section>
       </div>
     </main>
@@ -1029,7 +1008,7 @@
   }
 
   function renderFilters(){
-    $("filterLot").innerHTML='<option value="">Tous les lots</option>';
+    $("filterLot").innerHTML='<option value="">Tous lots</option>';
     [...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{
       const o=document.createElement("option");
       o.value=l;o.textContent=l;
@@ -1184,9 +1163,7 @@
       STATUTS.forEach(v=>{
         const o=document.createElement("option");
         o.value=v;
-        o.textContent= v==="À faire" ? "A faire" :
-                       v==="En cours" ? "En cours" :
-                       "Terminée";
+        o.textContent=v;
         if(v===t.statut)o.selected=true;
         ss.appendChild(o);
       });
@@ -1210,9 +1187,7 @@
       PRIOS.forEach(v=>{
         const o=document.createElement("option");
         o.value=v;
-        o.textContent= v==="Haute" ? "Haute" :
-                       v==="Basse" ? "Basse" :
-                       "Moyenne";
+        o.textContent=v;
         if(v===t.priorite)o.selected=true;
         sp.appendChild(o);
       });
@@ -1381,8 +1356,9 @@
     }
   }
 
+  /* Import Excel depuis l'onglet Documents */
   $("importBtn").addEventListener("click",()=>{
-    if(!confirm("Importer le DPGF va remplacer toutes les tâches.\n\nContinuer ?"))return;
+    if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\n\nContinuer ?"))return;
     $("fileInput").click();
   });
 
@@ -1427,7 +1403,7 @@
           }
         });
         if(!found.length){
-          alert("Aucune tâche trouvée.");
+          alert("Aucune tâche trouvée dans ce fichier.");
           return;
         }
         await pushDB(found);
@@ -1435,7 +1411,7 @@
         alert("Import terminé.");
       }catch(err){
         console.error(err);
-        alert("Erreur lecture Excel.");
+        alert("Erreur lors de la lecture du fichier Excel.");
       }
     };
     reader.readAsArrayBuffer(file);
@@ -1487,7 +1463,7 @@
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
 
-  /* INTERVENANTS – données statiques à compléter */
+  /* INTERVENANTS – local editable */
   const intervenantsData=[
     {nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
     {nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
@@ -1499,16 +1475,38 @@
   function renderIntervenants(){
     const g=document.getElementById("intervenantsGrid");
     g.innerHTML="";
-    intervenantsData.forEach(i=>{
+    intervenantsData.forEach((i,idx)=>{
       const c=document.createElement("div");
       c.className="inter-card";
       c.innerHTML=
-        `<div class="inter-name">${i.nom}</div>
-         <div class="inter-role">${i.role||""}</div>
-         <div class="inter-line"><strong>Téléphone :</strong> ${i.tel||"à compléter"}</div>
-         <div class="inter-line"><strong>Email :</strong> ${i.mail||"à compléter"}</div>
-         ${i.note?`<div class="inter-line"><strong>Note :</strong> ${i.note}</div>`:""}`;
+        `<div class="inter-row">
+           <span class="inter-label">Nom</span>
+           <input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-idx="${idx}">
+         </div>
+         <div class="inter-row">
+           <span class="inter-label">Rôle</span>
+           <input class="inter-input" value="${i.role||""}" data-field="role" data-idx="${idx}">
+         </div>
+         <div class="inter-row">
+           <span class="inter-label">Téléphone</span>
+           <input class="inter-input" value="${i.tel||""}" data-field="tel" data-idx="${idx}">
+         </div>
+         <div class="inter-row">
+           <span class="inter-label">Email</span>
+           <input class="inter-input" value="${i.mail||""}" data-field="mail" data-idx="${idx}">
+         </div>
+         <div class="inter-row">
+           <span class="inter-label">Note</span>
+           <input class="inter-input" value="${i.note||""}" data-field="note" data-idx="${idx}">
+         </div>`;
       g.appendChild(c);
+    });
+    g.querySelectorAll(".inter-input").forEach(inp=>{
+      inp.addEventListener("input",e=>{
+        const idx=parseInt(e.target.getAttribute("data-idx"),10);
+        const field=e.target.getAttribute("data-field");
+        intervenantsData[idx][field]=e.target.value;
+      });
     });
   }
 
