@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suivi Chantier – Noé Cléry</title>
+  <title>Suivi Chantier – Cléry</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
   <style>
@@ -28,26 +28,26 @@
       background:var(--white);
       border-bottom:3px solid var(--red);
       box-shadow:var(--shadow);
-      padding:0 32px;height:64px;
+      padding:0 32px;height:76px;
       display:flex;align-items:center;justify-content:space-between;
       position:sticky;top:0;z-index:100;
     }
     .topbar-left{display:flex;align-items:center;gap:20px;}
-    .logo{height:42px;width:auto;display:block;}
-    .topbar-divider{width:1px;height:28px;background:var(--border);}
-    .topbar-project{display:flex;flex-direction:column;gap:1px;}
-    .topbar-project-name{font-size:.9rem;font-weight:700;color:var(--text);}
-    .topbar-project-sub{font-size:.72rem;color:var(--text2);}
+    .logo{height:56px;width:auto;display:block;}
+    .topbar-divider{width:1px;height:32px;background:var(--border);}
+    .topbar-project{display:flex;flex-direction:column;gap:2px;}
+    .topbar-project-name{font-size:1.05rem;font-weight:700;color:var(--text);}
+    .topbar-project-sub{font-size:.8rem;color:var(--text2);}
     .topbar-badge{
       display:inline-flex;align-items:center;gap:5px;
       background:var(--red-light);border:1px solid rgba(177,32,40,.2);
-      color:var(--red);font-size:.68rem;font-weight:600;
-      padding:3px 10px;border-radius:999px;
+      color:var(--red);font-size:.75rem;font-weight:600;
+      padding:5px 13px;border-radius:999px;
     }
-    .topbar-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 2s infinite;flex-shrink:0;}
+    .topbar-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 2s infinite;flex-shrink:0;}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-    .topbar-right{display:flex;align-items:center;gap:10px;}
-    .topbar-date{font-size:.75rem;color:var(--text3);}
+    .topbar-right{display:flex;align-items:center;}
+    .topbar-date{font-size:.78rem;color:var(--text3);}
 
     /* STATS BAR */
     .statsbar{
@@ -57,20 +57,20 @@
       display:flex;align-items:center;
     }
     .stat-item{
-      display:flex;align-items:center;gap:10px;
-      padding:14px 24px 14px 0;
-      margin-right:24px;
+      display:flex;align-items:center;gap:12px;
+      padding:18px 32px 18px 0;
+      margin-right:32px;
       border-right:1px solid var(--border);
     }
     .stat-item:last-child{border-right:none;}
-    .stat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .stat-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
     .sd-all{background:var(--text3);}
     .sd-af{background:var(--red);}
     .sd-ec{background:var(--orange);}
     .sd-ok{background:var(--green);}
-    .stat-info{display:flex;flex-direction:column;gap:1px;}
-    .stat-val{font-size:1.2rem;font-weight:700;color:var(--text);line-height:1;}
-    .stat-lbl{font-size:.7rem;color:var(--text2);font-weight:500;}
+    .stat-info{display:flex;flex-direction:column;gap:2px;}
+    .stat-val{font-size:1.7rem;font-weight:700;color:var(--text);line-height:1;}
+    .stat-lbl{font-size:.78rem;color:var(--text2);font-weight:500;}
 
     /* FILTRES */
     .filterbar{padding:16px 32px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
@@ -115,11 +115,11 @@
     .tw{background:var(--white);border-radius:var(--rl);box-shadow:var(--shadow-md);overflow:hidden;border:1px solid var(--border);}
     table{width:100%;border-collapse:collapse;font-size:.85rem;}
     thead{background:var(--grey);border-bottom:1.5px solid var(--border);}
-    th{padding:11px 16px;text-align:left;font-size:.68rem;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;}
+    th{padding:12px 16px;text-align:left;font-size:.68rem;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;}
     tbody tr{
       border-bottom:1px solid var(--border);
-      transition:background .1s, border-left .1s;
-      border-left:3px solid transparent;
+      transition:background .1s;
+      border-left:4px solid transparent;
     }
     tbody tr:last-child{border-bottom:none;}
     tbody tr:hover{background:#fafbff;}
@@ -127,6 +127,7 @@
     td.r{font-size:.74rem;font-weight:700;color:var(--text3);}
     td.l{font-size:.78rem;color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;}
     td.t{white-space:normal;max-width:280px;font-size:.86rem;font-weight:500;color:var(--text);line-height:1.4;}
+    td.td-comment{min-width:260px;width:300px;}
 
     .ss{appearance:none;border:none;border-radius:999px;padding:4px 12px;font-size:.73rem;font-weight:600;cursor:pointer;font-family:inherit;outline:none;transition:opacity .15s;}
     .ss:hover{opacity:.8;}
@@ -140,23 +141,48 @@
     .pm{background:#fffbeb;color:#d97706;border-color:#fcd34d;}
     .pb{background:var(--grey);color:var(--text3);border-color:var(--grey3);}
 
-    .si{appearance:none;background:var(--grey);border:1.5px solid var(--border);border-radius:var(--rs);padding:5px 10px;font-size:.8rem;color:var(--text2);cursor:pointer;font-family:inherit;outline:none;transition:all .15s;min-width:130px;}
+    .si{
+      appearance:none;background:var(--grey);
+      border:1.5px solid var(--border);border-radius:var(--rs);
+      padding:5px 10px;font-size:.8rem;color:var(--text2);
+      cursor:pointer;font-family:inherit;outline:none;
+      transition:all .15s;min-width:130px;
+    }
     .si:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(177,32,40,.1);}
 
-    .ci{width:175px;background:var(--grey);border:1.5px solid var(--border);border-radius:var(--rs);padding:5px 10px;font-size:.8rem;color:var(--text2);font-family:inherit;outline:none;transition:all .15s;}
-    .ci:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(177,32,40,.1);}
-    .ci::placeholder{color:var(--text3);}
+    /* COMMENTAIRE — plus grand et plus visible */
+    .ci{
+      width:100%;
+      background:var(--white);
+      border:1.5px solid var(--grey3);
+      border-radius:var(--rs);
+      padding:7px 12px;
+      font-size:.84rem;
+      color:var(--text);
+      font-family:inherit;
+      outline:none;
+      transition:all .15s;
+      min-height:36px;
+    }
+    .ci:focus{
+      border-color:var(--red);
+      box-shadow:0 0 0 2px rgba(177,32,40,.1);
+      background:#fff;
+    }
+    .ci::placeholder{color:var(--text3);font-style:italic;}
 
     .empty{text-align:center;padding:60px 20px;color:var(--text3);}
     .empty p{font-size:.92rem;font-weight:500;color:var(--text2);margin-top:14px;}
     .empty span{font-size:.8rem;}
 
     @media(max-width:900px){
-      .topbar-main{padding:0 16px;}
+      .topbar-main{padding:0 16px;height:64px;}
+      .logo{height:44px;}
       .statsbar{padding:0 16px;flex-wrap:wrap;}
       .filterbar{padding:12px 16px;}
       .content{padding:0 16px 24px;}
       th:nth-child(2),td:nth-child(2){display:none;}
+      td.td-comment{min-width:140px;width:160px;}
     }
   </style>
 </head>
@@ -167,7 +193,7 @@
     <img src="technicombles_logo_small.jpg" alt="Technicombles" class="logo" />
     <div class="topbar-divider"></div>
     <div class="topbar-project">
-      <span class="topbar-project-name">Noé Cléry</span>
+      <span class="topbar-project-name">Chantier Cléry</span>
       <span class="topbar-project-sub">Aménagement des combles & rénovation</span>
     </div>
     <div class="topbar-badge">Chantier actif</div>
@@ -292,7 +318,6 @@
 
   function sCls(s){return s==="En cours"?"sec":s==="Terminée"?"sok":"saf";}
   function pCls(p){return p==="Haute"?"ph":p==="Basse"?"pb":"pm";}
-
   function borderColor(s){
     if(s==="En cours")return"#f59e0b";
     if(s==="Terminée")return"#10b981";
@@ -363,39 +388,43 @@
 
     list.forEach(t=>{
       const tr=document.createElement("tr");
-      tr.style.borderLeft="3px solid "+borderColor(t.statut);
+      tr.style.borderLeft="4px solid "+borderColor(t.statut);
 
       const td1=document.createElement("td");td1.className="r";td1.textContent=t.ref;tr.appendChild(td1);
       const td2=document.createElement("td");td2.className="l";td2.textContent=t.lot;td2.title=t.lot;tr.appendChild(td2);
       const td3=document.createElement("td");td3.className="t";td3.textContent=t.task;tr.appendChild(td3);
 
+      // Intervenant
       const td4=document.createElement("td");
       const si=document.createElement("select");si.className="si";
       INTERVS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.intervenant)o.selected=true;si.appendChild(o);});
       si.addEventListener("change",async e=>{t.intervenant=e.target.value;await save(t.id,"intervenant",t.intervenant);renderFilters();});
       td4.appendChild(si);tr.appendChild(td4);
 
+      // Statut
       const td5=document.createElement("td");
       const ss=document.createElement("select");ss.className="ss "+sCls(t.statut);
       STATUTS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.statut)o.selected=true;ss.appendChild(o);});
       ss.addEventListener("change",async e=>{
         t.statut=e.target.value;
         ss.className="ss "+sCls(t.statut);
-        tr.style.borderLeft="3px solid "+borderColor(t.statut);
+        tr.style.borderLeft="4px solid "+borderColor(t.statut);
         await save(t.id,"statut",t.statut);
         updateStats(getFiltered());
       });
       td5.appendChild(ss);tr.appendChild(td5);
 
+      // Priorité
       const td6=document.createElement("td");
       const sp=document.createElement("select");sp.className="sp "+pCls(t.priorite);
       PRIOS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.priorite)o.selected=true;sp.appendChild(o);});
       sp.addEventListener("change",async e=>{t.priorite=e.target.value;sp.className="sp "+pCls(t.priorite);await save(t.id,"priorite",t.priorite);});
       td6.appendChild(sp);tr.appendChild(td6);
 
-      const td7=document.createElement("td");
+      // Commentaire — large et visible
+      const td7=document.createElement("td");td7.className="td-comment";
       const ci=document.createElement("input");ci.type="text";ci.className="ci";
-      ci.value=t.commentaire||"";ci.placeholder="Ajouter…";
+      ci.value=t.commentaire||"";ci.placeholder="Ajouter un commentaire…";
       ci.addEventListener("change",async e=>{t.commentaire=e.target.value;await save(t.id,"commentaire",t.commentaire);});
       td7.appendChild(ci);tr.appendChild(td7);
 
