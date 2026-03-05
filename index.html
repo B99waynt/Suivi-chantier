@@ -4,496 +4,508 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suivi Chantier – Noé Cléry</title>
-  //fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  //fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
   <style>
     :root {
-      --red: #c0392b; --red-light: #fdf2f2; --red-dark: #922b21;
-      --orange: #e67e22; --orange-light: #fef5ec;
-      --green: #27ae60; --green-light: #eafaf1;
-      --grey-50: #f8f9fa; --grey-100: #f1f3f5; --grey-200: #e9ecef;
-      --grey-500: #adb5bd; --grey-600: #6c757d; --grey-700: #495057;
-      --grey-800: #343a40; --grey-900: #212529;
-      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px;
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --red:#c0392b; --red-dark:#922b21; --red-light:#fdf2f2;
+      --orange:#e67e22; --orange-light:#fef5ec;
+      --green:#27ae60; --green-light:#eafaf1;
+      --g50:#f8f9fa; --g100:#f1f3f5; --g200:#e9ecef;
+      --g500:#adb5bd; --g600:#6c757d; --g700:#495057;
+      --g800:#343a40; --g900:#212529;
+      --sidebar:260px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
-      min-height: 100vh; color: var(--grey-800);
-    }
-    .layout { display: flex; min-height: 100vh; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:#eef0f4;color:var(--g800);min-height:100vh;}
 
-    /* SIDEBAR */
-    .sidebar {
-      width: 260px; min-height: 100vh;
-      background: var(--grey-900);
-      display: flex; flex-direction: column;
-      position: fixed; left: 0; top: 0; bottom: 0;
-      z-index: 100; box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+    /* ── SIDEBAR ── */
+    .sidebar{
+      position:fixed;left:0;top:0;bottom:0;width:var(--sidebar);
+      background:var(--g900);display:flex;flex-direction:column;
+      box-shadow:4px 0 20px rgba(0,0,0,.18);z-index:100;
     }
-    .sidebar-logo {
-      padding: 28px 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    .sb-logo{
+      padding:26px 22px 18px;border-bottom:1px solid rgba(255,255,255,.07);
+      display:flex;flex-direction:column;align-items:center;gap:10px;
     }
-    .sidebar-logo img { width: 130px; filter: brightness(0) invert(1); opacity: 0.9; }
-    .sidebar-logo-sub {
-      font-size: 0.7rem; font-weight: 500;
-      color: rgba(255,255,255,0.35);
-      letter-spacing: 0.09em; text-transform: uppercase; text-align: center;
-    }
-    .sidebar-project {
-      padding: 20px 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-    }
-    .sidebar-project-label {
-      font-size: 0.68rem; font-weight: 600;
-      color: rgba(255,255,255,0.3);
-      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;
-    }
-    .sidebar-project-name { font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.3; }
-    .sidebar-project-sub { font-size: 0.76rem; color: rgba(255,255,255,0.4); margin-top: 4px; }
-    .sidebar-badge {
-      display: inline-flex; align-items: center; gap: 5px; margin-top: 10px;
-      background: rgba(192,57,43,0.2); border: 1px solid rgba(192,57,43,0.4);
-      color: #e98c84; font-size: 0.7rem; font-weight: 600;
-      padding: 3px 10px; border-radius: 999px;
-    }
-    .sidebar-badge::before {
-      content: ''; width: 6px; height: 6px; border-radius: 50%;
-      background: #e98c84; animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .sb-logo img{width:120px;filter:brightness(0) invert(1);opacity:.88;}
+    .sb-logo-sub{font-size:.68rem;font-weight:600;color:rgba(255,255,255,.3);
+      letter-spacing:.1em;text-transform:uppercase;}
 
-    .sidebar-stats { padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; }
-    .sidebar-stats-title {
-      font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.3);
-      letter-spacing: 0.1em; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px;
+    .sb-project{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.07);}
+    .sb-label{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.28);
+      letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;}
+    .sb-name{font-size:1.05rem;font-weight:700;color:#fff;line-height:1.25;}
+    .sb-sub{font-size:.75rem;color:rgba(255,255,255,.38);margin-top:3px;line-height:1.4;}
+    .sb-badge{
+      display:inline-flex;align-items:center;gap:5px;margin-top:10px;
+      background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.38);
+      color:#e8877f;font-size:.68rem;font-weight:600;
+      padding:3px 10px;border-radius:999px;
     }
-    .sidebar-stat {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 12px; border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05);
-      transition: background 0.15s;
-    }
-    .sidebar-stat:hover { background: rgba(255,255,255,0.08); }
-    .sidebar-stat-left { display: flex; align-items: center; gap: 10px; }
-    .stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .dot-total { background: var(--grey-500); }
-    .dot-afaire { background: var(--red); }
-    .dot-encours { background: var(--orange); }
-    .dot-terminees { background: var(--green); }
-    .sidebar-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
-    .sidebar-stat-num { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .sb-badge::before{content:'';width:6px;height:6px;border-radius:50%;
+      background:#e8877f;animation:blink 2s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 
-    .sidebar-footer {
-      margin-top: auto; padding: 18px 24px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      font-size: 0.72rem; color: rgba(255,255,255,0.25); line-height: 1.6;
+    .sb-stats{padding:18px 14px;display:flex;flex-direction:column;gap:7px;}
+    .sb-stats-lbl{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.28);
+      letter-spacing:.12em;text-transform:uppercase;padding:0 8px;margin-bottom:3px;}
+    .sb-stat{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:9px 12px;border-radius:8px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);
+      transition:background .15s;cursor:default;
+    }
+    .sb-stat:hover{background:rgba(255,255,255,.08);}
+    .sb-stat-l{display:flex;align-items:center;gap:9px;}
+    .dot{width:8px;height:8px;border-radius:50%;}
+    .dot-all{background:var(--g500);}
+    .dot-af{background:var(--red);}
+    .dot-ec{background:var(--orange);}
+    .dot-ok{background:var(--green);}
+    .sb-stat-lbl{font-size:.8rem;color:rgba(255,255,255,.52);}
+    .sb-stat-num{font-size:1.1rem;font-weight:700;color:#fff;}
+
+    .sb-footer{
+      margin-top:auto;padding:16px 22px;
+      border-top:1px solid rgba(255,255,255,.06);
+      font-size:.7rem;color:rgba(255,255,255,.22);line-height:1.7;
     }
 
-    /* MAIN */
-    .main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar);display:flex;flex-direction:column;min-height:100vh;}
 
-    /* TOPBAR */
-    .topbar {
-      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--grey-200);
-      padding: 14px 32px; display: flex; align-items: center; gap: 10px;
-      flex-wrap: wrap; position: sticky; top: 0; z-index: 50;
+    /* ── TOPBAR ── */
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--g200);
+      padding:12px 28px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;
     }
-    .topbar-search {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--grey-100); border: 1.5px solid var(--grey-200);
-      border-radius: var(--radius-md); padding: 8px 14px;
-      flex: 1; min-width: 180px; max-width: 300px; transition: all 0.15s;
+    .search-box{
+      display:flex;align-items:center;gap:7px;
+      background:var(--g100);border:1.5px solid var(--g200);border-radius:10px;
+      padding:7px 13px;flex:1;min-width:160px;max-width:280px;transition:all .15s;
     }
-    .topbar-search:focus-within {
-      border-color: var(--red); background: #fff;
-      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    .search-box:focus-within{
+      border-color:var(--red);background:#fff;
+      box-shadow:0 0 0 3px rgba(192,57,43,.1);
     }
-    .topbar-search input {
-      border: none; background: transparent; font-size: 0.85rem;
-      color: var(--grey-800); outline: none; width: 100%; font-family: inherit;
+    .search-box svg{color:var(--g500);flex-shrink:0;}
+    .search-box input{
+      border:none;background:transparent;font-size:.84rem;
+      color:var(--g800);outline:none;width:100%;font-family:inherit;
     }
-    .topbar-search input::placeholder { color: var(--grey-500); }
-    .filter-select {
-      appearance: none;
-      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236c757d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
-      border: 1.5px solid var(--grey-200); border-radius: var(--radius-md);
-      padding: 8px 28px 8px 12px; font-size: 0.82rem; color: var(--grey-700);
-      cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s;
+    .search-box input::placeholder{color:var(--g500);}
+    .fsel{
+      appearance:none;
+      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236c757d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 9px center;
+      border:1.5px solid var(--g200);border-radius:10px;
+      padding:7px 26px 7px 11px;font-size:.8rem;color:var(--g700);
+      cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s;
     }
-    .filter-select:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
-    .btn-import {
-      display: flex; align-items: center; gap: 7px;
-      background: var(--red); color: #fff; border: none;
-      border-radius: var(--radius-md); padding: 9px 18px;
-      font-size: 0.84rem; font-weight: 600; cursor: pointer; font-family: inherit;
-      transition: all 0.15s; box-shadow: 0 2px 8px rgba(192,57,43,0.3); margin-left: auto;
+    .fsel:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,.1);}
+    .btn-import{
+      margin-left:auto;display:flex;align-items:center;gap:7px;
+      background:var(--red);color:#fff;border:none;border-radius:10px;
+      padding:8px 17px;font-size:.83rem;font-weight:600;
+      cursor:pointer;font-family:inherit;
+      box-shadow:0 2px 8px rgba(192,57,43,.28);transition:all .15s;
     }
-    .btn-import:hover { background: var(--red-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(192,57,43,0.4); }
-    #fileInput { display: none; }
+    .btn-import:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(192,57,43,.38);}
+    #fileInput{display:none;}
 
-    /* CONTENT */
-    .content { padding: 28px 32px; flex: 1; }
-    .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .table-title { font-size: 0.95rem; font-weight: 600; color: var(--grey-700); }
-    .table-count { font-size: 0.8rem; color: var(--grey-500); background: var(--grey-100); padding: 4px 12px; border-radius: 999px; font-weight: 500; }
+    /* ── CONTENT ── */
+    .content{padding:24px 28px;flex:1;}
+    .tbl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .tbl-title{font-size:.92rem;font-weight:600;color:var(--g700);}
+    .tbl-count{font-size:.78rem;color:var(--g500);background:var(--g100);
+      padding:3px 11px;border-radius:999px;font-weight:500;}
 
-    /* TABLE */
-    .table-wrapper { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; border: 1px solid var(--grey-100); }
-    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
-    thead { background: var(--grey-50); border-bottom: 2px solid var(--grey-100); }
-    th { padding: 12px 16px; text-align: left; font-size: 0.7rem; font-weight: 600; color: var(--grey-500); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
-    tbody tr { border-bottom: 1px solid var(--grey-100); transition: background 0.1s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #fafbfc; }
-    tbody tr:nth-child(even) { background: #fdfdfe; }
-    td { padding: 10px 16px; vertical-align: middle; white-space: nowrap; }
-    td.td-ref { font-size: 0.75rem; font-weight: 700; color: var(--grey-500); }
-    td.td-lot { font-size: 0.76rem; color: var(--grey-600); max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
-    td.td-task { white-space: normal; max-width: 260px; font-size: 0.84rem; font-weight: 500; color: var(--grey-800); line-height: 1.4; }
+    /* ── TABLE ── */
+    .tbl-wrap{background:#fff;border-radius:14px;
+      box-shadow:0 2px 12px rgba(0,0,0,.07);overflow:hidden;border:1px solid var(--g100);}
+    table{width:100%;border-collapse:collapse;font-size:.83rem;}
+    thead{background:var(--g50);border-bottom:2px solid var(--g100);}
+    th{padding:11px 15px;text-align:left;font-size:.68rem;font-weight:600;
+      color:var(--g500);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;}
+    tbody tr{border-bottom:1px solid var(--g100);transition:background .1s;}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:#fafbfc;}
+    tbody tr:nth-child(even){background:#fdfdfe;}
+    tbody tr:nth-child(even):hover{background:#fafbfc;}
+    td{padding:9px 15px;vertical-align:middle;white-space:nowrap;}
+    td.td-ref{font-size:.73rem;font-weight:700;color:var(--g500);}
+    td.td-lot{font-size:.74rem;color:var(--g600);max-width:140px;overflow:hidden;text-overflow:ellipsis;}
+    td.td-task{white-space:normal;max-width:270px;font-size:.83rem;font-weight:500;color:var(--g800);line-height:1.4;}
 
-    .status-select {
-      appearance: none; border: none; border-radius: 999px;
-      padding: 4px 12px; font-size: 0.74rem; font-weight: 600;
-      cursor: pointer; font-family: inherit; outline: none; transition: opacity 0.15s;
+    .sel-status{
+      appearance:none;border:none;border-radius:999px;
+      padding:4px 11px;font-size:.72rem;font-weight:600;
+      cursor:pointer;font-family:inherit;outline:none;transition:opacity .15s;
     }
-    .status-select:hover { opacity: 0.8; }
-    .s-afaire { background: var(--red-light); color: var(--red); }
-    .s-encours { background: var(--orange-light); color: var(--orange); }
-    .s-termine { background: var(--green-light); color: var(--green); }
+    .sel-status:hover{opacity:.8;}
+    .s-af{background:var(--red-light);color:var(--red);}
+    .s-ec{background:var(--orange-light);color:var(--orange);}
+    .s-ok{background:var(--green-light);color:var(--green);}
 
-    .priority-select {
-      appearance: none; border-radius: 999px; padding: 3px 10px;
-      font-size: 0.72rem; font-weight: 600; cursor: pointer;
-      font-family: inherit; outline: none; border: 1.5px solid transparent; transition: opacity 0.15s;
+    .sel-prio{
+      appearance:none;border-radius:999px;
+      padding:3px 10px;font-size:.7rem;font-weight:600;
+      cursor:pointer;font-family:inherit;outline:none;
+      border:1.5px solid transparent;transition:opacity .15s;
     }
-    .priority-select:hover { opacity: 0.8; }
-    .p-haute { background: var(--red-light); color: var(--red); border-color: var(--red); }
-    .p-moyenne { background: var(--orange-light); color: var(--orange); border-color: var(--orange); }
-    .p-basse { background: var(--grey-100); color: var(--grey-600); border-color: var(--grey-500); }
+    .sel-prio:hover{opacity:.8;}
+    .p-h{background:var(--red-light);color:var(--red);border-color:var(--red);}
+    .p-m{background:var(--orange-light);color:var(--orange);border-color:var(--orange);}
+    .p-b{background:var(--g100);color:var(--g600);border-color:var(--g500);}
 
-    .intervenant-select {
-      appearance: none; border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm);
-      padding: 4px 10px; font-size: 0.8rem; color: var(--grey-700);
-      background: #fff; cursor: pointer; font-family: inherit; outline: none; transition: all 0.15s;
+    .sel-interv{
+      appearance:none;border:1.5px solid var(--g200);border-radius:8px;
+      padding:4px 9px;font-size:.78rem;color:var(--g700);
+      background:#fff;cursor:pointer;font-family:inherit;outline:none;transition:all .15s;
     }
-    .intervenant-select:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+    .sel-interv:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,.1);}
 
-    .comment-input {
-      width: 180px; border: 1.5px solid var(--grey-200); border-radius: var(--radius-sm);
-      padding: 4px 10px; font-size: 0.8rem; color: var(--grey-700);
-      background: #fff; font-family: inherit; outline: none; transition: all 0.15s;
+    .inp-comment{
+      width:170px;border:1.5px solid var(--g200);border-radius:8px;
+      padding:4px 9px;font-size:.78rem;color:var(--g700);
+      background:#fff;font-family:inherit;outline:none;transition:all .15s;
     }
-    .comment-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+    .inp-comment:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,.1);}
 
-    /* EMPTY STATE */
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--grey-500); }
-    
-    .empty-state svg { margin-bottom: 16px; opacity: 0.3; }
-    .empty-state p { font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color: var(--grey-700); }
-    .empty-state span { font-size: 0.82rem; }
+    .empty{text-align:center;padding:52px 20px;color:var(--g500);}
+    .empty p{font-size:.92rem;font-weight:500;color:var(--g700);margin-top:12px;}
+    .empty span{font-size:.8rem;}
 
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .sidebar { display: none; }
-      .main { margin-left: 0; }
-      .topbar { padding: 12px 16px; }
-      .content { padding: 16px; }
-      td.td-lot { display: none; }
-      th:nth-child(2) { display: none; }
+    @media(max-width:900px){
+      .sidebar{display:none;}
+      .main{margin-left:0;}
+      .topbar{padding:10px 14px;}
+      .content{padding:14px;}
+      th:nth-child(2),td:nth-child(2){display:none;}
     }
   </style>
 </head>
 <body>
-<div class="layout">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <img src="technicombles_logo_small.jpg" alt="Technicombles" />
-      <span class="sidebar-logo-sub">Gestion de chantier</span>
+<div class="sidebar">
+  <div class="sb-logo">
+    <img src="technicombles_logo_small.jpg" alt="Technicombles" />
+    <span class="sb-logo-sub">Gestion de chantier</span>
+  </div>
+  <div class="sb-project">
+    <div class="sb-label">Projet en cours</div>
+    <div class="sb-name">Noé Cléry</div>
+    <div class="sb-sub">Aménagement des combles<br/>et rénovation</div>
+    <div class="sb-badge">Chantier actif</div>
+  </div>
+  <div class="sb-stats">
+    <div class="sb-stats-lbl">Avancement</div>
+    <div class="sb-stat">
+      <div class="sb-stat-l"><div class="dot dot-all"></div><span class="sb-stat-lbl">Total tâches</span></div>
+      <span class="sb-stat-num" id="statTotal">0</span>
     </div>
-    <div class="sidebar-project">
-      <div class="sidebar-project-label">Projet en cours</div>
-      <div class="sidebar-project-name">Noé Cléry</div>
-      <div class="sidebar-project-sub">Aménagement des combles<br/>et rénovation</div>
-      <div class="sidebar-badge">Chantier actif</div>
+    <div class="sb-stat">
+      <div class="sb-stat-l"><div class="dot dot-af"></div><span class="sb-stat-lbl">À faire</span></div>
+      <span class="sb-stat-num" id="statAFaire">0</span>
     </div>
-    <div class="sidebar-stats">
-      <div class="sidebar-stats-title">Avancement</div>
-      <div class="sidebar-stat">
-        <div class="sidebar-stat-left">
-          <div class="stat-dot dot-total"></div>
-          <span class="sidebar-stat-label">Total tâches</span>
-        </div>
-        <span class="sidebar-stat-num" id="statTotal">0</span>
-      </div>
-      <div class="sidebar-stat">
-        <div class="sidebar-stat-left">
-          <div class="stat-dot dot-afaire"></div>
-          <span class="sidebar-stat-label">À faire</span>
-        </div>
-        <span class="sidebar-stat-num" id="statAFaire">0</span>
-      </div>
-      <div class="sidebar-stat">
-        <div class="sidebar-stat-left">
-          <div class="stat-dot dot-encours"></div>
-          <span class="sidebar-stat-label">En cours</span>
-        </div>
-        <span class="sidebar-stat-num" id="statEnCours">0</span>
-      </div>
-      <div class="sidebar-stat">
-        <div class="sidebar-stat-left">
-          <div class="stat-dot dot-terminees"></div>
-          <span class="sidebar-stat-label">Terminées</span>
-        </div>
-        <span class="sidebar-stat-num" id="statTerminees">0</span>
-      </div>
+    <div class="sb-stat">
+      <div class="sb-stat-l"><div class="dot dot-ec"></div><span class="sb-stat-lbl">En cours</span></div>
+      <span class="sb-stat-num" id="statEnCours">0</span>
     </div>
-    <div class="sidebar-footer">
-      <span>Dernière mise à jour</span>
-      <span id="lastUpdate">—</span>
+    <div class="sb-stat">
+      <div class="sb-stat-l"><div class="dot dot-ok"></div><span class="sb-stat-lbl">Terminées</span></div>
+      <span class="sb-stat-num" id="statTerminees">0</span>
     </div>
-  </aside>
-
-  <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-search">
-        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">ircle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" />
-      </div>
-
-      <select class="filter-select" id="filterStatut">
-        <option value="">Tous les statuts</option>
-        <option value="À faire">À faire</option>
-        <option value="En cours">En cours</option>
-        <option value="Terminée">Terminée</option>
-      </select>
-
-      <select class="filter-select" id="filterLot">
-        <option value="">Tous les lots</option>
-      </select>
-
-      <select class="filter-select" id="filterIntervenant">
-        <option value="">Tous les intervenants</option>
-      </select>
-
-      <button class="btn-import" id="importBtn">
-        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/>e x1="12" y1="3" x2="12" y2="15"/></svg>
-        Importer DPGF
-      </button>
-      <input type="file" id="fileInput" accept=".xlsx,.xls" />
-    </div>
-
-    <div class="content">
-      <div class="table-header">
-        <span class="table-title">Liste des tâches</span>
-        <span class="table-count" id="tableCount">0 tâche</span>
-      </div>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Réf</th>
-              <th>Lot</th>
-              <th>Tâche</th>
-              <th>Intervenant</th>
-              <th>Statut</th>
-              <th>Priorité</th>
-              <th>Commentaire</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-    </div>
+  </div>
+  <div class="sb-footer">
+    <span>Dernière mise à jour</span>
+    <span id="lastUpdate">—</span>
   </div>
 </div>
 
+<div class="main">
+  <div class="topbar">
+    <div class="search-box">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">ircle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" />
+    </div>
+    <select class="fsel" id="filterStatut">
+      <option value="">Tous les statuts</option>
+      <option value="À faire">À faire</option>
+      <option value="En cours">En cours</option>
+      <option value="Terminée">Terminée</option>
+    </select>
+    <select class="fsel" id="filterLot"><option value="">Tous les lots</option></select>
+    <select class="fsel" id="filterIntervenant"><option value="">Tous les intervenants</option></select>
+    <button class="btn-import" id="importBtn">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/>e x1="12" y1="3" x2="12" y2="15"/></svg>
+      Importer DPGF
+    </button>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" />
+  </div>
+
+  <div class="content">
+    <div class="tbl-header">
+      <span class="tbl-title">Liste des tâches</span>
+      <span class="tbl-count" id="tblCount">0 tâche</span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Réf</th>
+            <th>Lot</th>
+            <th>Tâche</th>
+            <th>Intervenant</th>
+            <th>Statut</th>
+            <th>Priorité</th>
+            <th>Commentaire</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <script>
   const SUPABASE_URL = "https://ifhvgqvmwgtyzuoyjbby.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const intervenantsOptions = ["Non assigné","Techni Combles","Home Work Peinture","Pro Martins","Interelec","Tiago","HK Menuiserie"];
-  const statutOptions = ["À faire","En cours","Terminée"];
-  const prioriteOptions = ["Basse","Moyenne","Haute"];
+  const INTERVENANTS = ["Non assigné","Techni Combles","Home Work Peinture","Pro Martins","Interelec","Tiago","HK Menuiserie"];
+  const STATUTS = ["À faire","En cours","Terminée"];
+  const PRIORITES = ["Basse","Moyenne","Haute"];
 
   let tasks = [];
 
-  const tableBody = document.getElementById("tableBody");
-  const searchInput = document.getElementById("searchInput");
-  const filterStatut = document.getElementById("filterStatut");
-  const filterLot = document.getElementById("filterLot");
-  const filterIntervenant = document.getElementById("filterIntervenant");
-  const importBtn = document.getElementById("importBtn");
-  const fileInput = document.getElementById("fileInput");
+  const $ = id => document.getElementById(id);
+  const searchInput = $("searchInput");
+  const filterStatut = $("filterStatut");
+  const filterLot = $("filterLot");
+  const filterIntervenant = $("filterIntervenant");
+  const tableBody = $("tableBody");
 
-  function updateDate() {
-    document.getElementById("lastUpdate").textContent = new Date().toLocaleString("fr-FR", {
-      day: "2-digit", month: "2-digit", year: "numeric",
-      hour: "2-digit", minute: "2-digit"
+  function setDate() {
+    $("lastUpdate").textContent = new Date().toLocaleString("fr-FR",{
+      day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"
     });
   }
 
   function guessLot(ref) {
-    if (!ref) return "Lot inconnu";
-    const num = ref.toString().split(".")[0];
-    const map = {
-      "0":"Lot 0 - Préparation","1":"Lot 1 - Démolition et GO",
-      "2":"Lot 2 - Maçonnerie","3":"Lot 3 - Plomberie",
-      "4":"Lot 4 - Électricité","5":"Lot 5 - Ventilation",
-      "6":"Lot 6 - Menuiseries Ext","7":"Lot 7 - Menuiseries Int",
-      "8":"Lot 8 - Parquet","9":"Lot 9 - Peinture"
-    };
-    return map[num] || "Lot " + num;
+    const n = (ref||"").toString().split(".")[0];
+    return {"0":"Lot 0 – Préparation","1":"Lot 1 – Démolition & GO",
+      "2":"Lot 2 – Maçonnerie","3":"Lot 3 – Plomberie",
+      "4":"Lot 4 – Électricité","5":"Lot 5 – Ventilation",
+      "6":"Lot 6 – Menuiseries Ext.","7":"Lot 7 – Menuiseries Int.",
+      "8":"Lot 8 – Parquet","9":"Lot 9 – Peinture"}[n] || "Lot "+n;
   }
 
-  function normalizeStatut(v) {
-    const s = (v||"").toLowerCase();
-    if (s.includes("cours")) return "En cours";
-    if (s.includes("termin")) return "Terminée";
+  function normStatut(v) {
+    const s=(v||"").toLowerCase();
+    if(s.includes("cours")) return "En cours";
+    if(s.includes("termin")) return "Terminée";
     return "À faire";
   }
 
-  function guessPriorite(desc, rem) {
-    const t = ((desc||"")+" "+(rem||"")).toLowerCase();
-    if (t.includes("urgent")||t.includes("priorit")) return "Haute";
-    if (t.includes("option")) return "Basse";
+  function guessPrio(desc,rem) {
+    const t=((desc||"")+" "+(rem||"")).toLowerCase();
+    if(t.includes("urgent")||t.includes("priorit")) return "Haute";
+    if(t.includes("option")) return "Basse";
     return "Moyenne";
   }
 
-  function statusClass(s) {
-    if (s === "En cours") return "s-encours";
-    if (s === "Terminée") return "s-termine";
-    return "s-afaire";
+  function sCls(s) {
+    return s==="En cours"?"s-ec":s==="Terminée"?"s-ok":"s-af";
   }
-
-  function priorityClass(p) {
-    if ((p||"").toLowerCase() === "haute") return "p-haute";
-    if ((p||"").toLowerCase() === "basse") return "p-basse";
-    return "p-moyenne";
+  function pCls(p) {
+    return p==="Haute"?"p-h":p==="Basse"?"p-b":"p-m";
   }
 
   function renderFilters() {
-    filterLot.innerHTML = '<option value="">Tous les lots</option>';
-    Array.from(new Set(tasks.map(t=>t.lot))).sort().forEach(l => {
-      const o = document.createElement("option");
-      o.value = l; o.textContent = l;
-      filterLot.appendChild(o);
+    filterLot.innerHTML='<option value="">Tous les lots</option>';
+    [...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{
+      const o=document.createElement("option");
+      o.value=l;o.textContent=l;filterLot.appendChild(o);
     });
-    filterIntervenant.innerHTML = '<option value="">Tous les intervenants</option>';
-    Array.from(new Set(tasks.map(t=>t.intervenant))).sort().forEach(i => {
-      if (!i) return;
-      const o = document.createElement("option");
-      o.value = i; o.textContent = i;
-      filterIntervenant.appendChild(o);
+    filterIntervenant.innerHTML='<option value="">Tous les intervenants</option>';
+    [...new Set(tasks.map(t=>t.intervenant))].sort().forEach(i=>{
+      if(!i)return;
+      const o=document.createElement("option");
+      o.value=i;o.textContent=i;filterIntervenant.appendChild(o);
     });
   }
 
-  function applyFilters() {
-    const q = searchInput.value.toLowerCase();
-    const s = filterStatut.value;
-    const l = filterLot.value;
-    const i = filterIntervenant.value;
-    return tasks.filter(t => {
-      if (s && t.statut !== s) return false;
-      if (l && t.lot !== l) return false;
-      if (i && t.intervenant !== i) return false;
-      if (!q) return true;
-      return (t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||"")).toLowerCase().includes(q);
+  function filtered() {
+    const q=searchInput.value.toLowerCase();
+    const s=filterStatut.value;
+    const l=filterLot.value;
+    const iv=filterIntervenant.value;
+    return tasks.filter(t=>{
+      if(s&&t.statut!==s)return false;
+      if(l&&t.lot!==l)return false;
+      if(iv&&t.intervenant!==iv)return false;
+      if(!q)return true;
+      return(t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||"")).toLowerCase().includes(q);
     });
   }
 
-  async function updateField(id, field, value) {
-    await db.from("taches_noe_clery").update({ [field]: value, updated_at: new Date().toISOString() }).eq("id", id);
-    updateDate();
+  async function save(id,field,val) {
+    await db.from("taches_noe_clery").update({[field]:val,updated_at:new Date().toISOString()}).eq("id",id);
+    setDate();
+  }
+
+  function updateStats(list) {
+    $("statTotal").textContent=list.length;
+    $("statAFaire").textContent=list.filter(t=>t.statut==="À faire").length;
+    $("statEnCours").textContent=list.filter(t=>t.statut==="En cours").length;
+    $("statTerminees").textContent=list.filter(t=>t.statut==="Terminée").length;
+    $("tblCount").textContent=list.length+" tâche"+(list.length>1?"s":"");
   }
 
   function render() {
-    const filtered = applyFilters();
-    tableBody.innerHTML = "";
+    const list=filtered();
+    tableBody.innerHTML="";
+    updateStats(list);
 
-    if (filtered.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
-        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    if(!list.length){
+      tableBody.innerHTML=`<tr><td colspan="7"><div class="empty">
+        <svg width="38" height="38" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
         <p>Aucune tâche trouvée</p>
         <span>Modifie les filtres ou importe ton DPGF</span>
       </div></td></tr>`;
-    } else {
-      filtered.forEach(t => {
-        const tr = document.createElement("tr");
+      return;
+    }
 
-        // Ref
-        const tdRef = document.createElement("td");
-        tdRef.className = "td-ref";
-        tdRef.textContent = t.ref;
+    list.forEach(t=>{
+      const tr=document.createElement("tr");
 
-        // Lot
-        const tdLot = document.createElement("td");
-        tdLot.className = "td-lot";
-        tdLot.textContent = t.lot;
-        tdLot.title = t.lot;
+      const mkTd=(cls,txt)=>{const td=document.createElement("td");td.className=cls;td.textContent=txt;td.title=txt;return td;};
+      tr.appendChild(mkTd("td-ref",t.ref));
+      tr.appendChild(mkTd("td-lot",t.lot));
+      tr.appendChild(mkTd("td-task",t.task));
 
-        // Task
-        const tdTask = document.createElement("td");
-        tdTask.className = "td-task";
-        tdTask.textContent = t.task;
+      // Intervenant
+      const tdI=document.createElement("td");
+      const si=document.createElement("select");
+      si.className="sel-interv";
+      INTERVENANTS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.intervenant)o.selected=true;si.appendChild(o);});
+      si.addEventListener("change",async e=>{t.intervenant=e.target.value;await save(t.id,"intervenant",t.intervenant);renderFilters();});
+      tdI.appendChild(si);tr.appendChild(tdI);
 
-        // Intervenant
-        const tdInterv = document.createElement("td");
-        const selInterv = document.createElement("select");
-        selInterv.className = "intervenant-select";
-        intervenantsOptions.forEach(v => {
-          const o = document.createElement("option");
-          o.value = v; o.textContent = v;
-          if (v === t.intervenant) o.selected = true;
-          selInterv.appendChild(o);
-        });
-        selInterv.addEventListener("change", async e => {
-          t.intervenant = e.target.value;
-          await updateField(t.id, "intervenant", t.intervenant);
-          renderFilters();
-        });
-        tdInterv.appendChild(selInterv);
+      // Statut
+      const tdS=document.createElement("td");
+      const ss=document.createElement("select");
+      ss.className="sel-status "+sCls(t.statut);
+      STATUTS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.statut)o.selected=true;ss.appendChild(o);});
+      ss.addEventListener("change",async e=>{
+        t.statut=e.target.value;
+        ss.className="sel-status "+sCls(t.statut);
+        await save(t.id,"statut",t.statut);
+        updateStats(filtered());
+      });
+      tdS.appendChild(ss);tr.appendChild(tdS);
 
-        // Statut
-        const tdStatut = document.createElement("td");
-        const selStatut = document.createElement("select");
-        selStatut.className = "status-select " + statusClass(t.statut);
-        statutOptions.forEach(v => {
-          const o = document.createElement("option");
-          o.value = v; o.textContent = v;
-          if (v === t.statut) o.selected = true;
-          selStatut.appendChild(o);
-        });
-        selStatut.addEventListener("change", async e => {
-          t.statut = e.target.value;
-          selStatut.className = "status-select " + statusClass(t.statut);
-          await updateField(t.id, "statut", t.statut);
-          updateStats(applyFilters());
-        });
-        tdStatut.appendChild(selStatut);
+      // Priorité
+      const tdP=document.createElement("td");
+      const sp=document.createElement("select");
+      sp.className="sel-prio "+pCls(t.priorite);
+      PRIORITES.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.priorite)o.selected=true;sp.appendChild(o);});
+      sp.addEventListener("change",async e=>{t.priorite=e.target.value;sp.className="sel-prio "+pCls(t.priorite);await save(t.id,"priorite",t.priorite);});
+      tdP.appendChild(sp);tr.appendChild(tdP);
 
-        // Priorité
-        const tdPrio = document.createElement("td");
-        const selPrio = document.createElement("select");
-        selPrio.className = "priority-select " + priorityClass(t.priorite);
-        prioriteOptions.forEach(v => {
-          const o = document.createElement("option");
-          o.value = v; o.textContent = v;
-          if (v === t.priorite) o.selected = true;
-          selPrio.appendChild(o);
+      // Commentaire
+      const tdC=document.createElement("td");
+      const ic=document.createElement("input");
+      ic.type="text";ic.className="inp-comment";ic.value=t.commentaire||"";ic.placeholder="Ajouter…";
+      ic.addEventListener("change",async e=>{t.commentaire=e.target.value;await save(t.id,"commentaire",t.commentaire);});
+      tdC.appendChild(ic);tr.appendChild(tdC);
+
+      tableBody.appendChild(tr);
+    });
+  }
+
+  async function loadFromDB() {
+    const{data,error}=await db.from("taches_noe_clery").select("*").order("ref",{ascending:true});
+    if(error){console.error(error);return;}
+    tasks=data||[];
+    renderFilters();
+    render();
+    setDate();
+  }
+
+  async function pushToDB(newTasks) {
+    await db.from("taches_noe_clery").delete().neq("id","00000000-0000-0000-0000-000000000000");
+    const{error}=await db.from("taches_noe_clery").insert(newTasks.map(t=>({
+      ref:t.ref,lot:t.lot,task:t.task,
+      intervenant:t.intervenant,statut:t.statut,
+      priorite:t.priorite,commentaire:t.commentaire
+    })));
+    if(error){console.error(error);alert("Erreur Supabase : "+error.message);}
+  }
+
+  $("importBtn").addEventListener("click",()=>{
+    if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\n\nContinuer ?"))return;
+    $("fileInput").click();
+  });
+
+  $("fileInput").addEventListener("change",e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=async ev=>{
+      try{
+        const wb=XLSX.read(new Uint8Array(ev.target.result),{type:"array"});
+        let found=[];
+        wb.SheetNames.forEach(sn=>{
+          const json=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1});
+          let hi=-1;
+          for(let i=0;i<json.length;i++){
+            const f=(json[i][0]||"").toString().toLowerCase();
+            if(f.includes("rf")||f.includes("réf")){hi=i;break;}
+          }
+          if(hi===-1)return;
+          const hdr=json[hi].map(h=>(h||"").toString().toLowerCase().trim());
+          const ri=hdr.findIndex(h=>h.includes("rf")||h.includes("réf"));
+          const di=hdr.findIndex(h=>h.includes("description")||h.includes("tche")||h.includes("tâche"));
+          const rpi=hdr.findIndex(h=>h.includes("responsable"));
+          const sti=hdr.findIndex(h=>h.includes("statut"));
+          const rmi=hdr.findIndex(h=>h.includes("remarque")||h.includes("observation"));
+          for(let i=hi+1;i<json.length;i++){
+            const row=json[i];
+            const ref=(row[ri]||"").toString().trim();
+            const desc=(row[di]||"").toString().trim();
+            if(!ref||!desc||ref.includes("---"))continue;
+            const resp=(row[rpi]||"").toString().trim();
+            const statut=(row[sti]||"").toString().trim();
+            const rem=(row[rmi]||"").toString().trim();
+            found.push({
+              ref,
+              lot:guessLot(ref),
+              task:desc,
+              intervenant:["à faire","faire",""].includes(resp.toLowerCase())?"Non assigné":resp,
+              statut:normStatut(statut),
+              priorite:guessPrio(desc,rem),
+              commentaire:rem
+            });
+          }
         });
-        selPrio.addEventListener("change", async e => {
-          t.priorite = e.target.value;
-          selPrio.className = "priority-select " + priorityClass(t.priorite);
-          await updateField(t.id, "priorite", t.priorite);
-        });
+        if(!found.length){alert("Aucune tâche trouvée.");return;}
+        await pushToDB(found);
+        await loadFromDB();
+        alert("✅ "+tasks.length+" tâches importées !");
+      }catch(err){console.error(err);alert("Erreur lecture Excel.");}
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  searchInput.addEventListener("input",render);
+  filterStatut.addEventListener("change",render);
+  filterLot.addEventListener("change",render);
+  filterIntervenant.addEventListener("change",render);
+
+  loadFromDB();
+</script>
+</body>
+</html>
