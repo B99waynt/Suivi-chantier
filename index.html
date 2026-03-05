@@ -77,8 +77,14 @@
       gap: 10px;
       align-items: center;
       margin-bottom: 10px;
+      justify-content: space-between;
     }
-    .toolbar-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .toolbar-left {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
     select,
     input[type="search"],
     input[type="file"] {
@@ -146,11 +152,15 @@
     @media (max-width: 600px) {
       .stats { grid-template-columns: 1fr 1fr; }
       .toolbar { flex-direction: column; align-items: stretch; }
-      .toolbar-group { width: 100%; }
+      .toolbar-left { width: 100%; }
       input[type="search"] { width: 100%; }
     }
   </style>
+
+  <!-- XLSX pour l'import Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 </head>
 <body>
   <div class="app">
@@ -188,8 +198,8 @@
     </div>
 
     <div class="toolbar">
-      <div class="toolbar-group">
-        <button class="btn-import" onclick="document.getElementById('fileInput').click()">
+      <div class="toolbar-left">
+        <button class="btn-import" id="importBtn">
           📂 Importer DPGF
         </button>
         <input type="file" id="fileInput" accept=".xlsx,.xls" />
@@ -236,6 +246,13 @@
   </div>
 
   <script>
+    // ---- CONFIG SUPABASE (tes vraies valeurs) ----
+    const SUPABASE_URL = "https://ifhvgqvmwgtyzuoyjbby.supabase.co";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const intervenantsOptions = [
       "Non assigné",
       "Techni Combles",
@@ -245,12 +262,10 @@
       "Tiago",
       "HK Menuiserie",
     ];
-
     const statutOptions = ["À faire", "En cours", "Terminée"];
-
     const prioriteOptions = ["Basse", "Moyenne", "Haute"];
 
-    let tasks = [];
+    let tasks = []; // {id, ref, lot, task, intervenant, statut, priorite, commentaire}
 
     const tableBody = document.getElementById("tableBody");
     const statTotal = document.getElementById("statTotal");
@@ -263,26 +278,20 @@
     const filterIntervenant = document.getElementById("filterIntervenant");
     const lastUpdateSpan = document.getElementById("lastUpdate");
     const fileInput = document.getElementById("fileInput");
+    const importBtn = document.getElementById("importBtn");
 
-    function normalizeStatut(val) {
-      const v = (val || "").toLowerCase().trim();
-      if (v.includes("faire")) return "À faire";
-      if (v.includes("cours")) return "En cours";
-      if (v.includes("termin")) return "Terminée";
-      return "À faire";
-    }
-
-    function guessPriorite(desc, remarques) {
-      const txt = ((desc || "") + " " + (remarques || "")).toLowerCase();
-      if (txt.includes("urgent") || txt.includes("priorit")) return "Haute";
-      if (txt.includes("option")) return "Basse";
-      return "Moyenne";
-    }
+    const now = new Date();
+    lastUpdateSpan.textContent = now.toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
     function guessLot(ref) {
       if (!ref) return "Lot inconnu";
-      const parts = ref.toString().split(".");
-      const num = parts[0];
+      const num = ref.toString().split(".")[0];
       const lotMap = {
         "0": "Lot 0 - Préparation",
         "1": "Lot 1 - Démolition et GO",
@@ -298,94 +307,20 @@
       return lotMap[num] || "Lot " + num;
     }
 
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    function normalizeStatut(val) {
+      const v = (val || "").toLowerCase().trim();
+      if (v.includes("faire")) return "À faire";
+      if (v.includes("cours")) return "En cours";
+      if (v.includes("termin")) return "Terminée";
+      return "À faire";
+    }
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const data = new Uint8Array(event.target.result);
-          const workbook = XLSX.read(data, { type: "array" });
-
-          const sheetNames = workbook.SheetNames;
-          let foundTasks = [];
-
-          sheetNames.forEach((sheetName) => {
-            const sheet = workbook.Sheets[sheetName];
-            const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-            let headerRowIndex = -1;
-            for (let i = 0; i < json.length; i++) {
-              const row = json[i];
-              const firstCol = (row[0] || "").toString().toLowerCase();
-              if (firstCol.includes("rf") || firstCol.includes("réf")) {
-                headerRowIndex = i;
-                break;
-              }
-            }
-
-            if (headerRowIndex === -1) return;
-
-            const headers = json[headerRowIndex].map((h) =>
-              (h || "").toString().toLowerCase().trim()
-            );
-
-            const refIdx = headers.findIndex((h) => h.includes("rf") || h.includes("réf"));
-            const descIdx = headers.findIndex((h) =>
-              h.includes("description") || h.includes("tche")
-            );
-            const responsableIdx = headers.findIndex((h) => h.includes("responsable"));
-            const statutIdx = headers.findIndex((h) => h.includes("statut"));
-            const remarquesIdx = headers.findIndex((h) =>
-              h.includes("remarque") || h.includes("observation")
-            );
-
-            for (let i = headerRowIndex + 1; i < json.length; i++) {
-              const row = json[i];
-              const ref = row[refIdx] || "";
-              const desc = row[descIdx] || "";
-
-              if (!ref || !desc) continue;
-              if (ref.toString().includes("---")) continue;
-
-              const responsable = row[responsableIdx] || "Non assigné";
-              const statut = row[statutIdx] || "À faire";
-              const remarques = row[remarquesIdx] || "";
-
-              foundTasks.push({
-                ref: ref.toString(),
-                lot: guessLot(ref),
-                task: desc.toString(),
-                intervenant:
-                  responsable.toString().toLowerCase() === "à faire" ||
-                  responsable.toString().toLowerCase() === "faire"
-                    ? "Non assigné"
-                    : responsable.toString(),
-                statut: normalizeStatut(statut),
-                priorite: guessPriorite(desc, remarques),
-                commentaire: remarques.toString(),
-              });
-            }
-          });
-
-          if (foundTasks.length === 0) {
-            alert("Aucune tâche trouvée dans le fichier Excel.");
-            return;
-          }
-
-          tasks = foundTasks;
-          renderLotsOptions();
-          renderIntervenantFilterOptions();
-          render();
-          alert(`✅ ${tasks.length} tâches importées avec succès !`);
-        } catch (err) {
-          console.error(err);
-          alert("Erreur lors de la lecture du fichier Excel.");
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    });
+    function guessPriorite(desc, remarques) {
+      const txt = ((desc || "") + " " + (remarques || "")).toLowerCase();
+      if (txt.includes("urgent") || txt.includes("priorit")) return "Haute";
+      if (txt.includes("option")) return "Basse";
+      return "Moyenne";
+    }
 
     function renderLotsOptions() {
       filterLot.innerHTML = '<option value="">Tous les lots</option>';
@@ -433,6 +368,18 @@
       });
     }
 
+    async function updateTaskField(id, field, value) {
+      try {
+        await supabaseClient
+          .from("taches_noe_clery")
+          .update({ [field]: value, updated_at: new Date().toISOString() })
+          .eq("id", id);
+      } catch (e) {
+        console.error("Erreur update", e);
+        alert("Erreur lors de la sauvegarde Supabase.");
+      }
+    }
+
     function render() {
       const filtered = applyFilters();
       tableBody.innerHTML = "";
@@ -461,8 +408,10 @@
           if (optVal === t.intervenant) opt.selected = true;
           selectInterv.appendChild(opt);
         });
-        selectInterv.addEventListener("change", (e) => {
+        selectInterv.addEventListener("change", async (e) => {
           t.intervenant = e.target.value;
+          await updateTaskField(t.id, "intervenant", t.intervenant);
+          renderIntervenantFilterOptions();
         });
         tdInterv.appendChild(selectInterv);
 
@@ -477,8 +426,9 @@
           if (optVal === t.statut) opt.selected = true;
           selectStatut.appendChild(opt);
         });
-        selectStatut.addEventListener("change", (e) => {
+        selectStatut.addEventListener("change", async (e) => {
           t.statut = e.target.value;
+          await updateTaskField(t.id, "statut", t.statut);
           render();
         });
         tdStatut.appendChild(selectStatut);
@@ -494,8 +444,9 @@
           if (optVal === t.priorite) opt.selected = true;
           selectPriorite.appendChild(opt);
         });
-        selectPriorite.addEventListener("change", (e) => {
+        selectPriorite.addEventListener("change", async (e) => {
           t.priorite = e.target.value;
+          await updateTaskField(t.id, "priorite", t.priorite);
         });
         tdPriorite.appendChild(selectPriorite);
 
@@ -505,8 +456,9 @@
         inputComment.type = "text";
         inputComment.value = t.commentaire || "";
         inputComment.className = "comment-input";
-        inputComment.addEventListener("change", (e) => {
+        inputComment.addEventListener("change", async (e) => {
           t.commentaire = e.target.value;
+          await updateTaskField(t.id, "commentaire", t.commentaire);
         });
         tdComment.appendChild(inputComment);
 
@@ -527,13 +479,137 @@
       statTerminees.textContent = filtered.filter((t) => t.statut === "Terminée").length;
     }
 
-    const now = new Date();
-    lastUpdateSpan.textContent = now.toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    async function loadTasksFromSupabase() {
+      const { data, error } = await supabaseClient
+        .from("taches_noe_clery")
+        .select("*")
+        .order("ref", { ascending: true });
+
+      if (error) {
+        console.error(error);
+        alert("Erreur chargement Supabase");
+        return;
+      }
+
+      tasks = data || [];
+      renderLotsOptions();
+      renderIntervenantFilterOptions();
+      render();
+    }
+
+    async function replaceTasksInSupabase(newTasks) {
+      // on efface tout puis on insère
+      await supabaseClient.from("taches_noe_clery").delete().neq("id", 0);
+      const { error } = await supabaseClient
+        .from("taches_noe_clery")
+        .insert(
+          newTasks.map((t) => ({
+            ref: t.ref,
+            lot: t.lot,
+            task: t.task,
+            intervenant: t.intervenant,
+            statut: t.statut,
+            priorite: t.priorite,
+            commentaire: t.commentaire,
+          }))
+        );
+      if (error) {
+        console.error(error);
+        alert("Erreur lors de l’enregistrement dans Supabase");
+      }
+    }
+
+    importBtn.addEventListener("click", async () => {
+      const confirmReset = confirm(
+        "Importer le DPGF va remplacer toutes les tâches existantes dans la base.\n\nContinuer ?"
+      );
+      if (!confirmReset) return;
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const data = new Uint8Array(event.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+
+          const sheetNames = workbook.SheetNames;
+          let foundTasks = [];
+
+          sheetNames.forEach((sheetName) => {
+            const sheet = workbook.Sheets[sheetName];
+            const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            let headerRowIndex = -1;
+            for (let i = 0; i < json.length; i++) {
+              const row = json[i];
+              const firstCol = (row[0] || "").toString().toLowerCase();
+              if (firstCol.includes("rf") || firstCol.includes("réf")) {
+                headerRowIndex = i;
+                break;
+              }
+            }
+            if (headerRowIndex === -1) return;
+
+            const headers = json[headerRowIndex].map((h) =>
+              (h || "").toString().toLowerCase().trim()
+            );
+
+            const refIdx = headers.findIndex((h) => h.includes("rf") || h.includes("réf"));
+            const descIdx = headers.findIndex((h) =>
+              h.includes("description") || h.includes("tche")
+            );
+            const responsableIdx = headers.findIndex((h) => h.includes("responsable"));
+            const statutIdx = headers.findIndex((h) => h.includes("statut"));
+            const remarquesIdx = headers.findIndex((h) =>
+              h.includes("remarque") || h.includes("observation")
+            );
+
+            for (let i = headerRowIndex + 1; i < json.length; i++) {
+              const row = json[i];
+              const ref = row[refIdx] || "";
+              const desc = row[descIdx] || "";
+              if (!ref || !desc) continue;
+              if (ref.toString().includes("---")) continue;
+
+              const responsable = row[responsableIdx] || "Non assigné";
+              const statut = row[statutIdx] || "À faire";
+              const remarques = row[remarquesIdx] || "";
+
+              foundTasks.push({
+                ref: ref.toString(),
+                lot: guessLot(ref),
+                task: desc.toString(),
+                intervenant:
+                  responsable.toString().toLowerCase() === "à faire" ||
+                  responsable.toString().toLowerCase() === "faire"
+                    ? "Non assigné"
+                    : responsable.toString(),
+                statut: normalizeStatut(statut),
+                priorite: guessPriorite(desc, remarques),
+                commentaire: remarques.toString(),
+              });
+            }
+          });
+
+          if (foundTasks.length === 0) {
+            alert("Aucune tâche trouvée dans le fichier Excel.");
+            return;
+          }
+
+          await replaceTasksInSupabase(foundTasks);
+          await loadTasksFromSupabase();
+          alert(`✅ ${tasks.length} tâches importées et sauvegardées dans Supabase.`);
+        } catch (err) {
+          console.error(err);
+          alert("Erreur lors de la lecture du fichier Excel.");
+        }
+      };
+      reader.readAsArrayBuffer(file);
     });
 
     searchInput.addEventListener("input", render);
@@ -541,7 +617,8 @@
     filterLot.addEventListener("change", render);
     filterIntervenant.addEventListener("change", render);
 
-    render();
+    // Chargement initial depuis Supabase
+    loadTasksFromSupabase();
   </script>
 </body>
 </html>
