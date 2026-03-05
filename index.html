@@ -219,23 +219,28 @@
     }
     tbody tr{
       border-bottom:1px solid var(--border);
-      transition:background .1s;
       border-left:4px solid transparent;
+      transition:background .12s,border-left-color .15s;
     }
     tbody tr:last-child{border-bottom:none;}
-    tbody tr:hover{background:#fafbff;}
+    tbody tr:nth-child(even){
+      background:#fcfcff;
+    }
+    tbody tr:hover{
+      background:#f3f4ff;
+    }
     td{
       padding:11px 16px;
       vertical-align:middle;
       white-space:nowrap;
     }
     td.r{
-      font-size:.74rem;
+      font-size:.72rem;
       font-weight:700;
       color:var(--text3);
     }
     td.l{
-      font-size:.75rem;
+      font-size:.74rem;
       color:var(--text3);
       max-width:120px;
       overflow:hidden;
@@ -244,7 +249,7 @@
     td.t{
       white-space:normal;
       max-width:320px;
-      font-size:.9rem;
+      font-size:.92rem;
       font-weight:600;
       color:var(--text);
       line-height:1.4;
@@ -274,9 +279,9 @@
       transition:opacity .15s;
     }
     .ss:hover{opacity:.8;}
-    .saf{background:#fef2f2;color:#dc2626;}
-    .sec{background:#fffbeb;color:#d97706;}
-    .sok{background:#f0fdf4;color:#16a34a;}
+    .saf{background:#fef2f2;color:#b91c1c;}
+    .sec{background:#fffbeb;color:#b45309;}
+    .sok{background:#f0fdf4;color:#15803d;}
 
     .sp{
       appearance:none;
@@ -291,8 +296,8 @@
       transition:opacity .15s;
     }
     .sp:hover{opacity:.8;}
-    .ph{background:#fef2f2;color:#dc2626;border-color:#fca5a5;}
-    .pm{background:#fffbeb;color:#d97706;border-color:#fcd34d;}
+    .ph{background:#fef2f2;color:#b91c1c;border-color:#fecaca;}
+    .pm{background:#fffbeb;color:#b45309;border-color:#fed7aa;}
     .pb{background:var(--grey);color:var(--text3);border-color:var(--grey3);}
 
     .si{
@@ -386,9 +391,26 @@
       margin-bottom:8px;
       cursor:grab;
       font-size:.8rem;
+      position:relative;
+      border-left:4px solid transparent;
+      transition:box-shadow .15s,transform .12s,border-left-color .15s;
     }
     .kanban-card:hover{
       box-shadow:var(--shadow-md);
+      transform:translateY(-1px);
+    }
+    .kanban-card.prio-haute{border-left-color:#b91c1c;}
+    .kanban-card.prio-moyenne{border-left-color:#d97706;}
+    .kanban-card.prio-basse{border-left-color:#9ca3af;}
+
+    .kanban-badge-lot{
+      display:inline-block;
+      font-size:.7rem;
+      padding:2px 6px;
+      border-radius:999px;
+      background:#f3f4f6;
+      color:#4b5563;
+      margin-bottom:4px;
     }
     .kanban-card-title{
       font-weight:600;
@@ -461,11 +483,23 @@
     .drawer-body h2{
       font-size:1.05rem;
       margin-bottom:6px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
     }
     .drawer-ref{
       font-size:.8rem;
       color:var(--text3);
       margin-bottom:16px;
+    }
+    .drawer-status-pill{
+      font-size:.72rem;
+      padding:2px 8px;
+      border-radius:999px;
+      background:#f3f4f6;
+      color:#4b5563;
+      white-space:nowrap;
     }
     .drawer-field{
       display:flex;
@@ -488,6 +522,11 @@
       flex-direction:column;
       gap:6px;
     }
+    .drawer-comment-wrapper{
+      background:#f9fafb;
+      border-radius:var(--r);
+      padding:10px;
+    }
     .drawer-textarea{
       min-height:80px;
       resize:vertical;
@@ -496,6 +535,8 @@
       padding:8px 10px;
       font-family:inherit;
       font-size:.85rem;
+      width:100%;
+      background:#fff;
     }
     .drawer-textarea:focus{
       outline:none;
@@ -633,7 +674,6 @@
   <div id="kanbanWrapper" class="kanban" style="display:none;"></div>
 </div>
 
-<!-- Panneau latéral détail tâche -->
 <div id="taskDrawer" class="drawer">
   <div class="drawer-overlay" id="drawerOverlay"></div>
   <div class="drawer-panel">
@@ -641,7 +681,9 @@
       ×
     </button>
     <div class="drawer-body">
-      <h2 id="drawerTitle">Détail tâche</h2>
+      <h2 id="drawerTitle">
+        <!-- texte + pill injectés en JS -->
+      </h2>
       <p class="drawer-ref" id="drawerRef"></p>
 
       <div class="drawer-field">
@@ -666,8 +708,10 @@
 
       <div class="drawer-block">
         <span class="df-label">Commentaire</span>
-        <textarea id="drawerCommentaire" class="drawer-textarea"
-          placeholder="Ajouter un commentaire…"></textarea>
+        <div class="drawer-comment-wrapper">
+          <textarea id="drawerCommentaire" class="drawer-textarea"
+            placeholder="Ajouter un commentaire…"></textarea>
+        </div>
       </div>
     </div>
   </div>
@@ -783,7 +827,25 @@
   function openDrawer(t){
     currentTask=t;
     document.body.classList.add("drawer-open");
-    $("drawerTitle").textContent=t.task;
+    const titleEl=$("drawerTitle");
+    titleEl.innerHTML="";
+    titleEl.appendChild(document.createTextNode(t.task));
+    const pill=document.createElement("span");
+    pill.className="drawer-status-pill";
+    pill.textContent=t.statut;
+    // couleur du pill selon statut
+    if(t.statut==="À faire"){
+      pill.style.background="#fef2f2";
+      pill.style.color="#b91c1c";
+    }else if(t.statut==="En cours"){
+      pill.style.background="#fffbeb";
+      pill.style.color="#b45309";
+    }else{
+      pill.style.background="#f0fdf4";
+      pill.style.color="#15803d";
+    }
+    titleEl.appendChild(pill);
+
     $("drawerRef").textContent="Réf : "+t.ref;
     $("drawerLot").textContent=t.lot;
     $("drawerIntervenant").textContent=t.intervenant||"—";
@@ -857,6 +919,7 @@
         t.intervenant=e.target.value;
         await save(t.id,"intervenant",t.intervenant);
         renderFilters();
+        if($("kanbanWrapper").style.display!=="none") renderKanban();
       });
       td4.appendChild(si);
       tr.appendChild(td4);
@@ -867,17 +930,23 @@
       ss.setAttribute("aria-label","Statut");
       STATUTS.forEach(v=>{
         const o=document.createElement("option");
-        o.value=v;o.textContent=v;
+        o.value=v;
+        o.textContent= v==="À faire" ? "⧗ À faire" :
+                       v==="En cours" ? "… En cours" :
+                       "✓ Terminée";
         if(v===t.statut)o.selected=true;
         ss.appendChild(o);
       });
       ss.addEventListener("change",async e=>{
-        t.statut=e.target.value;
+        const val=e.target.value;
+        // enlever les icônes pour la valeur réelle
+        t.statut=val;
         ss.className="ss "+sCls(t.statut);
         tr.style.borderLeft="4px solid "+borderColor(t.statut);
         badge.style.backgroundColor=borderColor(t.statut);
         await save(t.id,"statut",t.statut);
         updateStats(getFiltered());
+        if($("kanbanWrapper").style.display!=="none") renderKanban();
       });
       td5.appendChild(ss);
       tr.appendChild(td5);
@@ -888,14 +957,19 @@
       sp.setAttribute("aria-label","Priorité");
       PRIOS.forEach(v=>{
         const o=document.createElement("option");
-        o.value=v;o.textContent=v;
+        o.value=v;
+        o.textContent= v==="Haute" ? "⚠️ Haute" :
+                       v==="Basse" ? "⬇️ Basse" :
+                       "• Moyenne";
         if(v===t.priorite)o.selected=true;
         sp.appendChild(o);
       });
       sp.addEventListener("change",async e=>{
-        t.priorite=e.target.value;
+        const val=e.target.value;
+        t.priorite=val;
         sp.className="sp "+pCls(t.priorite);
         await save(t.id,"priorite",t.priorite);
+        if($("kanbanWrapper").style.display!=="none") renderKanban();
       });
       td6.appendChild(sp);
       tr.appendChild(td6);
@@ -911,6 +985,7 @@
       ci.addEventListener("blur",async e=>{
         t.commentaire=e.target.value;
         await save(t.id,"commentaire",t.commentaire);
+        if($("kanbanWrapper").style.display!=="none") renderKanban();
       });
       ci.addEventListener("keydown",async e=>{
         if(e.key==="Enter"){
@@ -918,6 +993,7 @@
           t.commentaire=e.target.value;
           await save(t.id,"commentaire",t.commentaire);
           ci.blur();
+          if($("kanbanWrapper").style.display!=="none") renderKanban();
         }
       });
       td7.appendChild(ci);
@@ -982,13 +1058,21 @@
 
       tasksInCol.forEach(t=>{
         const card=document.createElement("div");
-        card.className="kanban-card";
+        card.className="kanban-card " + (
+          t.priorite==="Haute" ? "prio-haute" :
+          t.priorite==="Basse" ? "prio-basse" : "prio-moyenne"
+        );
         card.draggable=true;
         card.dataset.id=t.id;
         card.addEventListener("dragstart",e=>{
           e.dataTransfer.setData("text/plain",t.id);
         });
         card.addEventListener("click",()=>openDrawer(t));
+
+        const lotBadge=document.createElement("div");
+        lotBadge.className="kanban-badge-lot";
+        lotBadge.textContent=t.lot;
+        card.appendChild(lotBadge);
 
         const title=document.createElement("div");
         title.className="kanban-card-title";
@@ -997,7 +1081,7 @@
 
         const meta=document.createElement("div");
         meta.className="kanban-card-meta";
-        meta.textContent=`${t.ref} · ${t.lot} · ${t.intervenant||"Non assigné"} · ${t.priorite}`;
+        meta.textContent=`${t.ref} · ${t.intervenant||"Non assigné"} · ${t.priorite}`;
         card.appendChild(meta);
 
         if(t.commentaire){
