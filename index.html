@@ -780,7 +780,7 @@
             <div class="stat-card">
               <span class="stat-card-label">Terminées</span>
               <span class="stat-card-value" id="statTerminees">0</span>
-              <span class="stat-card-note">Clôturées</span>
+              <span class="stat-card-note">Clôturées           </div>         </div>         <!-- AVANCEMENT PAR LOT -->         <div class="panel">           <div class="tbl-header">             <span class="tbl-title">Avancement par lot</span>           </div>           <div class="lots-grid" id="lotsGrid"></div>         </div></span>
             </div>
           </section>
 
@@ -1108,7 +1108,7 @@
       badge.className="status-dot";
       badge.style.backgroundColor=borderColor(t.statut);
       td3.appendChild(badge);
-      td3.appendChild(document.createTextNode(t.task));
+      td3.appendChild(document.createTextNode(t.task));       const retardSpan=document.createElement("span");       retardSpan.className="retard";       td3.appendChild(retardSpan);       checkRetard(t,retardSpan);
       tr.appendChild(td3);
 
       const td4=document.createElement("td");
@@ -1474,7 +1474,7 @@
          </div>`;
       g.appendChild(c);
     });
-    g.querySelectorAll(".inter-input").forEach(inp=>{
+    g.querySelectorAll(".inter-tasks-btn").forEach(btn=>{     btn.addEventListener("click",e=>{       const nom=e.target.getAttribute("data-nom");       // Aller sur l'onglet Tâches et filtrer par intervenant       navItems.forEach(n=>n.classList.remove("active"));       document.querySelector('[data-view-btn="taches"]').classList.add("active");       views.forEach(v=>v.classList.toggle("active",v.getAttribute("data-view")==="taches"));       $("filterIntervenant").value=nom;       render();       if($("kanbanWrapper").style.display!=="none") renderKanban();     });   });     g.querySelectorAll(".inter-input").forEach(inp=>{
       inp.addEventListener("input",e=>{
         const idx=parseInt(e.target.getAttribute("data-idx"),10);
         const field=e.target.getAttribute("data-field");
