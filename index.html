@@ -54,14 +54,14 @@
       overflow:hidden;
     }
 
-    /* SIDEBAR */
+    /* SIDEBAR arrondie */
     .sidebar{
       width:220px;
       background:linear-gradient(180deg,#7c3aed,#6d28d9);
       padding:24px 16px 18px;
       display:flex;
       flex-direction:column;
-      border-radius:22px 0 0 22px;
+      border-radius:18px;
     }
     .nav-label{
       font-size:.95rem;
@@ -113,7 +113,7 @@
       background:#f9fafb;
     }
 
-    /* TOPBAR (logo + date seulement) */
+    /* TOPBAR */
     .topbar{
       height:96px;
       padding:0 32px;
@@ -166,6 +166,7 @@
       font-size:1.35rem;
       font-weight:800;
       color:var(--violet-dark);
+      margin-bottom:4px;
     }
     .section-sub{
       font-size:.85rem;
@@ -271,14 +272,6 @@
       font-weight:700;
       color:var(--violet-dark);
     }
-    .tbl-count{
-      font-size:.75rem;color:var(--text3);
-      background:#f9fafb;
-      padding:3px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      white-space:nowrap;
-    }
     .tbl-actions{
       display:flex;
       gap:6px;
@@ -291,7 +284,7 @@
       border:1px solid var(--border);
       background:#f9fafb;
       padding:4px 9px;
-      font-size:.75rem;
+      font-size:.8rem;
       cursor:pointer;
       color:var(--text3);
       font-weight:600;
@@ -335,7 +328,7 @@
     }
     tbody tr{
       border-bottom:1px solid var(--border);
-      border-left:3px solid transparent;
+      border-left:2px solid transparent;
       transition:background .08s,border-left-color .08s;
     }
     tbody tr:last-child{border-bottom:none;}
@@ -538,7 +531,7 @@
       border-radius:var(--rs);
     }
 
-    /* INTERVENANTS */
+    /* INTERVENANTS (layout actuel, qu'on améliorera ensuite) */
     .intervenants-grid{
       display:grid;
       grid-template-columns:repeat(3,minmax(0,1fr));
@@ -820,7 +813,6 @@
                 <button id="viewTable" class="view-btn view-btn-active">Tableau</button>
                 <button id="viewKanban" class="view-btn">Kanban</button>
               </div>
-              <span class="tbl-count" id="tblCount">0 tâche</span>
             </div>
 
             <div class="tw" id="tableWrapper">
@@ -984,9 +976,9 @@
   function sCls(s){return s==="En cours"?"sec":s==="Terminée"?"sok":"saf";}
   function pCls(p){return p==="Haute"?"ph":p==="Basse"?"pb":"pm";}
   function borderColor(s){
-    if(s==="À faire")   return "#ef4444";  // rouge
-    if(s==="En cours")  return "#f97316";  // orange
-    if(s==="Terminée")  return "#16a34a";  // vert
+    if(s==="À faire")   return "#ef4444";
+    if(s==="En cours")  return "#f97316";
+    if(s==="Terminée")  return "#16a34a";
     return "#7c3aed";
   }
 
@@ -1037,7 +1029,6 @@
     $("statAFaire").textContent=af;
     $("statEnCours").textContent=ec;
     $("statTerminees").textContent=ok;
-    $("tblCount").textContent=total+" tâche"+(total>1?"s":"");
   }
 
   function openDrawer(t){
@@ -1093,7 +1084,7 @@
 
     list.forEach(t=>{
       const tr=document.createElement("tr");
-      tr.style.borderLeft="3px solid "+borderColor(t.statut);
+      tr.style.borderLeft="2px solid "+borderColor(t.statut);
       tr.style.cursor="pointer";
       tr.addEventListener("click",e=>{
         if(["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName)) return;
@@ -1154,7 +1145,7 @@
         const val=e.target.value;
         t.statut=val;
         ss.className="ss "+sCls(t.statut);
-        tr.style.borderLeft="3px solid "+borderColor(t.statut);
+        tr.style.borderLeft="2px solid "+borderColor(t.statut);
         badge.style.backgroundColor=borderColor(t.statut);
         await save(t.id,"statut",t.statut);
         updateStats(getFiltered());
@@ -1445,7 +1436,7 @@
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
 
-  /* INTERVENANTS – local */
+  /* INTERVENANTS – pour l'instant local, qu'on branchera ensuite sur Supabase */
   const intervenantsData=[
     {nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
     {nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
