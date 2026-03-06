@@ -329,7 +329,7 @@
       border-bottom:1px solid var(--border);
       border-left:2px solid transparent;
       transition:background .08s,border-left-color .08s;
-      line-height:1.4; /* plus confortable */
+      line-height:1.4;
     }
     tbody tr:last-child{border-bottom:none;}
     tbody tr:nth-child(even){
@@ -365,7 +365,7 @@
       display:flex;
       align-items:center;
     }
-    /* colonne commentaire élargie et multi-lignes */
+    /* colonne commentaire élargie */
     td.td-comment{
       min-width:420px;
       width:520px;
@@ -623,7 +623,7 @@
       position:absolute;
       top:0;right:0;
       height:100%;
-      width:480px;              /* élargi */
+      width:480px;
       max-width:100%;
       background:var(--card);
       box-shadow:-12px 0 30px rgba(15,23,42,.35);
@@ -699,7 +699,6 @@
       gap:6px;
     }
 
-    /* bloc commentaire qui prend toute la hauteur restante */
     .drawer-block-commentaire{
       display:flex;
       flex-direction:column;
@@ -925,7 +924,6 @@
         <span class="df-value" id="drawerPriorite"></span>
       </div>
 
-      <!-- BLOC COMMENTAIRE AGRANDI -->
       <div class="drawer-block drawer-block-commentaire">
         <span class="df-label">Commentaire</span>
         <div class="drawer-comment-wrapper">
@@ -944,7 +942,8 @@
   const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
   const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-  const INTERVS=["Non assigné","Techni Combles","Home Work Peinture","Pro Martins","Interelec","Tiago","HK Menuiserie"];
+  // INTERVENANTS dynamiques : base "Non assigné", complétée par Supabase
+  let INTERVS=["Non assigné"];
   const STATUTS=["À faire","En cours","Terminée"];
   const PRIOS=["Basse","Moyenne","Haute"];
   let tasks=[];
@@ -1483,12 +1482,25 @@
         {id:6,nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
       ];
       if(!error){
-        await db.from(INTER_TABLE).insert(defaults.map(d=>({id:d.id,nom:d.nom,role:d.role,tel:d.tel,mail:d.mail,note:d.note})));
+        await db.from(INTER_TABLE).insert(
+          defaults.map(d=>({
+            id:d.id,
+            nom:d.nom,
+            role:d.role,
+            tel:d.tel,
+            mail:d.mail,
+            note:d.note
+          }))
+        );
       }
       intervenantsData=defaults;
     } else {
       intervenantsData=data;
     }
+
+    // Met à jour la liste utilisée dans les selects Intervenant
+    INTERVS=["Non assigné", ...intervenantsData.map(i=>i.nom).filter(Boolean)];
+
     renderIntervenants();
   }
 
