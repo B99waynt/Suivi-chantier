@@ -3,50 +3,22 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Suivi Chantier – Cléry</title>
+<title>Suivi Chantier – Cléry | TECHNICOMBLES</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* === OPTIONS DE COULEURS === */
-/* Décommente l'option que tu préfères */
-
-/* OPTION 1: BLEU (Moderne & Professionnel) */
 :root{
---primary: #3b82f6;
---primary-light: #60a5fa;
---primary-dark: #2563eb;
---primary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
---primary-bg: #eff6ff;
---primary-hover: #2563eb;
-}
+/* Couleurs TECHNICOMBLES - Rouge & Gris */
+--primary: #dc2626;
+--primary-light: #ef4444;
+--primary-dark: #b91c1c;
+--primary-gradient: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+--primary-bg: #fef2f2;
+--secondary: #64748b;
+--secondary-light: #94a3b8;
 
-/* OPTION 2: VERT (Écologique & Frais) */
-/*
-:root{
---primary: #10b981;
---primary-light: #34d399;
---primary-dark: #059669;
---primary-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
---primary-bg: #ecfdf5;
---primary-hover: #059669;
-}
-*/
-
-/* OPTION 3: ORANGE (Énergique & BTP) */
-/*
-:root{
---primary: #f97316;
---primary-light: #fb923c;
---primary-dark: #ea580c;
---primary-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
---primary-bg: #fff7ed;
---primary-hover: #ea580c;
-}
-*/
-
-/* COULEURS SECONDAIRES */
-:root{
+/* Status colors */
 --success: #10b981;
 --success-bg: #d1fae5;
 --warning: #f59e0b;
@@ -54,20 +26,21 @@
 --danger: #ef4444;
 --danger-bg: #fee2e2;
 
-/* NEUTRES */
---bg: #f8fafc;
+/* Neutres */
+--bg: #f1f5f9;
 --bg-card: #ffffff;
---sidebar-bg: var(--primary-gradient);
 --border: #e2e8f0;
 --text: #1e293b;
 --text-light: #64748b;
 --text-muted: #94a3b8;
 
-/* EFFETS */
+/* Shadows */
 --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+/* Radius */
 --radius: 12px;
 --radius-lg: 16px;
 --radius-xl: 20px;
@@ -95,7 +68,7 @@ line-height: 1.6;
 /* === SIDEBAR === */
 .sidebar{
 width: 280px;
-background: var(--sidebar-bg);
+background: var(--primary-gradient);
 padding: 24px 20px;
 display: flex;
 flex-direction: column;
@@ -296,6 +269,65 @@ font-size: 1.3rem;
 .stat-card-value{font-size: 2.25rem;font-weight: 700;color: var(--text);letter-spacing: -0.025em;}
 .stat-card-note{font-size: 0.8rem;color: var(--text-muted);}
 
+/* === PROGRESS BARS === */
+.progress-section{
+background: var(--bg-card);
+border-radius: var(--radius-xl);
+border: 1px solid var(--border);
+box-shadow: var(--shadow);
+padding: 28px;
+}
+
+.progress-title{
+font-size: 1.1rem;
+font-weight: 600;
+color: var(--text);
+margin-bottom: 20px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.progress-title i{color: var(--primary);}
+
+.progress-item{
+margin-bottom: 20px;
+}
+
+.progress-header{
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 8px;
+}
+
+.progress-label{
+font-size: 0.9rem;
+font-weight: 500;
+color: var(--text);
+}
+
+.progress-value{
+font-size: 0.85rem;
+font-weight: 600;
+color: var(--primary);
+}
+
+.progress-bar{
+width: 100%;
+height: 8px;
+background: var(--bg);
+border-radius: var(--radius-full);
+overflow: hidden;
+}
+
+.progress-fill{
+height: 100%;
+background: var(--primary-gradient);
+border-radius: var(--radius-full);
+transition: width 0.5s ease;
+}
+
 /* === PANEL === */
 .panel{
 background: var(--bg-card);
@@ -327,7 +359,7 @@ transition: all 0.2s ease;
 
 .search-box:focus-within{
 border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .search-box i{color: var(--text-muted);font-size: 1.1rem;}
@@ -363,7 +395,7 @@ transition: all 0.2s ease;
 .filter-select:focus{
 outline: none;
 border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 /* === TABLE HEADER === */
@@ -564,7 +596,7 @@ transition: all 0.2s ease;
 
 .intervenant-select:focus{
 border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 /* === COMMENT INPUT === */
@@ -583,7 +615,7 @@ transition: all 0.2s ease;
 
 .comment-input:focus{
 border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 /* === KANBAN === */
@@ -700,7 +732,7 @@ transition: all 0.2s ease;
 
 .inter-input:focus{
 border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .inter-label{font-size: 0.8rem;color: var(--text-light);font-weight: 600;text-transform: uppercase;letter-spacing: 0.05em;}
@@ -820,7 +852,7 @@ transition: all 0.2s ease;
 
 .drawer-textarea:focus{
 border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 outline: none;
 }
 
@@ -957,8 +989,6 @@ table{min-width: 850px;}
 #toastContainer{bottom: 20px; right: 20px; left: 20px;}
 .toast{min-width: auto; width: 100%;}
 .topbar{flex-direction: column; height: auto; padding: 18px; gap: 14px;}
-.topbar-left{width: 100%; justify-content: space-between;}
-.topbar-right{width: 100%; justify-content: space-between;}
 }
 </style>
 </head>
@@ -981,8 +1011,8 @@ table{min-width: 850px;}
 <i class="fas fa-hard-hat"></i>
 </div>
 <div>
-<div class="sidebar-title">Suivi Chantier</div>
-<div class="sidebar-subtitle">Technicombles</div>
+<div class="sidebar-title">TECHNICOMBLES</div>
+<div class="sidebar-subtitle">Aménagement de combles</div>
 </div>
 </div>
 
@@ -1008,7 +1038,7 @@ table{min-width: 850px;}
 <div class="sidebar-user">
 <div class="sidebar-avatar">TC</div>
 <div class="sidebar-user-info">
-<div class="sidebar-user-name">Technicombles</div>
+<div class="sidebar-user-name">Chantier Cléry</div>
 <div class="sidebar-user-role">Administrateur</div>
 </div>
 </div>
@@ -1073,6 +1103,17 @@ table{min-width: 850px;}
 <span class="stat-card-note">Clôturées</span>
 </div>
 </section>
+
+<!-- PROGRESSION PAR LOT -->
+<div class="progress-section">
+<div class="progress-title">
+<i class="fas fa-chart-bar"></i>
+Progression par lot
+</div>
+<div id="progressContainer">
+<!-- Les barres de progression seront générées ici -->
+</div>
+</div>
 
 <section class="panel">
 <div class="filterbar">
@@ -1166,7 +1207,7 @@ table{min-width: 850px;}
 <button class="btn-primary" id="importBtn">
 <i class="fas fa-file-excel"></i> Importer un DPGF (Excel)
 </button>
-<span style="font-size: 0.9rem; color: var(--text-light);">Sélectionne le fichier Excel DPGF pour mettre à jour toutes les tâches</span>
+<span style="font-size: 0.9rem; color: var(--text-light);">Sélectionne le fichier Excel DPGF</span>
 </div>
 <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" />
 </section>
@@ -1177,7 +1218,7 @@ table{min-width: 850px;}
 <div class="section-header">
 <div class="section-title-group">
 <div class="section-title"><i class="fas fa-camera"></i> Photos du chantier</div>
-<div class="section-sub">Stockage dans Supabase (bucket photos_chantier)</div>
+<div class="section-sub">Stockage dans Supabase</div>
 </div>
 </div>
 
@@ -1186,7 +1227,7 @@ table{min-width: 850px;}
 <button class="btn-primary" id="importPhotosBtn">
 <i class="fas fa-upload"></i> Importer des photos
 </button>
-<span style="font-size: 0.9rem; color: var(--text-light);">Taille limitée (~50 Mo) : privilégier quelques photos clés</span>
+<span style="font-size: 0.9rem; color: var(--text-light);">Taille limitée (~50 Mo)</span>
 </div>
 <input type="file" id="photosInput" accept="image/*" multiple style="display:none;">
 <div id="photosEmpty" class="empty" style="display:none;">
@@ -1321,8 +1362,41 @@ function guessPr(d,r){
 
 function sCls(s){return s==="En cours"?"status-progress":s==="Terminée"?"status-done":"status-todo";}
 function pCls(p){return p==="Haute"?"priority-high":p==="Basse"?"priority-low":"priority-medium";}
-function borderColor(s){if(s==="À faire")return"#ef4444";if(s==="En cours")return"#f97316";if(s==="Terminée")return"#10b981";return"#3b82f6";}
+function borderColor(s){if(s==="À faire")return"#ef4444";if(s==="En cours")return"#f97316";if(s==="Terminée")return"#10b981";return"#dc2626";}
 function statusClass(s){return s==="À faire"?"todo":s==="En cours"?"progress":"done";}
+
+/* === PROGRESSION PAR LOT === */
+function calculateProgressByLot(){
+  const lots = {};
+  tasks.forEach(t=>{
+    if(!lots[t.lot]) lots[t.lot] = {total:0, done:0};
+    lots[t.lot].total++;
+    if(t.statut==="Terminée") lots[t.lot].done++;
+  });
+  return lots;
+}
+
+function renderProgressBars(){
+  const lots = calculateProgressByLot();
+  const container = $("progressContainer");
+  container.innerHTML = "";
+  
+  Object.entries(lots).forEach(([lot, data])=>{
+    const percentage = Math.round((data.done/data.total)*100);
+    const item = document.createElement("div");
+    item.className = "progress-item";
+    item.innerHTML = `
+      <div class="progress-header">
+        <span class="progress-label">${lot}</span>
+        <span class="progress-value">${data.done}/${data.total} (${percentage}%)</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: ${percentage}%"></div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
 
 function renderFilters(){
   $("filterLot").innerHTML='<option value="">Tous lots</option>';
@@ -1371,6 +1445,7 @@ function updateStats(list){
   $("statAFaire").textContent=af;
   $("statEnCours").textContent=ec;
   $("statTerminees").textContent=ok;
+  renderProgressBars();
 }
 
 function openDrawer(t){
@@ -1478,6 +1553,7 @@ async function loadDB(){
     if(error)throw error;
     tasks=data||[];
     renderFilters();render();setDate();
+    renderProgressBars();
   } catch(err){
     console.error(err);
     showToast("Impossible de charger les tâches","error");
@@ -1551,7 +1627,7 @@ $("exportPdfBtn").addEventListener("click",async ()=>{
   try{
     const{jsPDF}=window.jspdf;
     const doc=new jsPDF();
-    doc.setFillColor(59,130,246);
+    doc.setFillColor(220,38,38);
     doc.rect(0,0,210,40,'F');
     doc.setTextColor(255,255,255);
     doc.setFontSize(22);
@@ -1559,7 +1635,7 @@ $("exportPdfBtn").addEventListener("click",async ()=>{
     doc.text('Rapport d\'avancement',14,20);
     doc.setFontSize(12);
     doc.setFont('helvetica','normal');
-    doc.text('Chantier Cléry – Technicombles',14,30);
+    doc.text('Chantier Cléry – TECHNICOMBLES',14,30);
     doc.setTextColor(100,100,100);
     doc.setFontSize(10);
     const dateStr=new Date().toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -1569,7 +1645,7 @@ $("exportPdfBtn").addEventListener("click",async ()=>{
     doc.setFont('helvetica','bold');
     doc.text('Statistiques',14,55);
     const stats=[['Total tâches',$("statTotal").textContent],['À faire',$("statAFaire").textContent],['En cours',$("statEnCours").textContent],['Terminées',$("statTerminees").textContent]];
-    doc.autoTable({startY:60,head:[['Métrique','Valeur']],body:stats,theme:'striped',headStyles:{fillColor:[59,130,246]},margin:{left:14,right:14}});
+    doc.autoTable({startY:60,head:[['Métrique','Valeur']],body:stats,theme:'striped',headStyles:{fillColor:[220,38,38]},margin:{left:14,right:14}});
     let finalY=doc.lastAutoTable.finalY+15;
     STATUTS.forEach(statut=>{
       const tasksByStatus=tasks.filter(t=>t.statut===statut);
