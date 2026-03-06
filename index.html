@@ -54,7 +54,7 @@
       overflow:hidden;
     }
 
-    /* SIDEBAR arrondie */
+    /* SIDEBAR */
     .sidebar{
       width:220px;
       background:linear-gradient(180deg,#7c3aed,#6d28d9);
@@ -204,7 +204,7 @@
       color:var(--text3);
     }
 
-    /* PANEL TÂCHES */
+    /* PANEL GÉNÉRIQUE */
     .panel{
       background:#ffffff;
       border-radius:20px;
@@ -217,6 +217,7 @@
       min-height:0;
     }
 
+    /* Filtres tâches */
     .filterbar{
       display:flex;align-items:center;gap:8px;
       flex-wrap:wrap;
@@ -237,6 +238,7 @@
       font-family:inherit;
     }
     .sbox input::placeholder{color:var(--text3);}
+
     .fsel{
       appearance:none;
       background:#f9f5ff
@@ -329,7 +331,6 @@
       border-bottom:1px solid var(--border);
       border-left:2px solid transparent;
       transition:background .08s,border-left-color .08s;
-      line-height:1.4;
     }
     tbody tr:last-child{border-bottom:none;}
     tbody tr:nth-child(even){
@@ -365,13 +366,9 @@
       display:flex;
       align-items:center;
     }
-    /* colonne commentaire élargie */
     td.td-comment{
-      min-width:420px;
-      width:520px;
-      max-width:600px;
-      white-space:normal;
-      font-size:0.9rem;
+      min-width:260px;
+      width:300px;
     }
 
     .status-dot{
@@ -396,7 +393,6 @@
     .saf{background:#fee2e2;color:#b91c1c;}
     .sec{background:#ffedd5;color:#c2410c;}
     .sok{background:#dcfce7;color:#15803d;}
-
     .sp{
       appearance:none;
       border-radius:999px;
@@ -698,39 +694,93 @@
       flex-direction:column;
       gap:6px;
     }
-
-    .drawer-block-commentaire{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-top:10px;
-      flex:1;
-      min-height:0;
-    }
     .drawer-comment-wrapper{
-      flex:1;
-      min-height:0;
-      border-radius:14px;
-      border:1px solid #e5e7eb;
       background:#f9fafb;
-      padding:10px 12px;
-      box-shadow:inset 0 0 0 1px rgba(148,163,184,.25);
+      border-radius:var(--r);
+      padding:8px;
+      border:1px solid var(--border);
     }
     .drawer-textarea{
-      width:100%;
-      height:100%;
+      min-height:70px;
       resize:vertical;
-      border:none;
-      outline:none;
-      background:transparent;
+      border-radius:var(--r);
+      border:1.5px solid var(--border);
+      padding:7px 9px;
       font-family:inherit;
-      font-size:.95rem;
-      line-height:1.5;
-      color:#111827;
+      font-size:.85rem;
+      width:100%;
+      background:#ffffff;
     }
     .drawer-textarea::placeholder{
-      color:#9ca3af;
+      color:var(--text3);
       font-style:italic;
+    }
+
+    /* PHOTOS */
+    .photos-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:6px;
+      margin-bottom:6px;
+      flex-wrap:wrap;
+    }
+    .btn-photo-import{
+      border:none;
+      border-radius:999px;
+      padding:8px 16px;
+      background:#7c3aed;
+      color:#ffffff;
+      font-size:.85rem;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(124,58,237,.4);
+    }
+    .photos-note{
+      font-size:.8rem;
+      color:var(--text2);
+    }
+    .photos-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+      gap:10px;
+      margin-top:8px;
+    }
+    .photo-card{
+      background:#ffffff;
+      border-radius:14px;
+      border:1px solid #e5e7eb;
+      overflow:hidden;
+      box-shadow:0 2px 8px rgba(15,23,42,.06);
+      display:flex;
+      flex-direction:column;
+    }
+    .photo-card img{
+      width:100%;
+      height:120px;
+      object-fit:cover;
+      display:block;
+    }
+    .photo-meta{
+      padding:6px 8px;
+      font-size:.75rem;
+      color:#6b7280;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+    }
+    .photo-name{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .photo-delete{
+      border:none;
+      background:transparent;
+      color:#b91c1c;
+      font-size:.75rem;
+      cursor:pointer;
     }
 
     @media(max-width:1100px){
@@ -761,6 +811,7 @@
       <div class="nav-item active" data-view-btn="taches">Tâches</div>
       <div class="nav-item" data-view-btn="intervenants">Intervenants</div>
       <div class="nav-item" data-view-btn="documents">Documents</div>
+      <div class="nav-item" data-view-btn="photos">Photos</div>
       <div class="sidebar-footer">
         <span>Suivi chantier Cléry</span>
         <span>Technicombles – Interne</span>
@@ -846,15 +897,15 @@
             <div class="tw" id="tableWrapper">
               <table>
                 <thead>
-                  <tr>
-                    <th>Réf</th>
-                    <th>Lot</th>
-                    <th>Tâche</th>
-                    <th>Intervenant</th>
-                    <th>Statut</th>
-                    <th>Priorité</th>
-                    <th>Commentaire</th>
-                  </tr>
+                <tr>
+                  <th>Réf</th>
+                  <th>Lot</th>
+                  <th>Tâche</th>
+                  <th>Intervenant</th>
+                  <th>Statut</th>
+                  <th>Priorité</th>
+                  <th>Commentaire</th>
+                </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
               </table>
@@ -869,10 +920,16 @@
           <div class="section-header">
             <div>
               <div class="section-title">Intervenants</div>
-              <div class="section-sub">Coordonnées et rôles (synchronisé avec Supabase)</div>
+              <div class="section-sub">Coordonnées et rôles synchronisés avec Supabase</div>
             </div>
           </div>
-          <section class="intervenants-grid" id="intervenantsGrid"></section>
+          <section class="panel">
+            <div class="photos-actions">
+              <button id="addIntervenantBtn" class="btn-photo-import">Ajouter un intervenant</button>
+              <span class="photos-note">La liste est liée à Supabase, tu peux ajouter/modifier/supprimer ici.</span>
+            </div>
+            <section class="intervenants-grid" id="intervenantsGrid"></section>
+          </section>
         </section>
 
         <!-- DOCUMENTS -->
@@ -894,11 +951,37 @@
             <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" />
           </section>
         </section>
+
+        <!-- PHOTOS -->
+        <section class="view-section" data-view="photos">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Photos du chantier</div>
+              <div class="section-sub">Stockage dans Supabase (bucket photos_chantier)</div>
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="photos-actions">
+              <button class="btn-photo-import" id="importPhotosBtn">Importer des photos</button>
+              <span class="photos-note">
+                Taille limitée (~50 Mo) : privilégier quelques photos clés.
+              </span>
+            </div>
+            <input type="file" id="photosInput" accept="image/*" multiple style="display:none;">
+            <div id="photosEmpty" class="empty" style="display:none;">
+              <p>Aucune photo pour l’instant</p>
+              <span>Importe des images depuis ton ordinateur.</span>
+            </div>
+            <div id="photosGrid" class="photos-grid"></div>
+          </section>
+        </section>
       </div>
     </main>
   </div>
 </div>
-<!-- Drawer -->
+
+<!-- Drawer tâches -->
 <div id="taskDrawer" class="drawer">
   <div class="drawer-overlay" id="drawerOverlay"></div>
   <div class="drawer-panel">
@@ -924,7 +1007,7 @@
         <span class="df-value" id="drawerPriorite"></span>
       </div>
 
-      <div class="drawer-block drawer-block-commentaire">
+      <div class="drawer-block">
         <span class="df-label">Commentaire</span>
         <div class="drawer-comment-wrapper">
           <textarea
@@ -942,10 +1025,13 @@
   const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
   const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-  // INTERVENANTS dynamiques : base "Non assigné", complétée par Supabase
+  // Constantes
   let INTERVS=["Non assigné"];
   const STATUTS=["À faire","En cours","Terminée"];
   const PRIOS=["Basse","Moyenne","Haute"];
+  const INTER_TABLE="intervenants_clery";
+  const PHOTOS_BUCKET="photos_chantier";
+
   let tasks=[];
   let currentTask=null;
   const $=id=>document.getElementById(id);
@@ -1166,8 +1252,7 @@
       ss.setAttribute("aria-label","Statut");
       STATUTS.forEach(v=>{
         const o=document.createElement("option");
-        o.value=v;
-        o.textContent=v;
+        o.value=v;o.textContent=v;
         if(v===t.statut)o.selected=true;
         ss.appendChild(o);
       });
@@ -1359,7 +1444,7 @@
       alert("Erreur Supabase : "+error.message);
     }
   }
-
+  // Import DPGF
   $("importBtn").addEventListener("click",()=>{
     if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\n\nContinuer ?"))return;
     $("fileInput").click();
@@ -1420,6 +1505,7 @@
     reader.readAsArrayBuffer(file);
   });
 
+  // Filtres & vues
   $("searchInput").addEventListener("input",()=>{
     render();
     if($("kanbanWrapper").style.display!=="none") renderKanban();
@@ -1466,8 +1552,7 @@
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
 
-  /* INTERVENANTS – connectés à Supabase */
-  const INTER_TABLE="intervenants_clery";
+  /* INTERVENANTS – CRUD simple */
   let intervenantsData=[];
 
   async function loadIntervenants(){
@@ -1498,9 +1583,7 @@
       intervenantsData=data;
     }
 
-    // Met à jour la liste utilisée dans les selects Intervenant
     INTERVS=["Non assigné", ...intervenantsData.map(i=>i.nom).filter(Boolean)];
-
     renderIntervenants();
   }
 
@@ -1509,10 +1592,24 @@
     if(error) console.error("Erreur save intervenant:",error);
   }
 
+  async function deleteIntervenant(id){
+    if(!confirm("Supprimer cet intervenant ?"))return;
+    const{error}=await db.from(INTER_TABLE).delete().eq("id",id);
+    if(error){
+      console.error(error);
+      alert("Erreur Supabase : "+error.message);
+      return;
+    }
+    await loadIntervenants();
+    renderFilters();
+    render();
+    if($("kanbanWrapper").style.display!=="none") renderKanban();
+  }
+
   function renderIntervenants(){
     const g=document.getElementById("intervenantsGrid");
     g.innerHTML="";
-    intervenantsData.forEach((i)=>{
+    intervenantsData.forEach(i=>{
       const c=document.createElement("div");
       c.className="inter-card";
       c.innerHTML=
@@ -1535,6 +1632,9 @@
         <div class="inter-row">
           <span class="inter-label">Note</span>
           <input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <button class="photo-delete" data-delete="${i.id}">Supprimer</button>
         </div>`;
       g.appendChild(c);
     });
@@ -1545,12 +1645,116 @@
         const item=intervenantsData.find(x=>x.id===id);
         if(item) item[field]=e.target.value;
         await saveIntervenant(id,field,e.target.value);
+        await loadIntervenants();
+        renderFilters();
+        render();
+      });
+    });
+    g.querySelectorAll("[data-delete]").forEach(btn=>{
+      btn.addEventListener("click",e=>{
+        const id=parseInt(e.target.getAttribute("data-delete"),10);
+        deleteIntervenant(id);
       });
     });
   }
 
+  $("addIntervenantBtn").addEventListener("click",async ()=>{
+    const nom=prompt("Nom de l’intervenant ?");
+    if(!nom)return;
+    const{data,error}=await db.from(INTER_TABLE).insert({nom,role:"",tel:"",mail:"",note:""}).select();
+    if(error){
+      console.error(error);
+      alert("Erreur Supabase : "+error.message);
+      return;
+    }
+    if(data&&data.length){
+      intervenantsData.push(data[0]);
+    }
+    await loadIntervenants();
+    renderFilters();
+    render();
+  });
+
+  /* PHOTOS – Upload & galerie */
+  const photosGrid=$("photosGrid");
+  const photosEmpty=$("photosEmpty");
+
+  async function loadPhotos(){
+    const{data,error}=await db.storage.from(PHOTOS_BUCKET).list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
+    if(error){
+      console.error(error);
+      return;
+    }
+    const files=data||[];
+    photosGrid.innerHTML="";
+    if(!files.length){
+      photosEmpty.style.display="block";
+      return;
+    }
+    photosEmpty.style.display="none";
+
+    files.forEach(file=>{
+      const publicUrl=db.storage.from(PHOTOS_BUCKET).getPublicUrl(file.name).data.publicUrl;
+      const card=document.createElement("div");
+      card.className="photo-card";
+      const img=document.createElement("img");
+      img.src=publicUrl;
+      img.alt=file.name;
+      img.loading="lazy";
+      img.addEventListener("click",()=>window.open(publicUrl,"_blank"));
+      card.appendChild(img);
+
+      const meta=document.createElement("div");
+      meta.className="photo-meta";
+      const nameSpan=document.createElement("span");
+      nameSpan.className="photo-name";
+      nameSpan.textContent=file.name;
+      const delBtn=document.createElement("button");
+      delBtn.className="photo-delete";
+      delBtn.textContent="Suppr.";
+      delBtn.addEventListener("click",async ()=>{
+        if(!confirm("Supprimer cette photo ?"))return;
+        const{error:delErr}=await db.storage.from(PHOTOS_BUCKET).remove([file.name]);
+        if(delErr){
+          console.error(delErr);
+          alert("Erreur Supabase : "+delErr.message);
+          return;
+        }
+        loadPhotos();
+      });
+      meta.appendChild(nameSpan);
+      meta.appendChild(delBtn);
+      card.appendChild(meta);
+
+      photosGrid.appendChild(card);
+    });
+  }
+
+  $("importPhotosBtn").addEventListener("click",()=>{
+    $("photosInput").click();
+  });
+
+  $("photosInput").addEventListener("change",async e=>{
+    const files=[...e.target.files];
+    if(!files.length)return;
+    for(const file of files){
+      const path=file.name;
+      const{error}=await db.storage.from(PHOTOS_BUCKET).upload(path,file,{upsert:true});
+      if(error){
+        console.error(error);
+        alert("Erreur upload photo : "+error.message);
+        break;
+      }
+    }
+    e.target.value="";
+    loadPhotos();
+  });
+
+  // Initialisation
   loadIntervenants();
   loadDB();
+  loadPhotos();
 </script>
 </body>
 </html>
+
