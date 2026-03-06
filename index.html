@@ -52,52 +52,6 @@
       display:flex;
       width:100%;
       overflow:hidden;
-      @media (max-width: 768px) {
-  body{
-    font-size: 15px;
-    padding: 0;
-  }
-
-  .layout{
-    padding: 10px;
-  }
-
-  .shell{
-    border-radius: 0;
-    flex-direction: column;
-  }
-
-  .sidebar{
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-  }
-
-  .main{
-    width: 100%;
-    padding: 12px 10px 16px;
-  }
-}
-@media (max-width: 768px) {
-  /* ... ce qu'on vient d'ajouter ... */
-
-  .kanban-wrapper{
-    display: none;
-  }
-
-  .table-wrapper{
-    width: 100%;
-    overflow-x: auto;
-  }
-}
-@media (max-width: 768px) {
-  .topbar{
-    margin-bottom: 10px;
-  }
-}
-
     }
 
     /* SIDEBAR arrondie */
@@ -283,7 +237,6 @@
       font-family:inherit;
     }
     .sbox input::placeholder{color:var(--text3);}
-
     .fsel{
       appearance:none;
       background:#f9f5ff
@@ -376,6 +329,7 @@
       border-bottom:1px solid var(--border);
       border-left:2px solid transparent;
       transition:background .08s,border-left-color .08s;
+      line-height:1.4; /* plus confortable */
     }
     tbody tr:last-child{border-bottom:none;}
     tbody tr:nth-child(even){
@@ -411,7 +365,14 @@
       display:flex;
       align-items:center;
     }
-    td.td-comment{min-width:220px;width:260px;}
+    /* colonne commentaire élargie et multi-lignes */
+    td.td-comment{
+      min-width:420px;
+      width:520px;
+      max-width:600px;
+      white-space:normal;
+      font-size:0.9rem;
+    }
 
     .status-dot{
       display:inline-block;
@@ -577,7 +538,7 @@
       border-radius:var(--rs);
     }
 
-    /* INTERVENANTS (layout actuel, qu'on améliorera ensuite) */
+    /* INTERVENANTS */
     .intervenants-grid{
       display:grid;
       grid-template-columns:repeat(3,minmax(0,1fr));
@@ -662,7 +623,7 @@
       position:absolute;
       top:0;right:0;
       height:100%;
-      width:360px;
+      width:480px;              /* élargi */
       max-width:100%;
       background:var(--card);
       box-shadow:-12px 0 30px rgba(15,23,42,.35);
@@ -674,8 +635,12 @@
       border-bottom-left-radius:18px;
     }
     .drawer-body{
-      padding:16px 18px 20px;
-      overflow-y:auto;
+      padding:24px 22px 20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      height:100%;
+      overflow:hidden;
     }
     .drawer-open .drawer{
       pointer-events:auto;
@@ -733,22 +698,40 @@
       flex-direction:column;
       gap:6px;
     }
+
+    /* bloc commentaire qui prend toute la hauteur restante */
+    .drawer-block-commentaire{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:10px;
+      flex:1;
+      min-height:0;
+    }
     .drawer-comment-wrapper{
+      flex:1;
+      min-height:0;
+      border-radius:14px;
+      border:1px solid #e5e7eb;
       background:#f9fafb;
-      border-radius:var(--r);
-      padding:8px;
-      border:1px solid var(--border);
+      padding:10px 12px;
+      box-shadow:inset 0 0 0 1px rgba(148,163,184,.25);
     }
     .drawer-textarea{
-      min-height:70px;
-      resize:vertical;
-      border-radius:var(--r);
-      border:1.5px solid var(--border);
-      padding:7px 9px;
-      font-family:inherit;
-      font-size:.85rem;
       width:100%;
-      background:#ffffff;
+      height:100%;
+      resize:vertical;
+      border:none;
+      outline:none;
+      background:transparent;
+      font-family:inherit;
+      font-size:.95rem;
+      line-height:1.5;
+      color:#111827;
+    }
+    .drawer-textarea::placeholder{
+      color:#9ca3af;
+      font-style:italic;
     }
 
     @media(max-width:1100px){
@@ -916,7 +899,6 @@
     </main>
   </div>
 </div>
-
 <!-- Drawer -->
 <div id="taskDrawer" class="drawer">
   <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -943,17 +925,20 @@
         <span class="df-value" id="drawerPriorite"></span>
       </div>
 
-      <div class="drawer-block">
+      <!-- BLOC COMMENTAIRE AGRANDI -->
+      <div class="drawer-block drawer-block-commentaire">
         <span class="df-label">Commentaire</span>
         <div class="drawer-comment-wrapper">
-          <textarea id="drawerCommentaire" class="drawer-textarea"
-            placeholder="Ajouter un commentaire…"></textarea>
+          <textarea
+            id="drawerCommentaire"
+            class="drawer-textarea"
+            placeholder="Ajouter un commentaire…"
+          ></textarea>
         </div>
       </div>
     </div>
   </div>
 </div>
-
 <script>
   const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
   const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
@@ -1482,80 +1467,78 @@
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
 
-/* INTERVENANTS – connectés à Supabase */
-    const INTER_TABLE="intervenants_clery";
-    let intervenantsData=[];
+  /* INTERVENANTS – connectés à Supabase */
+  const INTER_TABLE="intervenants_clery";
+  let intervenantsData=[];
 
-    async function loadIntervenants(){
-      const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
-      if(error||!data||!data.length){
-        // Données par défaut si la table est vide ou absente
-        const defaults=[
-          {id:1,nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
-          {id:2,nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
-          {id:3,nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
-          {id:4,nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
-          {id:5,nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
-          {id:6,nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
-        ];
-        // Tenter d'insérer les données par défaut si la table existe mais est vide
-        if(!error){
-          await db.from(INTER_TABLE).insert(defaults.map(d=>({id:d.id,nom:d.nom,role:d.role,tel:d.tel,mail:d.mail,note:d.note})));
-        }
-        intervenantsData=defaults;
-      } else {
-        intervenantsData=data;
+  async function loadIntervenants(){
+    const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
+    if(error||!data||!data.length){
+      const defaults=[
+        {id:1,nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
+        {id:2,nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
+        {id:3,nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
+        {id:4,nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
+        {id:5,nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
+        {id:6,nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
+      ];
+      if(!error){
+        await db.from(INTER_TABLE).insert(defaults.map(d=>({id:d.id,nom:d.nom,role:d.role,tel:d.tel,mail:d.mail,note:d.note})));
       }
-      renderIntervenants();
+      intervenantsData=defaults;
+    } else {
+      intervenantsData=data;
     }
+    renderIntervenants();
+  }
 
-    async function saveIntervenant(id,field,val){
-      const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
-      if(error) console.error("Erreur save intervenant:",error);
-    }
+  async function saveIntervenant(id,field,val){
+    const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
+    if(error) console.error("Erreur save intervenant:",error);
+  }
 
-    function renderIntervenants(){
-      const g=document.getElementById("intervenantsGrid");
-      g.innerHTML="";
-      intervenantsData.forEach((i)=>{
-        const c=document.createElement("div");
-        c.className="inter-card";
-        c.innerHTML=
-          `<div class="inter-row">
-            <span class="inter-label">Nom</span>
-            <input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}">
-          </div>
-          <div class="inter-row">
-            <span class="inter-label">Rôle</span>
-            <input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}">
-          </div>
-          <div class="inter-row">
-            <span class="inter-label">Téléphone</span>
-            <input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}">
-          </div>
-          <div class="inter-row">
-            <span class="inter-label">Email</span>
-            <input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}">
-          </div>
-          <div class="inter-row">
-            <span class="inter-label">Note</span>
-            <input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}">
-          </div>`;
-        g.appendChild(c);
+  function renderIntervenants(){
+    const g=document.getElementById("intervenantsGrid");
+    g.innerHTML="";
+    intervenantsData.forEach((i)=>{
+      const c=document.createElement("div");
+      c.className="inter-card";
+      c.innerHTML=
+        `<div class="inter-row">
+          <span class="inter-label">Nom</span>
+          <input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <span class="inter-label">Rôle</span>
+          <input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <span class="inter-label">Téléphone</span>
+          <input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <span class="inter-label">Email</span>
+          <input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <span class="inter-label">Note</span>
+          <input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}">
+        </div>`;
+      g.appendChild(c);
+    });
+    g.querySelectorAll(".inter-input").forEach(inp=>{
+      inp.addEventListener("change",async e=>{
+        const id=parseInt(e.target.getAttribute("data-id"),10);
+        const field=e.target.getAttribute("data-field");
+        const item=intervenantsData.find(x=>x.id===id);
+        if(item) item[field]=e.target.value;
+        await saveIntervenant(id,field,e.target.value);
       });
-      g.querySelectorAll(".inter-input").forEach(inp=>{
-        inp.addEventListener("change",async e=>{
-          const id=parseInt(e.target.getAttribute("data-id"),10);
-          const field=e.target.getAttribute("data-field");
-          const item=intervenantsData.find(x=>x.id===id);
-          if(item) item[field]=e.target.value;
-          await saveIntervenant(id,field,e.target.value);
-        });
-      });
-    }
+    });
+  }
 
-    loadIntervenants();
-    loadDB();
-    </script>
+  loadIntervenants();
+  loadDB();
+</script>
 </body>
 </html>
