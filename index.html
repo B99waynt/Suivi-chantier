@@ -10,96 +10,137 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 <style>
 :root{
---primary: #dc2626;
---primary-dark: #991b1b;
---primary-light: #ef4444;
---gray-50: #f9fafb;
---gray-100: #f3f4f6;
---gray-200: #e5e7eb;
---gray-300: #d1d5db;
---gray-500: #6b7280;
---gray-700: #374151;
---gray-900: #111827;
---success: #10b981;
---warning: #f59e0b;
---danger: #ef4444;
---shadow: 0 1px 3px rgba(0,0,0,0.1);
---shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+--primary:#dc2626;
+--primary-dark:#991b1b;
+--primary-light:#ef4444;
+--gray-50:#fafafa;
+--gray-100:#f4f4f5;
+--gray-200:#e4e4e7;
+--gray-300:#d4d4d8;
+--gray-500:#71717a;
+--gray-700:#3f3f46;
+--gray-900:#18181b;
+--success:#10b981;
+--warning:#f59e0b;
+--danger:#ef4444;
+--shadow:0 1px 3px rgba(0,0,0,0.08);
+--shadow-md:0 4px 6px rgba(0,0,0,0.1);
+--radius:8px;
+--radius-lg:12px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
-font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
 background:var(--gray-50);
 color:var(--gray-900);
 min-height:100vh;
 font-size:14px;
+line-height:1.5;
 }
 
 .layout{display:flex;min-height:100vh;}
 
-/* SIDEBAR MINIMALISTE */
+/* SIDEBAR */
 .sidebar{
-width:72px;
-background:linear-gradient(180deg,#dc2626 0%,#991b1b 100%);
+width:260px;
+background:white;
+border-right:1px solid var(--gray-200);
 display:flex;
 flex-direction:column;
-align-items:center;
-padding:20px 0;
-gap:8px;
 position:fixed;
 height:100vh;
 z-index:100;
 }
 
-.sidebar-logo{
-width:52px;
-height:52px;
-background:white;
-border-radius:12px;
-display:flex;
-align-items:center;
-justify-content:center;
-margin-bottom:20px;
-box-shadow:0 4px 12px rgba(0,0,0,0.15);
+.sidebar-header{
+padding:28px 24px;
+border-bottom:1px solid var(--gray-200);
 }
 
-.sidebar-logo img{
-width:44px;
-height:44px;
+.sidebar-logo{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.logo-img{
+height:42px;
+width:auto;
 object-fit:contain;
 }
 
+.brand-text{
+display:flex;
+flex-direction:column;
+}
+
+.brand-name{
+font-size:1.1rem;
+font-weight:700;
+color:var(--gray-900);
+letter-spacing:-0.025em;
+}
+
+.brand-sub{
+font-size:0.75rem;
+color:var(--gray-500);
+margin-top:2px;
+}
+
+.nav-menu{
+padding:20px 12px;
+display:flex;
+flex-direction:column;
+gap:4px;
+flex:1;
+}
+
 .nav-item{
-width:52px;
-height:52px;
 display:flex;
 align-items:center;
-justify-content:center;
-border-radius:12px;
-color:rgba(255,255,255,0.7);
-font-size:1.4rem;
+gap:12px;
+padding:12px 16px;
+border-radius:var(--radius);
+color:var(--gray-700);
+font-size:0.95rem;
+font-weight:500;
 cursor:pointer;
 transition:all 0.2s;
 text-decoration:none;
 }
 
 .nav-item:hover{
-background:rgba(255,255,255,0.15);
-color:white;
-transform:scale(1.05);
+background:var(--gray-100);
+color:var(--gray-900);
 }
 
 .nav-item.active{
-background:rgba(255,255,255,0.25);
-color:white;
-box-shadow:0 4px 12px rgba(0,0,0,0.2);
+background:rgba(220,38,38,0.1);
+color:var(--primary);
+font-weight:600;
 }
 
-/* MAIN CONTENT */
+.nav-item i{
+width:20px;
+text-align:center;
+font-size:1.1rem;
+}
+
+.sidebar-footer{
+padding:20px;
+border-top:1px solid var(--gray-200);
+}
+
+.sidebar-footer-text{
+font-size:0.85rem;
+color:var(--gray-500);
+}
+
+/* MAIN */
 .main{
 flex:1;
-margin-left:72px;
+margin-left:260px;
 min-width:0;
 }
 
@@ -170,7 +211,7 @@ margin-bottom:32px;
 .stat-card{
 background:white;
 border:1px solid var(--gray-200);
-border-radius:16px;
+border-radius:var(--radius-lg);
 padding:24px;
 display:flex;
 flex-direction:column;
@@ -207,7 +248,7 @@ letter-spacing:-0.025em;
 .progress-section{
 background:white;
 border:1px solid var(--gray-200);
-border-radius:16px;
+border-radius:var(--radius-lg);
 padding:28px;
 margin-bottom:32px;
 }
@@ -250,7 +291,7 @@ transition:width 0.6s ease;
 .panel{
 background:white;
 border:1px solid var(--gray-200);
-border-radius:16px;
+border-radius:var(--radius-lg);
 padding:28px;
 }
 
@@ -469,6 +510,7 @@ font-size:0.85rem;
 background:white;
 cursor:pointer;
 outline:none;
+min-width:140px;
 }
 
 .select-inline:focus{
@@ -497,6 +539,8 @@ display:flex;
 align-items:center;
 justify-content:space-between;
 margin-bottom:16px;
+padding-bottom:12px;
+border-bottom:2px solid var(--gray-200);
 }
 
 .kanban-col-title{
@@ -505,6 +549,7 @@ color:var(--gray-900);
 display:flex;
 align-items:center;
 gap:8px;
+font-size:0.95rem;
 }
 
 .kanban-count{
@@ -514,6 +559,11 @@ border-radius:20px;
 font-size:0.8rem;
 font-weight:600;
 color:var(--gray-500);
+border:1px solid var(--gray-200);
+}
+
+.kanban-list{
+min-height:200px;
 }
 
 .kanban-card{
@@ -524,11 +574,16 @@ padding:16px;
 margin-bottom:12px;
 cursor:grab;
 transition:all 0.2s;
+box-shadow:var(--shadow);
 }
 
 .kanban-card:hover{
 box-shadow:var(--shadow-md);
 transform:translateY(-2px);
+}
+
+.kanban-card:active{
+cursor:grabbing;
 }
 
 .kanban-card.prio-haute{border-left:3px solid var(--danger);}
@@ -584,6 +639,7 @@ font-size:1.25rem;
 font-weight:700;
 color:var(--gray-900);
 line-height:1.4;
+flex:1;
 }
 
 .drawer-close{
@@ -708,8 +764,8 @@ transition:transform 0.3s;
 }
 
 @media(max-width:768px){
-.sidebar{width:64px;}
-.main{margin-left:64px;}
+.sidebar{width:240px;}
+.main{margin-left:240px;}
 .header{padding:16px 20px;height:70px;}
 .content{padding:20px;}
 .stats-grid{grid-template-columns:1fr;}
@@ -722,16 +778,41 @@ transition:transform 0.3s;
 <div class="layout">
 <!-- SIDEBAR -->
 <aside class="sidebar">
+<div class="sidebar-header">
 <div class="sidebar-logo">
-<img src="technicombles_logo_small.jpg" alt="TC">
+<img src="technicombles_logo_small.jpg" alt="TC" class="logo-img">
+<div class="brand-text">
+<span class="brand-name">TECHNICOMBLES</span>
+<span class="brand-sub">Aménagement de combles</span>
+</div>
+</div>
 </div>
 
-<nav>
-<a class="nav-item active" data-view="taches" title="Tâches">📋</a>
-<a class="nav-item" data-view="intervenants" title="Intervenants">👥</a>
-<a class="nav-item" data-view="documents" title="Documents">📄</a>
-<a class="nav-item" data-view="photos" title="Photos">📷</a>
+<nav class="nav-menu">
+<a class="nav-item active" data-view="taches">
+<i class="fas fa-list-check"></i>
+<span>Tâches</span>
+</a>
+<a class="nav-item" data-view="intervenants">
+<i class="fas fa-users"></i>
+<span>Intervenants</span>
+</a>
+<a class="nav-item" data-view="documents">
+<i class="fas fa-file-contract"></i>
+<span>Documents</span>
+</a>
+<a class="nav-item" data-view="photos">
+<i class="fas fa-camera"></i>
+<span>Photos</span>
+</a>
 </nav>
+
+<div class="sidebar-footer">
+<div class="sidebar-footer-text">
+<strong style="color:var(--gray-900);">Chantier Cléry</strong><br>
+Suivi en temps réel
+</div>
+</div>
 </aside>
 
 <!-- MAIN -->
@@ -785,13 +866,13 @@ transition:transform 0.3s;
 <h2 class="panel-title">Liste des tâches</h2>
 <div class="actions">
 <button class="btn btn-primary" id="exportPdfBtn">
-📄 Export PDF
+<i class="fas fa-file-pdf"></i> Export PDF
 </button>
 <button class="btn btn-secondary btn-active" id="viewTable">
-📊 Tableau
+<i class="fas fa-table"></i> Tableau
 </button>
 <button class="btn btn-secondary" id="viewKanban">
-📌 Kanban
+<i class="fas fa-columns"></i> Kanban
 </button>
 </div>
 </div>
@@ -879,6 +960,7 @@ transition:transform 0.3s;
 <!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 <script>
 const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
@@ -891,7 +973,6 @@ const INTER_TABLE="intervenants_clery";
 const PHOTOS_BUCKET="photos_chantier";
 let tasks=[];
 let currentTask=null;
-let currentView="taches";
 const $=id=>document.getElementById(id);
 
 // Utils
@@ -914,14 +995,22 @@ document.querySelectorAll(".nav-item").forEach(item=>{
 item.addEventListener("click",()=>{
 document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
 item.classList.add("active");
-currentView=item.dataset.view;
-showView(currentView);
+const view=item.dataset.view;
+showView(view);
 });
 });
 
 function showView(view){
 document.querySelectorAll(".view-section").forEach(s=>s.style.display="none");
-if(view==="taches"){$("tableWrapper").style.display="block";$("kanbanWrapper").style.display="none";}
+if(view==="taches"){
+document.querySelector(".panel").style.display="block";
+}else if(view==="intervenants"){
+// Load intervenants view
+}else if(view==="documents"){
+// Load documents view
+}else if(view==="photos"){
+// Load photos view
+}
 }
 
 function setDate(){
@@ -1058,7 +1147,7 @@ function renderKanban(){
 const list=getFiltered();
 const kw=$("kanbanWrapper");
 kw.innerHTML="";
-const cols=[{statut:"À faire",label:"À faire",icon:"🔴"},{statut:"En cours",label:"En cours",icon:"🟡"},{statut:"Terminée",label:"Terminées",icon:"🟢"}];
+const cols=[{statut:"À faire",label:"À faire",color:"#ef4444"},{statut:"En cours",label:"En cours",color:"#f59e0b"},{statut:"Terminée",label:"Terminées",color:"#10b981"}];
 
 cols.forEach(c=>{
 const col=document.createElement("div");
@@ -1067,23 +1156,58 @@ const tasksInCol=list.filter(t=>t.statut===c.statut);
 
 col.innerHTML=`
 <div class="kanban-col-header">
-<span class="kanban-col-title">${c.icon} ${c.label}</span>
+<span class="kanban-col-title" style="color:${c.color}">${c.label}</span>
 <span class="kanban-count">${tasksInCol.length}</span>
 </div>
 <div class="kanban-list" data-statut="${c.statut}"></div>
 `;
 
 const listEl=col.querySelector(".kanban-list");
+
+// Drag events
+listEl.addEventListener("dragover",e=>{
+e.preventDefault();
+listEl.style.background="var(--gray-100)";
+});
+
+listEl.addEventListener("dragleave",()=>{
+listEl.style.background="";
+});
+
+listEl.addEventListener("drop",async e=>{
+e.preventDefault();
+listEl.style.background="";
+const id=e.dataTransfer.getData("text/plain");
+const task=tasks.find(t=>t.id===id);
+if(!task)return;
+task.statut=c.statut;
+await save(task.id,"statut",task.statut);
+renderKanban();
+updateStats(getFiltered());
+render();
+});
+
 tasksInCol.forEach(t=>{
 const card=document.createElement("div");
 card.className=`kanban-card prio-${t.priorite.toLowerCase()}`;
 card.draggable=true;
 card.dataset.id=t.id;
 card.innerHTML=`
-<div style="font-weight:600;margin-bottom:8px;">${t.task}</div>
-<div style="font-size:0.8rem;color:var(--gray-500);">${t.ref} • ${t.lot}</div>
+<div style="font-weight:600;margin-bottom:8px;color:var(--gray-900);">${t.task}</div>
+<div style="font-size:0.8rem;color:var(--gray-500);margin-bottom:8px;">${t.ref} • ${t.lot}</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">
+<span class="badge ${badgeClass(t.statut)}" style="font-size:0.75rem;">${t.statut}</span>
+<span class="badge ${prioClass(t.priorite)}" style="font-size:0.75rem;">${t.priorite}</span>
+</div>
 `;
 card.addEventListener("click",()=>openDrawer(t));
+card.addEventListener("dragstart",e=>{
+e.dataTransfer.setData("text/plain",t.id);
+card.style.opacity="0.5";
+});
+card.addEventListener("dragend",()=>{
+card.style.opacity="1";
+});
 listEl.appendChild(card);
 });
 
