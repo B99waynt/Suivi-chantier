@@ -803,229 +803,11 @@
     }
   </style>
 </head>
-<body>
-<div class="layout">
-  <div class="shell">
-    <aside class="sidebar">
-      <div class="nav-label">Menu</div>
-      <div class="nav-item active" data-view-btn="taches">Tâches</div>
-      <div class="nav-item" data-view-btn="intervenants">Intervenants</div>
-      <div class="nav-item" data-view-btn="documents">Documents</div>
-      <div class="nav-item" data-view-btn="photos">Photos</div>
-      <div class="sidebar-footer">
-        <span>Suivi chantier Cléry</span>
-        <span>Technicombles – Interne</span>
-      </div>
-    </aside>
-
-    <main class="main">
-      <header class="topbar">
-        <div class="topbar-left">
-          <div class="topbar-logo">
-            <img src="technicombles_logo_small.jpg" alt="Technicombles">
-          </div>
-        </div>
-        <div class="topbar-right">
-          <span id="lastUpdate">—</span>
-        </div>
-      </header>
-
-      <div class="main-inner">
-        <!-- TÂCHES -->
-        <section class="view-section active" data-view="taches">
-          <div class="section-header">
-            <div>
-              <div class="section-title">Tâches du chantier</div>
-              <div class="section-sub">Tableau de suivi & vue Kanban</div>
-            </div>
-          </div>
-
-          <section class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-card-label">Total tâches</span>
-              <span class="stat-card-value" id="statTotal">0</span>
-              <span class="stat-card-note">Toutes colonnes confondues</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-card-label">À faire</span>
-              <span class="stat-card-value" id="statAFaire">0</span>
-              <span class="stat-card-note">Non démarrées</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-card-label">En cours</span>
-              <span class="stat-card-value" id="statEnCours">0</span>
-              <span class="stat-card-note">En production</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-card-label">Terminées</span>
-              <span class="stat-card-value" id="statTerminees">0</span>
-              <span class="stat-card-note">Clôturées</span>
-            </div>
-          </section>
-
-          <section class="panel">
-            <div class="filterbar">
-              <div class="sbox">
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" />
-              </div>
-              <select class="fsel" id="filterStatut">
-                <option value="">Tous statuts</option>
-                <option value="À faire">À faire</option>
-                <option value="En cours">En cours</option>
-                <option value="Terminée">Terminée</option>
-              </select>
-              <select class="fsel" id="filterLot">
-                <option value="">Tous lots</option>
-              </select>
-              <select class="fsel" id="filterIntervenant">
-                <option value="">Tous intervenants</option>
-              </select>
-            </div>
-
-            <div class="tbl-header">
-              <span class="tbl-title">Tâches</span>
-              <div class="tbl-actions">
-                <button id="viewTable" class="view-btn view-btn-active">Tableau</button>
-                <button id="viewKanban" class="view-btn">Kanban</button>
-              </div>
-            </div>
-
-            <div class="tw" id="tableWrapper">
-              <table>
-                <thead>
-                <tr>
-                  <th>Réf</th>
-                  <th>Lot</th>
-                  <th>Tâche</th>
-                  <th>Intervenant</th>
-                  <th>Statut</th>
-                  <th>Priorité</th>
-                  <th>Commentaire</th>
-                </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-              </table>
-            </div>
-
-            <div id="kanbanWrapper" class="kanban" style="display:none;"></div>
-          </section>
-        </section>
-
-        <!-- INTERVENANTS -->
-        <section class="view-section" data-view="intervenants">
-          <div class="section-header">
-            <div>
-              <div class="section-title">Intervenants</div>
-              <div class="section-sub">Coordonnées et rôles synchronisés avec Supabase</div>
-            </div>
-          </div>
-          <section class="panel">
-            <div class="photos-actions">
-              <button id="addIntervenantBtn" class="btn-photo-import">Ajouter un intervenant</button>
-              <span class="photos-note">La liste est liée à Supabase, tu peux ajouter/modifier/supprimer ici.</span>
-            </div>
-            <section class="intervenants-grid" id="intervenantsGrid"></section>
-          </section>
-        </section>
-
-        <!-- DOCUMENTS -->
-        <section class="view-section" data-view="documents">
-          <div class="section-header">
-            <div>
-              <div class="section-title">Documents</div>
-              <div class="section-sub">Import du DPGF et pièces du chantier</div>
-            </div>
-          </div>
-
-          <section class="panel">
-            <div class="doc-actions">
-              <button class="btn-doc-import" id="importBtn">Importer un DPGF (Excel)</button>
-              <span class="doc-note">
-                Sélectionne le fichier Excel DPGF pour mettre à jour toutes les tâches du chantier.
-              </span>
-            </div>
-            <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" />
-          </section>
-        </section>
-
-        <!-- PHOTOS -->
-        <section class="view-section" data-view="photos">
-          <div class="section-header">
-            <div>
-              <div class="section-title">Photos du chantier</div>
-              <div class="section-sub">Stockage dans Supabase (bucket photos_chantier)</div>
-            </div>
-          </div>
-
-          <section class="panel">
-            <div class="photos-actions">
-              <button class="btn-photo-import" id="importPhotosBtn">Importer des photos</button>
-              <span class="photos-note">
-                Taille limitée (~50 Mo) : privilégier quelques photos clés.
-              </span>
-            </div>
-            <input type="file" id="photosInput" accept="image/*" multiple style="display:none;">
-            <div id="photosEmpty" class="empty" style="display:none;">
-              <p>Aucune photo pour l’instant</p>
-              <span>Importe des images depuis ton ordinateur.</span>
-            </div>
-            <div id="photosGrid" class="photos-grid"></div>
-          </section>
-        </section>
-      </div>
-    </main>
-  </div>
-</div>
-
-<!-- Drawer tâches -->
-<div id="taskDrawer" class="drawer">
-  <div class="drawer-overlay" id="drawerOverlay"></div>
-  <div class="drawer-panel">
-    <button class="drawer-close" id="drawerClose" aria-label="Fermer le détail">×</button>
-    <div class="drawer-body">
-      <h2 id="drawerTitle"></h2>
-      <p class="drawer-ref" id="drawerRef"></p>
-
-      <div class="drawer-field">
-        <span class="df-label">Lot</span>
-        <span class="df-value" id="drawerLot"></span>
-      </div>
-      <div class="drawer-field">
-        <span class="df-label">Intervenant</span>
-        <span class="df-value" id="drawerIntervenant"></span>
-      </div>
-      <div class="drawer-field">
-        <span class="df-label">Statut</span>
-        <span class="df-value" id="drawerStatut"></span>
-      </div>
-      <div class="drawer-field">
-        <span class="df-label">Priorité</span>
-        <span class="df-value" id="drawerPriorite"></span>
-      </div>
-
-      <div class="drawer-block">
-        <span class="df-label">Commentaire</span>
-        <div class="drawer-comment-wrapper">
-          <textarea
-            id="drawerCommentaire"
-            class="drawer-textarea"
-            placeholder="Ajouter un commentaire…"
-          ></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 <script>
   const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
   const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
   const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-  // Constantes
   let INTERVS=["Non assigné"];
   const STATUTS=["À faire","En cours","Terminée"];
   const PRIOS=["Basse","Moyenne","Haute"];
@@ -1442,8 +1224,9 @@
     if(error){
       console.error(error);
       alert("Erreur Supabase : "+error.message);
- }
-      // Import DPGF
+    }
+  }
+  // Import DPGF
   $("importBtn").addEventListener("click",()=>{
     if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\n\nContinuer ?"))return;
     $("fileInput").click();
@@ -1551,7 +1334,7 @@
     if($("kanbanWrapper").style.display!=="none") renderKanban();
   });
 
-  /* INTERVENANTS – CRUD simple */
+  /* INTERVENANTS – CRUD simple (sans toucher à id) */
   let intervenantsData=[];
 
   async function loadIntervenants(){
@@ -1664,10 +1447,9 @@
   $("addIntervenantBtn").addEventListener("click",async ()=>{
     const nom=prompt("Nom de l’intervenant ?");
     if(!nom)return;
-    const { data, error } = await db
+    const { error } = await db
       .from(INTER_TABLE)
-      .insert({ nom, role:"", tel:"", mail:"", note:"" })
-      .select();
+      .insert({ nom, role:"", tel:"", mail:"", note:"" });
     if(error){
       console.error(error);
       alert("Erreur Supabase : "+error.message);
