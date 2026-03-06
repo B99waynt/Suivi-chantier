@@ -6,6 +6,8 @@
 <title>Suivi Chantier – Cléry</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root{
 --violet:#7c3aed;
@@ -283,6 +285,25 @@ font-weight:600;
 border-color:var(--violet);
 color:var(--violet-dark);
 background:#ede9fe;
+}
+.btn-export{
+border-radius:999px;
+border:none;
+background:var(--violet);
+color:#ffffff;
+padding:6px 14px;
+font-size:.8rem;
+font-weight:700;
+cursor:pointer;
+box-shadow:0 4px 12px rgba(124,58,237,.3);
+transition:transform .08s,box-shadow .08s;
+}
+.btn-export:hover{
+transform:translateY(-1px);
+box-shadow:0 6px 16px rgba(124,58,237,.4);
+}
+.btn-export:active{
+transform:translateY(0);
 }
 .tw{
 background:#fcfcff;
@@ -947,6 +968,8 @@ th:nth-child(2),td:nth-child(2){display:none;}
 <div class="tbl-header">
 <span class="tbl-title">Tâches</span>
 <div class="tbl-actions">
+<!-- === ÉTAPE 4 : Bouton Export PDF === -->
+<button id="exportPdfBtn" class="btn-export">📄 Export PDF</button>
 <button id="viewTable" class="view-btn view-btn-active">Tableau</button>
 <button id="viewKanban" class="view-btn">Kanban</button>
 </div>
@@ -1125,6 +1148,122 @@ function showToast(message, type = 'info') {
       if(container.contains(toast)) container.removeChild(toast);
     }, 300);
   }, 4000);
+}
+
+/* === ÉTAPE 4 : Export PDF === */
+async function exportPDF() {
+  showLoading();
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // En-tête
+    doc.setFillColor(124, 58, 237);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Rapport d\'avancement', 14, 20);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Chantier Cléry – Technicombles', 14, 30);
+    
+    // Date
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(10);
+    const dateStr = new Date().toLocaleString('fr-FR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    doc.text(`Généré le ${dateStr}`, 14, 40);
+    
+    // Statistiques
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Statistiques', 14, 55);
+    
+    const stats = [
+      ['Total tâches', $("statTotal").textContent],
+      ['À faire', $("statAFaire").textContent],
+      ['En cours', $("statEnCours").textContent],
+      ['Terminées', $("statTerminees").textContent]
+    ];
+    
+    doc.autoTable({
+      startY: 60,
+      head: [['Métrique', 'Valeur']],
+      body: stats,
+      theme: 'striped',
+      headStyles: { fillColor: [124, 58, 237] },
+      margin: { left: 14, right: 14 }
+    });
+    
+    // Tâches par statut
+    let finalY = doc.lastAutoTable.finalY + 15;
+    
+    STATUTS.forEach(statut => {
+      const tasksByStatus = tasks.filter(t => t.statut === statut);
+      if (tasksByStatus.length === 0) return;
+      
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Tâches : ${statut} (${tasksByStatus.length})`, 14, finalY);
+      
+      const tableData = tasksByStatus.map(t => [
+        t.ref,
+        t.lot,
+        t.task.substring(0, 60) + (t.task.length > 60 ? '...' : ''),
+        t.intervenant || 'Non assigné',
+        t.priorite
+      ]);
+      
+      doc.autoTable({
+        startY: finalY + 5,
+        head: [['Réf', 'Lot', 'Tâche', 'Intervenant', 'Priorité']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: statut === 'À faire' ? [239, 68, 68] : statut === 'En cours' ? [249, 115, 22] : [22, 163, 74] },
+        margin: { left: 14, right: 14 },
+        styles: { fontSize: 8, cellPadding: 3 },
+        columnStyles: {
+          0: { cellWidth: 20 },
+          1: { cellWidth: 35 },
+          2: { cellWidth: 80 },
+          3: { cellWidth: 35 },
+          4: { cellWidth: 25 }
+        }
+      });
+      
+      finalY = doc.lastAutoTable.finalY + 15;
+      
+      // Nouvelle page si nécessaire
+      if (finalY > 250) {
+        doc.addPage();
+        finalY = 20;
+      }
+    });
+    
+    // Pied de page
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(`Page ${i} sur ${pageCount}`, 180, 290);
+    }
+    
+    // Sauvegarde
+    const fileName = `rapport-clery-${Date.now()}.pdf`;
+    doc.save(fileName);
+    showToast('Rapport PDF généré avec succès !', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('Erreur lors de la génération du PDF', 'error');
+  } finally {
+    hideLoading();
+  }
 }
 
 /* NAVIGATION */
@@ -1609,6 +1748,10 @@ $("tableWrapper").style.display="none";
 $("kanbanWrapper").style.display="flex";
 renderKanban();
 });
+
+/* === ÉTAPE 4 : Event Listener Export PDF === */
+$("exportPdfBtn").addEventListener("click", exportPDF);
+
 $("drawerOverlay").addEventListener("click",closeDrawer);
 $("drawerClose").addEventListener("click",closeDrawer);
 window.addEventListener("keydown",e=>{
