@@ -1734,21 +1734,30 @@
     $("photosInput").click();
   });
 
-  $("photosInput").addEventListener("change",async e=>{
-    const files=[...e.target.files];
-    if(!files.length)return;
-    for(const file of files){
-      const path=file.name;
-      const{error}=await db.storage.from(PHOTOS_BUCKET).upload(path,file,{upsert:true});
-      if(error){
-        console.error(error);
-        alert("Erreur upload photo : "+error.message);
-        break;
-      }
+$("photosInput").addEventListener("change",async e=>{
+  const files=[...e.target.files];
+  if(!files.length)return;
+
+  for(const file of files){
+    const safeName = file.name
+      .toLowerCase()
+      .replace(/\s+/g,"-")
+      .replace(/[^a-z0-9.\-_]/g,"");
+
+    const timestamp = Date.now();
+    const path = `${timestamp}-${safeName || "photo"}`;
+
+    const { error } = await db.storage.from(PHOTOS_BUCKET).upload(path, file, { upsert: false });
+    if(error){
+      console.error(error);
+      alert("Erreur upload photo : "+error.message);
+      return;
     }
-    e.target.value="";
-    loadPhotos();
-  });
+  }
+
+  e.target.value="";
+  loadPhotos();
+});
 
   // Initialisation
   loadIntervenants();
