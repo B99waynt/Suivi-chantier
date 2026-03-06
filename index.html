@@ -1442,9 +1442,8 @@
     if(error){
       console.error(error);
       alert("Erreur Supabase : "+error.message);
-    }
-  }
-  // Import DPGF
+ }
+      // Import DPGF
   $("importBtn").addEventListener("click",()=>{
     if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\n\nContinuer ?"))return;
     $("fileInput").click();
@@ -1556,45 +1555,49 @@
   let intervenantsData=[];
 
   async function loadIntervenants(){
-    const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
-    if(error||!data||!data.length){
-      const defaults=[
-        {id:1,nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
-        {id:2,nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
-        {id:3,nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
-        {id:4,nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
-        {id:5,nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
-        {id:6,nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
+    const { data, error } = await db
+      .from(INTER_TABLE)
+      .select("*")
+      .order("id",{ascending:true});
+
+    if (error || !data || !data.length) {
+      const defaults = [
+        { nom:"Techni Combles", role:"Entreprise principale / plaquiste - isolation", tel:"", mail:"", note:"" },
+        { nom:"Home Work Peinture", role:"Peinture & finitions intérieures", tel:"", mail:"", note:"" },
+        { nom:"Pro Martins", role:"Maçonnerie / plâtrerie", tel:"", mail:"", note:"" },
+        { nom:"Interelec", role:"Électricité", tel:"", mail:"", note:"" },
+        { nom:"Tiago", role:"Plomberie / sanitaires", tel:"", mail:"", note:"" },
+        { nom:"HK Menuiserie", role:"Menuiseries intérieures / extérieures", tel:"", mail:"", note:"" },
       ];
-      if(!error){
-        await db.from(INTER_TABLE).insert(
-          defaults.map(d=>({
-            id:d.id,
-            nom:d.nom,
-            role:d.role,
-            tel:d.tel,
-            mail:d.mail,
-            note:d.note
-          }))
-        );
+      if (!error) {
+        await db.from(INTER_TABLE).insert(defaults);
+        const refreshed = await db
+          .from(INTER_TABLE)
+          .select("*")
+          .order("id",{ascending:true});
+        intervenantsData = refreshed.data || [];
+      } else {
+        intervenantsData = [];
       }
-      intervenantsData=defaults;
     } else {
-      intervenantsData=data;
+      intervenantsData = data;
     }
 
-    INTERVS=["Non assigné", ...intervenantsData.map(i=>i.nom).filter(Boolean)];
+    INTERVS = ["Non assigné", ...intervenantsData.map(i=>i.nom).filter(Boolean)];
     renderIntervenants();
   }
 
   async function saveIntervenant(id,field,val){
-    const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
+    const { error } = await db
+      .from(INTER_TABLE)
+      .update({[field]:val})
+      .eq("id",id);
     if(error) console.error("Erreur save intervenant:",error);
   }
 
   async function deleteIntervenant(id){
     if(!confirm("Supprimer cet intervenant ?"))return;
-    const{error}=await db.from(INTER_TABLE).delete().eq("id",id);
+    const { error } = await db.from(INTER_TABLE).delete().eq("id",id);
     if(error){
       console.error(error);
       alert("Erreur Supabase : "+error.message);
@@ -1661,14 +1664,14 @@
   $("addIntervenantBtn").addEventListener("click",async ()=>{
     const nom=prompt("Nom de l’intervenant ?");
     if(!nom)return;
-    const{data,error}=await db.from(INTER_TABLE).insert({nom,role:"",tel:"",mail:"",note:""}).select();
+    const { data, error } = await db
+      .from(INTER_TABLE)
+      .insert({ nom, role:"", tel:"", mail:"", note:"" })
+      .select();
     if(error){
       console.error(error);
       alert("Erreur Supabase : "+error.message);
       return;
-    }
-    if(data&&data.length){
-      intervenantsData.push(data[0]);
     }
     await loadIntervenants();
     renderFilters();
@@ -1680,7 +1683,9 @@
   const photosEmpty=$("photosEmpty");
 
   async function loadPhotos(){
-    const{data,error}=await db.storage.from(PHOTOS_BUCKET).list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
+    const { data, error } = await db.storage
+      .from(PHOTOS_BUCKET)
+      .list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
     if(error){
       console.error(error);
       return;
@@ -1714,7 +1719,7 @@
       delBtn.textContent="Suppr.";
       delBtn.addEventListener("click",async ()=>{
         if(!confirm("Supprimer cette photo ?"))return;
-        const{error:delErr}=await db.storage.from(PHOTOS_BUCKET).remove([file.name]);
+        const { error:delErr } = await db.storage.from(PHOTOS_BUCKET).remove([file.name]);
         if(delErr){
           console.error(delErr);
           alert("Erreur Supabase : "+delErr.message);
@@ -1739,7 +1744,7 @@
     if(!files.length)return;
     for(const file of files){
       const path=file.name;
-      const{error}=await db.storage.from(PHOTOS_BUCKET).upload(path,file,{upsert:true});
+      const { error } = await db.storage.from(PHOTOS_BUCKET).upload(path,file,{upsert:true});
       if(error){
         console.error(error);
         alert("Erreur upload photo : "+error.message);
@@ -1757,4 +1762,3 @@
 </script>
 </body>
 </html>
-
