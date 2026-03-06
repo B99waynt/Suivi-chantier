@@ -1658,22 +1658,32 @@
     });
   }
 
-  $("addIntervenantBtn").addEventListener("click",async ()=>{
-    const nom=prompt("Nom de l’intervenant ?");
-    if(!nom)return;
-    const{data,error}=await db.from(INTER_TABLE).insert({nom,role:"",tel:"",mail:"",note:""}).select();
-    if(error){
-      console.error(error);
-      alert("Erreur Supabase : "+error.message);
-      return;
-    }
-    if(data&&data.length){
-      intervenantsData.push(data[0]);
-    }
-    await loadIntervenants();
-    renderFilters();
-    render();
-  });
+  $("addIntervenantBtn").addEventListener("click", async () => {
+  const nom = prompt("Nom de l’intervenant ?");
+  if (!nom) return;
+
+  const newId =
+    (intervenantsData.length ? Math.max(...intervenantsData.map(i => i.id || 0)) : 0) + 1;
+
+  const { data, error } = await db
+    .from(INTER_TABLE)
+    .insert({ id: newId, nom, role: "", tel: "", mail: "", note: "" })
+    .select();
+
+  if (error) {
+    console.error(error);
+    alert("Erreur Supabase : " + error.message);
+    return;
+  }
+
+  if (data && data.length) {
+    intervenantsData.push(data[0]);
+  }
+  await loadIntervenants();
+  renderFilters();
+  render();
+});
+
 
   /* PHOTOS – Upload & galerie */
   const photosGrid=$("photosGrid");
