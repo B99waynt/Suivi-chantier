@@ -616,6 +616,15 @@ gap:12px;
 height:100%;
 overflow:hidden;
 }
+.drawer-open .drawer{
+pointer-events:auto;
+}
+.drawer-open .drawer-overlay{
+opacity:1;
+}
+.drawer-open .drawer-panel{
+transform:translateX(0);
+}
 .drawer-close{
 border:none;
 background:transparent;
@@ -751,7 +760,7 @@ font-size:.75rem;
 cursor:pointer;
 }
 
-/* === NOUVEAU : Indicateur de chargement === */
+/* === ÉTAPE 2 : Loading Overlay === */
 .loading-overlay {
   position: fixed;
   inset: 0;
@@ -780,6 +789,52 @@ cursor:pointer;
   to { transform: rotate(360deg); }
 }
 
+/* === ÉTAPE 3 : Toast Notifications === */
+#toastContainer {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15,23,42,.15);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+  max-width: 400px;
+  border-left: 4px solid var(--violet);
+  transform: translateX(120%);
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: auto;
+}
+.toast.show {
+  transform: translateX(0);
+}
+.toast-success { border-left-color: var(--green); }
+.toast-error { border-left-color: var(--red); }
+.toast-warning { border-left-color: var(--orange); }
+.toast-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.toast-success .toast-icon { color: var(--green); }
+.toast-error .toast-icon { color: var(--red); }
+.toast-warning .toast-icon { color: var(--orange); }
+.toast-message {
+  font-size: 0.85rem;
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 @media(max-width:1100px){
 .intervenants-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
@@ -797,15 +852,20 @@ th:nth-child(2),td:nth-child(2){display:none;}
 .stats-grid{grid-template-columns:1fr;}
 .intervenants-grid{grid-template-columns:1fr;}
 .drawer-panel{width:100%;border-radius:18px 18px 0 0;}
+#toastContainer { bottom: 10px; right: 10px; left: 10px; }
+.toast { min-width: auto; width: 100%; }
 }
 </style>
 </head>
 <body>
 
-<!-- === NOUVEAU : Indicateur de chargement === -->
+<!-- === ÉTAPE 2 : Loading Overlay === -->
 <div id="loadingOverlay" class="loading-overlay">
   <div class="loading-spinner"></div>
 </div>
+
+<!-- === ÉTAPE 3 : Toast Container === -->
+<div id="toastContainer"></div>
 
 <div class="layout">
 <div class="shell">
@@ -1022,7 +1082,7 @@ let tasks=[];
 let currentTask=null;
 const $=id=>document.getElementById(id);
 
-/* === NOUVEAU : Fonction debounce === */
+/* === ÉTAPE 2 : Fonction debounce === */
 function debounce(fn, delay) {
   let timer;
   return (...args) => {
@@ -1031,9 +1091,41 @@ function debounce(fn, delay) {
   };
 }
 
-/* === NOUVEAU : Gestion du loading === */
+/* === ÉTAPE 2 : Gestion du loading === */
 function showLoading() { $("loadingOverlay").classList.add("active"); }
 function hideLoading() { $("loadingOverlay").classList.remove("active"); }
+
+/* === ÉTAPE 3 : Toast Notifications === */
+function showToast(message, type = 'info') {
+  const container = $("toastContainer");
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  
+  let icon = 'ℹ️';
+  if(type === 'success') icon = '✅';
+  if(type === 'error') icon = '❌';
+  if(type === 'warning') icon = '⚠️';
+  
+  toast.innerHTML = `
+    <span class="toast-icon">${icon}</span>
+    <span class="toast-message">${message}</span>
+  `;
+  
+  container.appendChild(toast);
+  
+  // Animation d'entrée
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+  
+  // Auto-remove après 4 secondes
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      if(container.contains(toast)) container.removeChild(toast);
+    }, 300);
+  }, 4000);
+}
 
 /* NAVIGATION */
 const navItems=document.querySelectorAll(".nav-item");
@@ -1121,10 +1213,15 @@ return(t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||""))
 });
 }
 async function save(id,field,val){
+try{
 await db.from("taches_noe_clery")
 .update({[field]:val,updated_at:new Date().toISOString()})
 .eq("id",id);
 setDate();
+} catch(err){
+console.error(err);
+showToast("Erreur de sauvegarde. Vérifiez votre connexion.", "error");
+}
 }
 function updateStats(list){
 const total=list.length;
@@ -1378,24 +1475,28 @@ kw.appendChild(col);
 });
 }
 
-/* === MODIFIÉ : loadDB avec loading === */
+/* === ÉTAPE 2 + 3 : loadDB avec loading et gestion d'erreur === */
 async function loadDB(){
   showLoading();
-  const{data,error}=await db.from("taches_noe_clery")
-    .select("*")
-    .order("ref",{ascending:true});
-  hideLoading();
-  
-  if(error){
-    console.error(error);
-    alert("Erreur de chargement : "+error.message);
-    return;
+  try{
+    const{data,error}=await db.from("taches_noe_clery")
+      .select("*")
+      .order("ref",{ascending:true});
+    
+    if(error) throw error;
+    
+    tasks=data||[];
+    renderFilters();render();setDate();
+  } catch(err){
+    console.error(err);
+    showToast("Impossible de charger les tâches. Vérifiez votre connexion.", "error");
+  } finally {
+    hideLoading();
   }
-  tasks=data||[];
-  renderFilters();render();setDate();
 }
 
 async function pushDB(newTasks){
+try{
 await db.from("taches_noe_clery")
 .delete()
 .neq("id","00000000-0000-0000-0000-000000000000");
@@ -1410,9 +1511,11 @@ priorite:t.priorite,
 commentaire:t.commentaire
 }))
 );
-if(error){
-console.error(error);
-alert("Erreur Supabase : "+error.message);
+if(error) throw error;
+showToast("Import réussi !","success");
+} catch(err){
+console.error(err);
+showToast("Erreur lors de l'import : "+err.message,"error");
 }
 }
 // Import DPGF
@@ -1461,21 +1564,20 @@ commentaire:rem
 }
 });
 if(!found.length){
-alert("Aucune tâche trouvée dans ce fichier.");
+showToast("Aucune tâche trouvée dans ce fichier.","warning");
 return;
 }
 await pushDB(found);
 await loadDB();
-alert("Import terminé.");
 }catch(err){
 console.error(err);
-alert("Erreur lors de la lecture du fichier Excel.");
+showToast("Erreur lors de la lecture du fichier Excel.","error");
 }
 };
 reader.readAsArrayBuffer(file);
 });
 
-/* === MODIFIÉ : Recherche avec debounce (300ms) === */
+/* === ÉTAPE 2 : Recherche avec debounce (300ms) === */
 $("searchInput").addEventListener("input", debounce(()=>{
   render();
   if($("kanbanWrapper").style.display!=="none") renderKanban();
@@ -1522,6 +1624,7 @@ if($("kanbanWrapper").style.display!=="none") renderKanban();
 /* INTERVENANTS – CRUD simple */
 let intervenantsData=[];
 async function loadIntervenants(){
+try{
 const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
 if(error||!data||!data.length){
 const defaults=[
@@ -1550,23 +1653,32 @@ intervenantsData=data;
 }
 INTERVS=["Non assigné", ...intervenantsData.map(i=>i.nom).filter(Boolean)];
 renderIntervenants();
+} catch(err){
+console.error(err);
+showToast("Erreur chargement intervenants","error");
+}
 }
 async function saveIntervenant(id,field,val){
 const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
-if(error) console.error("Erreur save intervenant:",error);
+if(error){
+console.error("Erreur save intervenant:",error);
+showToast("Erreur sauvegarde intervenant","error");
+}
 }
 async function deleteIntervenant(id){
 if(!confirm("Supprimer cet intervenant ?"))return;
+try{
 const{error}=await db.from(INTER_TABLE).delete().eq("id",id);
-if(error){
-console.error(error);
-alert("Erreur Supabase : "+error.message);
-return;
-}
+if(error) throw error;
+showToast("Intervenant supprimé","success");
 await loadIntervenants();
 renderFilters();
 render();
 if($("kanbanWrapper").style.display!=="none") renderKanban();
+} catch(err){
+console.error(err);
+showToast("Erreur suppression","error");
+}
 }
 function renderIntervenants(){
 const g=document.getElementById("intervenantsGrid");
@@ -1622,33 +1734,33 @@ deleteIntervenant(id);
 $("addIntervenantBtn").addEventListener("click", async () => {
 const nom = prompt("Nom de l'intervenant ?");
 if (!nom) return;
+try{
 const newId =
 (intervenantsData.length ? Math.max(...intervenantsData.map(i => i.id || 0)) : 0) + 1;
 const { data, error } = await db
 .from(INTER_TABLE)
 .insert({ id: newId, nom, role: "", tel: "", mail: "", note: "" })
 .select();
-if (error) {
-console.error(error);
-alert("Erreur Supabase : " + error.message);
-return;
-}
+if (error) throw error;
 if (data && data.length) {
 intervenantsData.push(data[0]);
 }
+showToast("Intervenant ajouté","success");
 await loadIntervenants();
 renderFilters();
 render();
+} catch(err){
+console.error(err);
+showToast("Erreur ajout intervenant","error");
+}
 });
 /* PHOTOS – Upload & galerie */
 const photosGrid=$("photosGrid");
 const photosEmpty=$("photosEmpty");
 async function loadPhotos(){
+try{
 const{data,error}=await db.storage.from(PHOTOS_BUCKET).list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
-if(error){
-console.error(error);
-return;
-}
+if(error) throw error;
 const files=data||[];
 photosGrid.innerHTML="";
 if(!files.length){
@@ -1676,19 +1788,25 @@ delBtn.className="photo-delete";
 delBtn.textContent="Suppr.";
 delBtn.addEventListener("click",async ()=>{
 if(!confirm("Supprimer cette photo ?"))return;
+try{
 const{error:delErr}=await db.storage.from(PHOTOS_BUCKET).remove([file.name]);
-if(delErr){
-console.error(delErr);
-alert("Erreur Supabase : "+delErr.message);
-return;
-}
+if(delErr) throw delErr;
+showToast("Photo supprimée","success");
 loadPhotos();
+} catch(err){
+console.error(err);
+showToast("Erreur suppression photo","error");
+}
 });
 meta.appendChild(nameSpan);
 meta.appendChild(delBtn);
 card.appendChild(meta);
 photosGrid.appendChild(card);
 });
+} catch(err){
+console.error(err);
+showToast("Erreur chargement photos","error");
+}
 }
 $("importPhotosBtn").addEventListener("click",()=>{
 $("photosInput").click();
@@ -1696,6 +1814,8 @@ $("photosInput").click();
 $("photosInput").addEventListener("change",async e=>{
 const files=[...e.target.files];
 if(!files.length)return;
+showLoading();
+try{
 for(const file of files){
 const safeName = file.name
 .toLowerCase()
@@ -1704,14 +1824,17 @@ const safeName = file.name
 const timestamp = Date.now();
 const path = `${timestamp}-${safeName || "photo"}`;
 const { error } = await db.storage.from(PHOTOS_BUCKET).upload(path, file, { upsert: false });
-if(error){
-console.error(error);
-alert("Erreur upload photo : "+error.message);
-return;
+if(error) throw error;
 }
-}
+showToast(`${files.length} photo(s) importée(s)`,"success");
 e.target.value="";
 loadPhotos();
+} catch(err){
+console.error(err);
+showToast("Erreur upload photo : "+err.message,"error");
+} finally {
+hideLoading();
+}
 });
 // Initialisation
 loadIntervenants();
