@@ -6,6 +6,7 @@
 <title>Suivi Chantier – Cléry</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
 --red:#dc2626;
@@ -255,6 +256,7 @@ box-shadow:0 0 0 2px rgba(220,38,38,.18);
 .tbl-header{
 display:flex;align-items:center;justify-content:space-between;
 gap:10px;
+flex-wrap:wrap;
 }
 .tbl-title{
 font-size:1rem;
@@ -267,6 +269,7 @@ gap:6px;
 align-items:center;
 margin-left:auto;
 margin-right:8px;
+flex-wrap:wrap;
 }
 .view-btn{
 border-radius:999px;
@@ -283,13 +286,12 @@ border-color:var(--red);
 color:var(--red-dark);
 background:#fee2e2;
 }
-/* TABLE - MOBILE FIX */
+/* TABLE - MOBILE CARD VIEW */
 .tw{
 background:#fcfcfc;
 border-radius:16px;
 box-shadow:none;
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
+overflow:auto;
 border:1px solid #e5e7eb;
 max-height:55vh;
 }
@@ -297,7 +299,6 @@ table{
 width:100%;
 border-collapse:collapse;
 font-size:.83rem;
-min-width:max-content;
 }
 thead{
 background:#f9fafb;
@@ -351,12 +352,6 @@ color:var(--red-dark);
 line-height:1.4;
 display:flex;
 align-items:center;
-}
-td.t mark{
-background:#fef08a;
-padding:0 3px;
-border-radius:3px;
-font-weight:800;
 }
 td.td-comment{
 min-width:260px;
@@ -438,6 +433,68 @@ background:#ffffff;
 .empty{text-align:center;padding:40px 20px;color:var(--text3);}
 .empty p{font-size:.9rem;font-weight:500;color:var(--text2);margin-top:12px;}
 .empty span{font-size:.8rem;}
+
+/* MOBILE CARD VIEW - VRAIE AMÉLIORATION */
+.mobile-cards{
+display:none;
+flex-direction:column;
+gap:10px;
+}
+.mobile-card{
+background:var(--card);
+border-radius:14px;
+border:1px solid var(--border);
+border-left:4px solid transparent;
+padding:12px;
+cursor:pointer;
+transition:background .08s;
+}
+.mobile-card:hover{background:#fef2f2;}
+.mobile-card-header{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+margin-bottom:8px;
+}
+.mobile-card-ref{
+font-size:.7rem;
+color:var(--text3);
+font-weight:600;
+}
+.mobile-card-status{
+font-size:.7rem;
+padding:2px 8px;
+border-radius:999px;
+font-weight:600;
+}
+.mobile-card-task{
+font-size:.9rem;
+font-weight:700;
+color:var(--red-dark);
+margin-bottom:8px;
+line-height:1.4;
+}
+.mobile-card-meta{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+font-size:.75rem;
+color:var(--text2);
+}
+.mobile-card-meta-item{
+display:flex;
+align-items:center;
+gap:4px;
+}
+.mobile-card-comment{
+margin-top:8px;
+padding-top:8px;
+border-top:1px solid var(--border);
+font-size:.8rem;
+color:var(--text3);
+font-style:italic;
+}
+
 /* KANBAN */
 .kanban{
 margin-top:6px;
@@ -789,7 +846,7 @@ cursor:pointer;
 background:#d1d5db;
 cursor:not-allowed;
 }
-/* TOAST NOTIFICATIONS */
+/* TOAST */
 .toast-container{
 position:fixed;
 bottom:20px;
@@ -828,7 +885,7 @@ to{transform:translateX(0);opacity:1;}
 from{transform:translateX(0);opacity:1;}
 to{transform:translateX(100%);opacity:0;}
 }
-/* RESPONSIVE */
+/* RESPONSIVE - VRAIES AMÉLIORATIONS MOBILE */
 @media(max-width:1100px){
 .intervenants-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
@@ -836,16 +893,33 @@ to{transform:translateX(100%);opacity:0;}
 .layout{padding:10px;}
 .shell{border-radius:0;}
 .sidebar{display:none;}
-.topbar{border-radius:0;}
+.topbar{border-radius:0;height:70px;}
+.topbar-logo img{height:50px;}
 .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 .tw{max-height:55vh;}
-table{min-width:max-content;}
-th:nth-child(2),td:nth-child(2){display:none;}
+/* CACHE LE TABLEAU SUR MOBILE, AFFICHE LES CARTES */
+table{display:none;}
+.mobile-cards{display:flex;}
+.th-mobile{display:none;}
 }
 @media(max-width:600px){
 .stats-grid{grid-template-columns:1fr;}
 .intervenants-grid{grid-template-columns:1fr;}
 .drawer-panel{width:100%;border-radius:18px 18px 0 0;}
+.filterbar{flex-direction:column;}
+.sbox{max-width:100%;}
+.tbl-actions{width:100%;justify-content:space-between;margin:8px 0;}
+}
+
+/* PRINT - POUR PDF */
+@media print{
+.sidebar{display:none;}
+.tbl-actions{display:none;}
+.filterbar{display:none;}
+.tw{overflow:visible;max-height:none;}
+table{display:table !important;}
+.mobile-cards{display:none !important;}
+.shell{box-shadow:none;}
 }
 </style>
 </head>
@@ -933,7 +1007,7 @@ th:nth-child(2),td:nth-child(2){display:none;}
 <div class="tbl-header">
 <span class="tbl-title">Tâches</span>
 <div class="tbl-actions">
-<button id="exportCsvBtn" class="view-btn" title="Exporter en CSV">📥 Export</button>
+<button id="exportPdfBtn" class="view-btn" title="Exporter en PDF">📄 PDF</button>
 <button id="viewTable" class="view-btn view-btn-active">Tableau</button>
 <button id="viewKanban" class="view-btn">Kanban</button>
 </div>
@@ -953,6 +1027,8 @@ th:nth-child(2),td:nth-child(2){display:none;}
 </thead>
 <tbody id="tableBody"></tbody>
 </table>
+<!-- VUE MOBILE CARTES -->
+<div class="mobile-cards" id="mobileCards"></div>
 </div>
 <div id="kanbanWrapper" class="kanban" style="display:none;" role="region" aria-label="Vue Kanban"></div>
 </section>
@@ -1073,13 +1149,11 @@ let currentTask=null;
 const $=id=>document.getElementById(id);
 
 /* ===== UTILITAIRES ===== */
-// Debounce pour éviter les re-renders excessifs
 const debounce=(fn,delay)=>{
 let t;
 return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn.apply(this,args),delay);};
 };
 
-// Toast notifications
 function showToast(msg,type="success"){
 const container=$("toastContainer");
 const toast=document.createElement("div");
@@ -1160,6 +1234,12 @@ if(s==="Terminée")  return "#16a34a";
 return "#dc2626";
 }
 
+function statusLabel(s){
+if(s==="À faire")   return {bg:"#fee2e2",color:"#b91c1c",text:"À faire"};
+if(s==="En cours")  return {bg:"#ffedd5",color:"#c2410c",text:"En cours"};
+return {bg:"#dcfce7",color:"#15803d",text:"Terminée"};
+}
+
 function renderFilters(){
 $("filterLot").innerHTML='<option value="">Tous lots</option>';
 [...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{
@@ -1224,16 +1304,9 @@ titleEl.appendChild(document.createTextNode(t.task));
 const pill=document.createElement("span");
 pill.className="drawer-status-pill";
 pill.textContent=t.statut;
-if(t.statut==="À faire"){
-pill.style.background="#fee2e2";
-pill.style.color="#b91c1c";
-}else if(t.statut==="En cours"){
-pill.style.background="#ffedd5";
-pill.style.color="#c2410c";
-}else{
-pill.style.background="#dcfce7";
-pill.style.color="#15803d";
-}
+const st=statusLabel(t.statut);
+pill.style.background=st.bg;
+pill.style.color=st.color;
 titleEl.appendChild(pill);
 $("drawerRef").textContent="Réf : "+t.ref;
 $("drawerLot").textContent=t.lot;
@@ -1249,23 +1322,11 @@ document.body.classList.remove("drawer-open");
 currentTask=null;
 }
 
-// Fonction de rendu avec highlight de recherche
-function render(){
-const list=getFiltered();
+// Rendu tableau desktop
+function renderTable(list,q){
 const tb=$("tableBody");
 tb.innerHTML="";
-updateStats(list);
-const q=$("searchInput").value.toLowerCase().trim();
-if(!list.length){
-tb.innerHTML=`<tr><td colspan="7"><div class="empty">
-<svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" style="margin:0 auto;display:block;opacity:.25">
-<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-</svg>
-<p>Aucune tâche trouvée</p>
-<span>Modifie les filtres ou importe ton DPGF</span>
-</div></td></tr>`;
-return;
-}
+if(!list.length)return;
 list.forEach(t=>{
 const tr=document.createElement("tr");
 tr.style.borderLeft="2px solid "+borderColor(t.statut);
@@ -1279,7 +1340,6 @@ openDrawer(t);
 const td1=document.createElement("td");
 td1.className="r";
 td1.textContent=t.ref;
-td1.setAttribute("scope","row");
 tr.appendChild(td1);
 // Lot
 const td2=document.createElement("td");
@@ -1287,7 +1347,7 @@ td2.className="l";
 td2.textContent=t.lot;
 td2.title=t.lot;
 tr.appendChild(td2);
-// Tâche avec highlight
+// Tâche
 const td3=document.createElement("td");
 td3.className="t";
 const badge=document.createElement("span");
@@ -1298,7 +1358,7 @@ td3.appendChild(badge);
 let taskText=t.task;
 if(q&&taskText.toLowerCase().includes(q)){
 const regex=new RegExp(`(${q})`,"gi");
-taskText=taskText.replace(regex,'<mark>$1</mark>');
+taskText=taskText.replace(regex,'<mark style="background:#fef08a;padding:0 3px;border-radius:3px;">$1</mark>');
 }
 td3.innerHTML+=taskText;
 tr.appendChild(td3);
@@ -1306,7 +1366,6 @@ tr.appendChild(td3);
 const td4=document.createElement("td");
 const si=document.createElement("select");
 si.className="si";
-si.setAttribute("aria-label","Intervenant pour "+t.task);
 INTERVS.forEach(v=>{
 const o=document.createElement("option");
 o.value=v;o.textContent=v;
@@ -1326,7 +1385,6 @@ tr.appendChild(td4);
 const td5=document.createElement("td");
 const ss=document.createElement("select");
 ss.className="ss "+sCls(t.statut);
-ss.setAttribute("aria-label","Statut de "+t.task);
 STATUTS.forEach(v=>{
 const o=document.createElement("option");
 o.value=v;o.textContent=v;
@@ -1350,7 +1408,6 @@ tr.appendChild(td5);
 const td6=document.createElement("td");
 const sp=document.createElement("select");
 sp.className="sp "+pCls(t.priorite);
-sp.setAttribute("aria-label","Priorité de "+t.task);
 PRIOS.forEach(v=>{
 const o=document.createElement("option");
 o.value=v;
@@ -1368,7 +1425,7 @@ showToast(`✅ Priorité : ${val}`);
 });
 td6.appendChild(sp);
 tr.appendChild(td6);
-// Commentaire - avec événement "change" au lieu de "blur"
+// Commentaire
 const td7=document.createElement("td");
 td7.className="td-comment";
 const ci=document.createElement("input");
@@ -1376,7 +1433,6 @@ ci.type="text";
 ci.className="ci";
 ci.value=t.commentaire||"";
 ci.placeholder="Ajouter un commentaire…";
-ci.setAttribute("aria-label","Commentaire pour "+t.task);
 ci.addEventListener("change",async e=>{
 t.commentaire=e.target.value;
 await save(t.id,"commentaire",t.commentaire);
@@ -1388,10 +1444,7 @@ showToast("💬 Commentaire enregistré");
 ci.addEventListener("keydown",async e=>{
 if(e.key==="Enter"){
 e.preventDefault();
-t.commentaire=e.target.value;
-await save(t.id,"commentaire",t.commentaire);
 ci.blur();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
 }
 });
 td7.appendChild(ci);
@@ -1400,7 +1453,53 @@ tb.appendChild(tr);
 });
 }
 
-// Kanban avec accessibilité
+// Rendu cartes mobile
+function renderMobileCards(list){
+const mc=$("mobileCards");
+mc.innerHTML="";
+if(!list.length)return;
+list.forEach(t=>{
+const card=document.createElement("div");
+card.className="mobile-card";
+card.style.borderLeftColor=borderColor(t.statut);
+card.addEventListener("click",()=>openDrawer(t));
+const st=statusLabel(t.statut);
+card.innerHTML=`
+<div class="mobile-card-header">
+<span class="mobile-card-ref">${t.ref}</span>
+<span class="mobile-card-status" style="background:${st.bg};color:${st.color}">${st.text}</span>
+</div>
+<div class="mobile-card-task">${t.task}</div>
+<div class="mobile-card-meta">
+<span class="mobile-card-meta-item">📁 ${t.lot}</span>
+<span class="mobile-card-meta-item">👤 ${t.intervenant||"Non assigné"}</span>
+<span class="mobile-card-meta-item">⚡ ${t.priorite}</span>
+</div>
+${t.commentaire?`<div class="mobile-card-comment">💬 ${t.commentaire}</div>`:''}
+`;
+mc.appendChild(card);
+});
+}
+
+function render(){
+const list=getFiltered();
+updateStats(list);
+const q=$("searchInput").value.toLowerCase().trim();
+if(!list.length){
+$("tableBody").innerHTML=`<tr><td colspan="7"><div class="empty">
+<svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" style="margin:0 auto;display:block;opacity:.25">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+</svg>
+<p>Aucune tâche trouvée</p>
+<span>Modifie les filtres ou importe ton DPGF</span>
+</div></td></tr>`;
+$("mobileCards").innerHTML="";
+return;
+}
+renderTable(list,q);
+renderMobileCards(list);
+}
+
 function renderKanban(){
 const list=getFiltered();
 const kw=$("kanbanWrapper");
@@ -1414,14 +1513,11 @@ cols.forEach(c=>{
 const col=document.createElement("div");
 col.className="kanban-column";
 col.dataset.statut=c.statut;
-col.setAttribute("role","group");
-col.setAttribute("aria-label",`Tâches ${c.label}`);
 const head=document.createElement("div");
 head.className="kanban-header";
 const title=document.createElement("span");
 title.className="kanban-title";
 title.textContent=c.label;
-title.id=`kanban-${c.statut.replace(/\s+/g,'-')}-label`;
 const count=document.createElement("span");
 count.className="kanban-count";
 const tasksInCol=list.filter(t=>t.statut===c.statut);
@@ -1432,8 +1528,6 @@ col.appendChild(head);
 const listEl=document.createElement("div");
 listEl.className="kanban-list";
 listEl.dataset.statut=c.statut;
-listEl.setAttribute("role","list");
-listEl.setAttribute("aria-labelledby",title.id);
 listEl.addEventListener("dragover",e=>{
 e.preventDefault();
 listEl.classList.add("drop-target");
@@ -1462,19 +1556,10 @@ t.priorite==="Basse" ? "prio-basse" : "prio-moyenne"
 );
 card.draggable=true;
 card.dataset.id=t.id;
-card.setAttribute("role","listitem");
-card.setAttribute("tabindex","0");
-card.setAttribute("aria-label",`${t.task} - ${t.statut} - priorité ${t.priorite}`);
 card.addEventListener("dragstart",e=>{
 e.dataTransfer.setData("text/plain",t.id);
 });
 card.addEventListener("click",()=>openDrawer(t));
-card.addEventListener("keydown",e=>{
-if(e.key==="Enter"||e.key===" "){
-e.preventDefault();
-openDrawer(t);
-}
-});
 const lotBadge=document.createElement("div");
 lotBadge.className="kanban-badge-lot";
 lotBadge.textContent=t.lot;
@@ -1528,32 +1613,63 @@ commentaire:t.commentaire
 if(error){
 console.error(error);
 showToast("❌ Erreur Supabase: "+error.message,"error");
-alert("Erreur Supabase : "+error.message);
 }
 }
 
-/* ===== EXPORT CSV ===== */
-$("exportCsvBtn")?.addEventListener("click",()=>{
+/* ===== EXPORT PDF ===== */
+$("exportPdfBtn")?.addEventListener("click",async()=>{
 const list=getFiltered();
 if(!list.length){
 showToast("⚠️ Aucune tâche à exporter","error");
 return;
 }
-const headers=["Réf","Lot","Tâche","Intervenant","Statut","Priorité","Commentaire"];
-const rows=list.map(t=>[
-t.ref,t.lot,t.task,t.intervenant,t.statut,t.priorite,t.commentaire||""
-]);
-const csv=[headers,...rows].map(r=>
-r.map(v=>`"${(v||"").toString().replace(/"/g,'""')}"`).join(",")
-).join("\n");
-const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
-const url=URL.createObjectURL(blob);
-const a=document.createElement("a");
-a.href=url;
-a.download=`taches-clery-${new Date().toISOString().slice(0,10)}.csv`;
-a.click();
-URL.revokeObjectURL(url);
-showToast("✓ Export CSV téléchargé");
+showToast("📄 Génération du PDF...");
+const element=document.createElement("div");
+element.style.padding="20px";
+element.style.fontFamily="Arial, sans-serif";
+element.innerHTML=`
+<h2 style="color:#991b1b;margin-bottom:10px;">Suivi Chantier – Cléry</h2>
+<p style="color:#6b7280;margin-bottom:20px;">Généré le ${new Date().toLocaleString("fr-FR")}</p>
+<p style="margin-bottom:10px;"><strong>${list.length} tâche(s)</strong> - Filtres actifs : ${$("filterStatut").value||"Tous"} | ${$("filterLot").value||"Tous lots"}</p>
+<table style="width:100%;border-collapse:collapse;font-size:11px;">
+<thead>
+<tr style="background:#f9fafb;">
+<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Réf</th>
+<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Lot</th>
+<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Tâche</th>
+<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Intervenant</th>
+<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Statut</th>
+<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Priorité</th>
+</tr>
+</thead>
+<tbody>
+${list.map(t=>`
+<tr>
+<td style="border:1px solid #e5e7eb;padding:8px;">${t.ref}</td>
+<td style="border:1px solid #e5e7eb;padding:8px;">${t.lot}</td>
+<td style="border:1px solid #e5e7eb;padding:8px;">${t.task}</td>
+<td style="border:1px solid #e5e7eb;padding:8px;">${t.intervenant||"-"}</td>
+<td style="border:1px solid #e5e7eb;padding:8px;">${t.statut}</td>
+<td style="border:1px solid #e5e7eb;padding:8px;">${t.priorite}</td>
+</tr>
+`).join("")}
+</tbody>
+</table>
+`;
+const opt={
+margin:10,
+filename:`suivi-chantier-${new Date().toISOString().slice(0,10)}.pdf`,
+image:{type:"jpeg",quality:0.98},
+html2canvas:{scale:2},
+jsPDF:{unit:"mm",format:"a4",orientation:"landscape"}
+};
+try{
+await html2pdf().set(opt).from(element).save();
+showToast("✓ PDF téléchargé");
+}catch(err){
+console.error(err);
+showToast("❌ Erreur génération PDF","error");
+}
 });
 
 /* ===== IMPORT DPGF ===== */
@@ -1618,7 +1734,7 @@ showToast("❌ Erreur de lecture Excel","error");
 reader.readAsArrayBuffer(file);
 });
 
-/* ===== FILTRES DÉBOUNCÉS ===== */
+/* ===== FILTRES ===== */
 const debouncedRender=debounce(()=>{
 render();
 if($("kanbanWrapper").style.display!=="none") renderKanban();
@@ -1629,7 +1745,7 @@ $("filterStatut").addEventListener("change",debouncedRender);
 $("filterLot").addEventListener("change",debouncedRender);
 $("filterIntervenant").addEventListener("change",debouncedRender);
 
-/* ===== VUES TABLEAU / KANBAN ===== */
+/* ===== VUES ===== */
 $("viewTable").addEventListener("click",()=>{
 $("viewTable").classList.add("view-btn-active");
 $("viewKanban").classList.remove("view-btn-active");
@@ -1652,7 +1768,6 @@ window.addEventListener("keydown",e=>{
 if(e.key==="Escape") closeDrawer();
 });
 
-// Sauvegarde explicite dans le drawer
 $("drawerSaveBtn")?.addEventListener("click",async()=>{
 if(!currentTask) return;
 const val=$("drawerCommentaire").value;
@@ -1672,7 +1787,7 @@ $("drawerCommentaire").addEventListener("input",()=>{
 $("drawerSaveBtn").disabled=false;
 });
 
-/* ===== INTERVENANTS – CRUD ===== */
+/* ===== INTERVENANTS ===== */
 let intervenantsData=[];
 async function loadIntervenants(){
 const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
