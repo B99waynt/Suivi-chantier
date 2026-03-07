@@ -9,38 +9,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
-/* Couleurs Technicombles - Nuances plus sophistiquées */
 --red:#c92a2a;
 --red-hover:#b02525;
 --red-light:#fff5f5;
 --red-border:#ffc9c9;
 --red-dark:#862e2e;
-
-/* Neutres - Gris plus froids pour côté pro */
 --bg:#f8f9fa;
 --bg-alt:#ffffff;
 --border:#dee2e6;
 --border-light:#e9ecef;
-
-/* Texte - Hiérarchie claire */
 --text:#212529;
 --text-secondary:#495057;
 --text-tertiary:#868e96;
-
-/* Statuts */
 --success:#2b8a3e;
 --success-light:#ebfbee;
 --warning:#e67700;
 --warning-light:#fff4e6;
---info:#1864ab;
---info-light:#e7f5ff;
-
-/* Ombres - Plus subtiles */
 --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
 --shadow:0 2px 8px rgba(0,0,0,0.06);
 --shadow-md:0 4px 16px rgba(0,0,0,0.08);
-
-/* Rayons - Réduits pour côté pro */
 --r:4px;
 --r-md:6px;
 --r-lg:8px;
@@ -56,28 +43,16 @@ min-height:100vh;
 font-size:14px;
 line-height:1.5;
 -webkit-font-smoothing:antialiased;
--moz-osx-font-smoothing:grayscale;
 }
 
-/* Scrollbars discrètes */
 ::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:#ced4da;border-radius:4px;}
-::-webkit-scrollbar-thumb:hover{background:#adb5bd;}
 
-.layout{
-display:flex;
-width:100%;
-min-height:100vh;
-}
+.layout{display:flex;width:100%;min-height:100vh;}
+.shell{display:flex;width:100%;background:var(--bg-alt);}
 
-.shell{
-display:flex;
-width:100%;
-background:var(--bg-alt);
-}
-
-/* SIDEBAR - Plus épurée */
+/* SIDEBAR - CORRIGÉE */
 .sidebar{
 width:240px;
 background:var(--red);
@@ -85,11 +60,14 @@ padding:0;
 display:flex;
 flex-direction:column;
 flex-shrink:0;
+border-right:1px solid rgba(0,0,0,0.1);
 }
 
+/* Header sidebar avec séparation */
 .sidebar-header{
-padding:24px 20px;
+padding:20px 20px;
 border-bottom:1px solid rgba(255,255,255,0.15);
+background:rgba(0,0,0,0.08);
 }
 
 .sidebar-logo{
@@ -99,21 +77,29 @@ gap:12px;
 color:#fff;
 }
 
+/* Logo sans fond blanc - version SVG ou PNG transparent */
 .sidebar-logo img{
-height:40px;
+height:36px;
 width:auto;
+filter:brightness(0) invert(1); /* Rend le logo blanc pour fond rouge */
 }
 
 .sidebar-logo-text{
-font-size:1.1rem;
+display:flex;
+flex-direction:column;
+gap:2px;
+}
+
+.sidebar-logo-title{
+font-size:1rem;
 font-weight:600;
 letter-spacing:-0.02em;
+line-height:1.2;
 }
 
 .sidebar-logo-sub{
-font-size:0.75rem;
-opacity:0.85;
-margin-top:2px;
+font-size:0.7rem;
+opacity:0.75;
 font-weight:400;
 }
 
@@ -123,10 +109,10 @@ flex:1;
 }
 
 .nav-label{
-font-size:0.7rem;
+font-size:0.65rem;
 text-transform:uppercase;
 letter-spacing:0.08em;
-color:rgba(255,255,255,0.6);
+color:rgba(255,255,255,0.5);
 margin:0 8px 12px;
 font-weight:600;
 }
@@ -164,7 +150,7 @@ opacity:0.9;
 padding:16px 20px;
 border-top:1px solid rgba(255,255,255,0.15);
 font-size:0.75rem;
-color:rgba(255,255,255,0.7);
+color:rgba(255,255,255,0.6);
 }
 
 /* MAIN */
@@ -176,7 +162,7 @@ flex-direction:column;
 background:var(--bg);
 }
 
-/* TOPBAR - Fusionnée avec titre */
+/* TOPBAR - Sans répétition "Suivi de chantier" */
 .topbar{
 height:64px;
 padding:0 32px;
@@ -193,7 +179,7 @@ z-index:10;
 .topbar-title{
 display:flex;
 align-items:center;
-gap:16px;
+gap:12px;
 }
 
 .topbar-title h1{
@@ -206,6 +192,7 @@ letter-spacing:-0.02em;
 .topbar-title span{
 color:var(--text-tertiary);
 font-weight:400;
+font-size:0.9rem;
 }
 
 .topbar-right{
@@ -226,6 +213,9 @@ font-size:0.85rem;
 font-weight:500;
 cursor:pointer;
 transition:background 0.15s;
+display:flex;
+align-items:center;
+gap:6px;
 }
 
 .btn-export:hover{
@@ -251,7 +241,6 @@ gap:24px;
 display:flex;
 }
 
-/* Section Header */
 .section-header{
 display:flex;
 justify-content:space-between;
@@ -272,7 +261,7 @@ color:var(--text-tertiary);
 font-weight:400;
 }
 
-/* STATS - Plus épurées */
+/* STATS */
 .stats-grid{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -295,7 +284,7 @@ box-shadow:var(--shadow-md);
 }
 
 .stat-card-label{
-font-size:0.75rem;
+font-size:0.7rem;
 text-transform:uppercase;
 letter-spacing:0.06em;
 color:var(--text-tertiary);
@@ -536,7 +525,6 @@ min-width:250px;
 width:300px;
 }
 
-/* Selects inline */
 .ss,.sp,.si{
 appearance:none;
 border:none;
@@ -554,20 +542,12 @@ transition:box-shadow 0.15s;
 box-shadow:0 0 0 2px var(--red-light);
 }
 
-.ss{
-min-width:100px;
-text-align:center;
-}
-
+.ss{min-width:100px;text-align:center;}
 .saf{background:var(--red-light);color:var(--red-dark);}
 .sec{background:var(--warning-light);color:var(--warning);}
 .sok{background:var(--success-light);color:var(--success);}
 
-.sp{
-min-width:90px;
-border:1px solid transparent;
-}
-
+.sp{min-width:90px;border:1px solid transparent;}
 .ph{background:var(--red-light);color:var(--red-dark);}
 .pm{background:var(--warning-light);color:var(--warning);}
 .pb{background:var(--bg);color:var(--text-secondary);border-color:var(--border);}
@@ -592,14 +572,8 @@ outline:none;
 transition:border-color 0.15s;
 }
 
-.ci::placeholder{
-color:var(--text-tertiary);
-}
-
-.ci:focus{
-border-color:var(--red);
-background:var(--bg-alt);
-}
+.ci::placeholder{color:var(--text-tertiary);}
+.ci:focus{border-color:var(--red);background:var(--bg-alt);}
 
 .empty{
 text-align:center;
@@ -607,17 +581,8 @@ padding:60px 20px;
 color:var(--text-tertiary);
 }
 
-.empty svg{
-opacity:0.3;
-margin-bottom:16px;
-}
-
-.empty p{
-font-size:0.95rem;
-font-weight:500;
-color:var(--text-secondary);
-margin-top:8px;
-}
+.empty svg{opacity:0.3;margin-bottom:16px;}
+.empty p{font-size:0.95rem;font-weight:500;color:var(--text-secondary);margin-top:8px;}
 
 /* KANBAN */
 .kanban{
@@ -681,14 +646,8 @@ border-left:3px solid transparent;
 transition:box-shadow 0.15s;
 }
 
-.kanban-card:hover{
-box-shadow:var(--shadow);
-}
-
-.kanban-card[draggable="true"]:active{
-cursor:grabbing;
-}
-
+.kanban-card:hover{box-shadow:var(--shadow);}
+.kanban-card[draggable="true"]:active{cursor:grabbing;}
 .kanban-card.prio-haute{border-left-color:var(--red);}
 .kanban-card.prio-moyenne{border-left-color:var(--warning);}
 .kanban-card.prio-basse{border-left-color:var(--text-tertiary);}
@@ -726,9 +685,7 @@ color:var(--text-secondary);
 font-style:italic;
 }
 
-.kanban-list.drop-target{
-background:var(--warning-light);
-}
+.kanban-list.drop-target{background:var(--warning-light);}
 
 /* INTERVENANTS */
 .intervenants-grid{
@@ -758,9 +715,7 @@ outline:none;
 transition:border-color 0.15s;
 }
 
-.inter-input:focus{
-border-color:var(--red);
-}
+.inter-input:focus{border-color:var(--red);}
 
 .inter-label{
 font-size:0.75rem;
@@ -776,9 +731,7 @@ flex-direction:column;
 gap:4px;
 }
 
-.inter-name-input{
-font-weight:600;
-}
+.inter-name-input{font-weight:600;}
 
 .btn-add{
 padding:10px 20px;
@@ -792,11 +745,8 @@ cursor:pointer;
 transition:background 0.15s;
 }
 
-.btn-add:hover{
-background:var(--red-hover);
-}
+.btn-add:hover{background:var(--red-hover);}
 
-/* DOCUMENTS & PHOTOS */
 .doc-actions,.photos-actions{
 display:flex;
 align-items:center;
@@ -815,14 +765,9 @@ cursor:pointer;
 transition:background 0.15s;
 }
 
-.btn-import:hover{
-background:var(--red-hover);
-}
+.btn-import:hover{background:var(--red-hover);}
 
-.note{
-font-size:0.85rem;
-color:var(--text-tertiary);
-}
+.note{font-size:0.85rem;color:var(--text-tertiary);}
 
 .photos-grid{
 display:grid;
@@ -838,9 +783,7 @@ overflow:hidden;
 transition:box-shadow 0.15s;
 }
 
-.photo-card:hover{
-box-shadow:var(--shadow-md);
-}
+.photo-card:hover{box-shadow:var(--shadow-md);}
 
 .photo-card img{
 width:100%;
@@ -874,9 +817,7 @@ cursor:pointer;
 font-weight:500;
 }
 
-.btn-delete:hover{
-text-decoration:underline;
-}
+.btn-delete:hover{text-decoration:underline;}
 
 /* DRAWER */
 .drawer{
@@ -910,17 +851,9 @@ display:flex;
 flex-direction:column;
 }
 
-.drawer-open .drawer{
-pointer-events:auto;
-}
-
-.drawer-open .drawer-overlay{
-opacity:1;
-}
-
-.drawer-open .drawer-panel{
-transform:translateX(0);
-}
+.drawer-open .drawer{pointer-events:auto;}
+.drawer-open .drawer-overlay{opacity:1;}
+.drawer-open .drawer-panel{transform:translateX(0);}
 
 .drawer-header{
 padding:20px 24px;
@@ -941,9 +874,7 @@ padding:4px;
 transition:color 0.15s;
 }
 
-.drawer-close:hover{
-color:var(--text);
-}
+.drawer-close:hover{color:var(--text);}
 
 .drawer-body{
 padding:24px;
@@ -984,17 +915,8 @@ padding:12px 0;
 border-bottom:1px solid var(--border-light);
 }
 
-.df-label{
-color:var(--text-tertiary);
-font-size:0.85rem;
-font-weight:500;
-}
-
-.df-value{
-color:var(--text);
-font-weight:500;
-font-size:0.9rem;
-}
+.df-label{color:var(--text-tertiary);font-size:0.85rem;font-weight:500;}
+.df-value{color:var(--text);font-weight:500;font-size:0.9rem;}
 
 .drawer-comment-label{
 font-size:0.85rem;
@@ -1017,10 +939,7 @@ outline:none;
 transition:border-color 0.15s;
 }
 
-.drawer-textarea:focus{
-border-color:var(--red);
-background:var(--bg-alt);
-}
+.drawer-textarea:focus{border-color:var(--red);background:var(--bg-alt);}
 
 .drawer-save-btn{
 margin-top:auto;
@@ -1036,14 +955,8 @@ cursor:pointer;
 transition:background 0.15s;
 }
 
-.drawer-save-btn:hover{
-background:var(--red-hover);
-}
-
-.drawer-save-btn:disabled{
-background:var(--text-tertiary);
-cursor:not-allowed;
-}
+.drawer-save-btn:hover{background:var(--red-hover);}
+.drawer-save-btn:disabled{background:var(--text-tertiary);cursor:not-allowed;}
 
 /* TOAST */
 .toast-container{
@@ -1070,13 +983,8 @@ background:var(--bg-alt);
 border:1px solid var(--border);
 }
 
-.toast.success{
-border-left:3px solid var(--success);
-}
-
-.toast.error{
-border-left:3px solid var(--red);
-}
+.toast.success{border-left:3px solid var(--success);}
+.toast.error{border-left:3px solid var(--red);}
 
 @keyframes slideIn{
 from{transform:translateX(100%);opacity:0;}
@@ -1095,7 +1003,6 @@ to{transform:translateX(100%);opacity:0;}
 
 @media(max-width:900px){
 .sidebar{width:200px;}
-.sidebar-logo-text{font-size:1rem;}
 .stats-grid{grid-template-columns:repeat(2,1fr);}
 .intervenants-grid{grid-template-columns:1fr;}
 }
@@ -1111,19 +1018,16 @@ to{transform:translateX(100%);opacity:0;}
 .sidebar-footer{display:none;}
 .main-inner{padding:16px;}
 .topbar{padding:0 16px;height:56px;}
-.topbar-title h1{font-size:1rem;}
 .stats-grid{grid-template-columns:1fr;}
 .drawer-panel{width:100%;}
 }
 
-/* PRINT */
 @media print{
 .sidebar,.tbl-actions,.filterbar,.btn-export,.toast-container{display:none !important;}
 .tw{overflow:visible;max-height:none;border:none;}
 .shell{box-shadow:none;}
 }
 </style>
-<!-- Inter Font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1137,9 +1041,9 @@ to{transform:translateX(100%);opacity:0;}
 <div class="sidebar-header">
 <div class="sidebar-logo">
 <img src="technicombles_logo_small.jpg" alt="TC">
-<div>
-<div class="sidebar-logo-text">Technicombles</div>
-<div class="sidebar-logo-sub">Suivi de chantier</div>
+<div class="sidebar-logo-text">
+<span class="sidebar-logo-title">Technicombles</span>
+<span class="sidebar-logo-sub">Chantier Cléry</span>
 </div>
 </div>
 </div>
@@ -1171,22 +1075,26 @@ Photos
 </div>
 </div>
 <div class="sidebar-footer">
-Chantier Cléry • Interne
+Interne • Technicombles
 </div>
 </aside>
 <main class="main">
 <header class="topbar">
 <div class="topbar-title">
-<h1>Suivi de chantier</h1>
+<h1>Tâches</h1>
 <span>Cléry</span>
 </div>
 <div class="topbar-right">
 <span id="lastUpdate">—</span>
-<button id="exportPdfBtn" class="btn-export">📄 Export PDF</button>
+<button id="exportPdfBtn" class="btn-export">
+<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+<path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+</svg>
+Export PDF
+</button>
 </div>
 </header>
 <div class="main-inner">
-<!-- TÂCHES -->
 <section class="view-section active" data-view="taches">
 <div class="section-header">
 <div>
@@ -1264,7 +1172,6 @@ Chantier Cléry • Interne
 <div id="kanbanWrapper" class="kanban" style="display:none;"></div>
 </section>
 </section>
-<!-- INTERVENANTS -->
 <section class="view-section" data-view="intervenants">
 <div class="section-header">
 <div>
@@ -1280,7 +1187,6 @@ Chantier Cléry • Interne
 <section class="intervenants-grid" id="intervenantsGrid"></section>
 </section>
 </section>
-<!-- DOCUMENTS -->
 <section class="view-section" data-view="documents">
 <div class="section-header">
 <div>
@@ -1296,7 +1202,6 @@ Chantier Cléry • Interne
 <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" />
 </section>
 </section>
-<!-- PHOTOS -->
 <section class="view-section" data-view="photos">
 <div class="section-header">
 <div>
@@ -1325,7 +1230,7 @@ Chantier Cléry • Interne
 </main>
 </div>
 </div>
-<!-- Drawer -->
+
 <div id="taskDrawer" class="drawer">
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <div class="drawer-panel">
@@ -1377,7 +1282,6 @@ let tasks=[];
 let currentTask=null;
 const $=id=>document.getElementById(id);
 
-/* UTILITAIRES */
 const debounce=(fn,delay)=>{let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn.apply(this,args),delay);};};
 
 function showToast(msg,type="success"){
@@ -1389,7 +1293,6 @@ container.appendChild(toast);
 setTimeout(()=>{toast.style.animation="slideOut .2s ease forwards";setTimeout(()=>toast.remove(),200);},3000);
 }
 
-/* NAVIGATION */
 const navItems=document.querySelectorAll(".nav-item");
 const views=document.querySelectorAll(".view-section");
 navItems.forEach(item=>{
@@ -1556,7 +1459,6 @@ const{error}=await db.from("taches_noe_clery").insert(newTasks.map(t=>({ref:t.re
 if(error){console.error(error);showToast("Erreur Supabase","error");}
 }
 
-/* EXPORT PDF */
 $("exportPdfBtn")?.addEventListener("click",async()=>{
 const list=getFiltered();
 if(!list.length){showToast("Aucune tâche à exporter","error");return;}
@@ -1568,7 +1470,6 @@ const opt={margin:10,filename:`suivi-chantier-${new Date().toISOString().slice(0
 try{await html2pdf().set(opt).from(element).save();showToast("PDF téléchargé");}catch(err){console.error(err);showToast("Erreur PDF","error");}
 });
 
-/* IMPORT DPGF */
 $("importBtn").addEventListener("click",()=>{if(!confirm("Importer le DPGF va remplacer toutes les tâches. Continuer ?"))return;$("fileInput").click();});
 $("fileInput").addEventListener("change",e=>{
 const file=e.target.files[0];if(!file)return;
@@ -1605,25 +1506,21 @@ await pushDB(found);await loadDB();alert("Import terminé.");showToast("Import D
 reader.readAsArrayBuffer(file);
 });
 
-/* FILTRES */
 const debouncedRender=debounce(()=>{render();if($("kanbanWrapper").style.display!=="none")renderKanban();},150);
 $("searchInput").addEventListener("input",debouncedRender);
 $("filterStatut").addEventListener("change",debouncedRender);
 $("filterLot").addEventListener("change",debouncedRender);
 $("filterIntervenant").addEventListener("change",debouncedRender);
 
-/* VUES */
 $("viewTable").addEventListener("click",()=>{$("viewTable").classList.add("view-btn-active");$("viewKanban").classList.remove("view-btn-active");$("tableWrapper").style.display="block";$("kanbanWrapper").style.display="none";render();});
 $("viewKanban").addEventListener("click",()=>{$("viewKanban").classList.add("view-btn-active");$("viewTable").classList.remove("view-btn-active");$("tableWrapper").style.display="none";$("kanbanWrapper").style.display="flex";renderKanban();});
 
-/* DRAWER */
 $("drawerOverlay").addEventListener("click",closeDrawer);
 $("drawerClose").addEventListener("click",closeDrawer);
 window.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();});
 $("drawerSaveBtn")?.addEventListener("click",async()=>{if(!currentTask)return;const val=$("drawerCommentaire").value;currentTask.commentaire=val;await save(currentTask.id,"commentaire",val);const btn=$("drawerSaveBtn");const old=btn.textContent;btn.textContent="✓ Enregistré";btn.disabled=true;setTimeout(()=>{btn.textContent="Enregistrer";btn.disabled=false;},1200);render();if($("kanbanWrapper").style.display!=="none")renderKanban();showToast("Commentaire enregistré");});
 $("drawerCommentaire").addEventListener("input",()=>{$("drawerSaveBtn").disabled=false;});
 
-/* INTERVENANTS */
 let intervenantsData=[];
 async function loadIntervenants(){
 const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
@@ -1649,7 +1546,6 @@ g.querySelectorAll("[data-delete]").forEach(btn=>{btn.addEventListener("click",e
 }
 $("addIntervenantBtn").addEventListener("click",async()=>{const nom=prompt("Nom ?");if(!nom)return;const newId=(intervenantsData.length?Math.max(...intervenantsData.map(i=>i.id||0)):0)+1;const{data,error}=await db.from(INTER_TABLE).insert({id:newId,nom,role:"",tel:"",mail:"",note:""}).select();if(error){console.error(error);showToast("Erreur ajout","error");return;}if(data&&data.length)intervenantsData.push(data[0]);await loadIntervenants();renderFilters();render();showToast("Intervenant ajouté");});
 
-/* PHOTOS */
 const photosGrid=$("photosGrid");const photosEmpty=$("photosEmpty");
 async function loadPhotos(){
 const{data,error}=await db.storage.from(PHOTOS_BUCKET).list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
@@ -1670,7 +1566,6 @@ meta.appendChild(nameSpan);meta.appendChild(delBtn);card.appendChild(meta);photo
 $("importPhotosBtn").addEventListener("click",()=>{$("photosInput").click();});
 $("photosInput").addEventListener("change",async e=>{const files=[...e.target.files];if(!files.length)return;for(const file of files){const safeName=file.name.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9.\-_]/g,"");const path=`${Date.now()}-${safeName||"photo"}`;const{error}=await db.storage.from(PHOTOS_BUCKET).upload(path,file,{upsert:false});if(error){console.error(error);showToast("Erreur upload","error");return;}}e.target.value="";loadPhotos();showToast("Photos importées");});
 
-/* INIT */
 loadIntervenants();loadDB();loadPhotos();
 </script>
 </body>
