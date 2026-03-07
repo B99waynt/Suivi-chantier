@@ -51,7 +51,7 @@ display:flex;
 width:100%;
 overflow:hidden;
 }
-/* SIDEBAR - ROUGE TECHNOCOMBLES */
+/* SIDEBAR */
 .sidebar{
 width:220px;
 background:linear-gradient(180deg,#dc2626,#991b1b);
@@ -100,7 +100,7 @@ flex-direction:column;
 gap:4px;
 font-weight:500;
 }
-/* MAIN - THÈME CLAIR GRIS/BLANC */
+/* MAIN */
 .main{
 flex:1;
 min-width:0;
@@ -195,7 +195,7 @@ color:var(--red-dark);
 font-size:.75rem;
 color:var(--text3);
 }
-/* PANEL GÉNÉRIQUE */
+/* PANEL */
 .panel{
 background:#ffffff;
 border-radius:20px;
@@ -207,7 +207,7 @@ flex-direction:column;
 gap:10px;
 min-height:0;
 }
-/* Filtres tâches */
+/* Filtres */
 .filterbar{
 display:flex;align-items:center;gap:8px;
 flex-wrap:wrap;
@@ -283,11 +283,13 @@ border-color:var(--red);
 color:var(--red-dark);
 background:#fee2e2;
 }
+/* TABLE - MOBILE FIX */
 .tw{
 background:#fcfcfc;
 border-radius:16px;
 box-shadow:none;
-overflow:auto;
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
 border:1px solid #e5e7eb;
 max-height:55vh;
 }
@@ -295,6 +297,7 @@ table{
 width:100%;
 border-collapse:collapse;
 font-size:.83rem;
+min-width:max-content;
 }
 thead{
 background:#f9fafb;
@@ -320,12 +323,8 @@ border-left:2px solid transparent;
 transition:background .08s,border-left-color .08s;
 }
 tbody tr:last-child{border-bottom:none;}
-tbody tr:nth-child(even){
-background:#f9fafb;
-}
-tbody tr:hover{
-background:#fef2f2;
-}
+tbody tr:nth-child(even){background:#f9fafb;}
+tbody tr:hover{background:#fef2f2;}
 td{
 padding:8px 12px;
 vertical-align:middle;
@@ -347,11 +346,17 @@ td.t{
 white-space:normal;
 max-width:320px;
 font-size:.9rem;
-font-weight:600;
+font-weight:700;
 color:var(--red-dark);
 line-height:1.4;
 display:flex;
 align-items:center;
+}
+td.t mark{
+background:#fef08a;
+padding:0 3px;
+border-radius:3px;
+font-weight:800;
 }
 td.td-comment{
 min-width:260px;
@@ -359,21 +364,23 @@ width:300px;
 }
 .status-dot{
 display:inline-block;
-width:8px;height:8px;
+width:10px;height:10px;
 border-radius:50%;
-margin-right:6px;
+margin-right:8px;
 flex-shrink:0;
 }
 .ss{
 appearance:none;
 border:none;
 border-radius:999px;
-padding:3px 10px;
-font-size:.73rem;
+padding:4px 12px;
+font-size:.75rem;
 font-weight:600;
 cursor:pointer;
 font-family:inherit;
 outline:none;
+min-width:90px;
+text-align:center;
 }
 .saf{background:#fee2e2;color:#b91c1c;}
 .sec{background:#ffedd5;color:#c2410c;}
@@ -416,12 +423,14 @@ color:var(--text);
 font-family:inherit;
 outline:none;
 min-height:30px;
+transition:border-color .15s,box-shadow .15s;
 }
 .ci::placeholder{color:var(--text3);font-style:italic;}
-.si:focus,
-.ss:focus,
-.sp:focus,
-.ci:focus{
+.ci.saved{
+border-color:var(--green);
+box-shadow:0 0 0 2px rgba(22,163,74,.2);
+}
+.si:focus,.ss:focus,.sp:focus,.ci:focus{
 border-color:var(--red);
 box-shadow:0 0 0 2px rgba(220,38,38,.16);
 background:#ffffff;
@@ -482,6 +491,12 @@ cursor:grab;
 font-size:.8rem;
 position:relative;
 border-left:3px solid transparent;
+transition:opacity .1s,transform .1s;
+}
+.kanban-card[draggable="true"]:active{
+opacity:0.7;
+transform:scale(0.98);
+cursor:grabbing;
 }
 .kanban-card.prio-haute{border-left-color:#b91c1c;}
 .kanban-card.prio-moyenne{border-left-color:#c2410c;}
@@ -577,6 +592,72 @@ box-shadow:0 10px 24px rgba(220,38,38,.4);
 .doc-note{
 font-size:.8rem;
 color:var(--text2);
+}
+/* PHOTOS */
+.photos-actions{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:6px;
+margin-bottom:6px;
+flex-wrap:wrap;
+}
+.btn-photo-import{
+border:none;
+border-radius:999px;
+padding:8px 16px;
+background:var(--red);
+color:#ffffff;
+font-size:.85rem;
+font-weight:700;
+cursor:pointer;
+box-shadow:0 10px 24px rgba(220,38,38,.4);
+}
+.photos-note{
+font-size:.8rem;
+color:var(--text2);
+}
+.photos-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+gap:10px;
+margin-top:8px;
+}
+.photo-card{
+background:#ffffff;
+border-radius:14px;
+border:1px solid #e5e7eb;
+overflow:hidden;
+box-shadow:0 2px 8px rgba(15,23,42,.06);
+display:flex;
+flex-direction:column;
+}
+.photo-card img{
+width:100%;
+height:120px;
+object-fit:cover;
+display:block;
+}
+.photo-meta{
+padding:6px 8px;
+font-size:.75rem;
+color:#6b7280;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:6px;
+}
+.photo-name{
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+.photo-delete{
+border:none;
+background:transparent;
+color:#b91c1c;
+font-size:.75rem;
+cursor:pointer;
 }
 /* DRAWER */
 .drawer{
@@ -692,72 +773,62 @@ background:#ffffff;
 color:var(--text3);
 font-style:italic;
 }
-/* PHOTOS */
-.photos-actions{
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:6px;
-margin-bottom:6px;
-flex-wrap:wrap;
-}
-.btn-photo-import{
+.drawer-save-btn{
+margin-top:8px;
+align-self:flex-end;
 border:none;
 border-radius:999px;
-padding:8px 16px;
+padding:6px 14px;
 background:var(--red);
-color:#ffffff;
-font-size:.85rem;
+color:#fff;
+font-size:.8rem;
 font-weight:700;
 cursor:pointer;
-box-shadow:0 10px 24px rgba(220,38,38,.4);
 }
-.photos-note{
-font-size:.8rem;
-color:var(--text2);
+.drawer-save-btn:disabled{
+background:#d1d5db;
+cursor:not-allowed;
 }
-.photos-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-gap:10px;
-margin-top:8px;
-}
-.photo-card{
-background:#ffffff;
-border-radius:14px;
-border:1px solid #e5e7eb;
-overflow:hidden;
-box-shadow:0 2px 8px rgba(15,23,42,.06);
+/* TOAST NOTIFICATIONS */
+.toast-container{
+position:fixed;
+bottom:20px;
+right:20px;
+z-index:9999;
 display:flex;
 flex-direction:column;
+gap:8px;
 }
-.photo-card img{
-width:100%;
-height:120px;
-object-fit:cover;
-display:block;
-}
-.photo-meta{
-padding:6px 8px;
-font-size:.75rem;
-color:#6b7280;
+.toast{
+padding:10px 16px;
+border-radius:12px;
+font-size:.85rem;
+font-weight:500;
+box-shadow:0 4px 12px rgba(0,0,0,.1);
+animation:slideIn .2s ease;
 display:flex;
-justify-content:space-between;
 align-items:center;
-gap:6px;
+gap:8px;
 }
-.photo-name{
-overflow:hidden;
-text-overflow:ellipsis;
-white-space:nowrap;
+.toast.success{
+background:#dcfce7;
+color:#15803d;
+border:1px solid #bbf7d0;
 }
-.photo-delete{
-border:none;
-background:transparent;
+.toast.error{
+background:#fef2f2;
 color:#b91c1c;
-font-size:.75rem;
-cursor:pointer;
+border:1px solid #fecaca;
 }
+@keyframes slideIn{
+from{transform:translateX(100%);opacity:0;}
+to{transform:translateX(0);opacity:1;}
+}
+@keyframes slideOut{
+from{transform:translateX(0);opacity:1;}
+to{transform:translateX(100%);opacity:0;}
+}
+/* RESPONSIVE */
 @media(max-width:1100px){
 .intervenants-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
@@ -768,7 +839,7 @@ cursor:pointer;
 .topbar{border-radius:0;}
 .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 .tw{max-height:55vh;}
-table{min-width:750px;}
+table{min-width:max-content;}
 th:nth-child(2),td:nth-child(2){display:none;}
 }
 @media(max-width:600px){
@@ -779,6 +850,9 @@ th:nth-child(2),td:nth-child(2){display:none;}
 </style>
 </head>
 <body>
+<!-- Toast container -->
+<div id="toastContainer" class="toast-container"></div>
+
 <div class="layout">
 <div class="shell">
 <aside class="sidebar">
@@ -841,45 +915,46 @@ th:nth-child(2),td:nth-child(2){display:none;}
 <circle cx="11" cy="11" r="8"></circle>
 <path d="m21 21-4.35-4.35"></path>
 </svg>
-<input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" />
+<input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" aria-label="Rechercher" />
 </div>
-<select class="fsel" id="filterStatut">
+<select class="fsel" id="filterStatut" aria-label="Filtrer par statut">
 <option value="">Tous statuts</option>
 <option value="À faire">À faire</option>
 <option value="En cours">En cours</option>
 <option value="Terminée">Terminée</option>
 </select>
-<select class="fsel" id="filterLot">
+<select class="fsel" id="filterLot" aria-label="Filtrer par lot">
 <option value="">Tous lots</option>
 </select>
-<select class="fsel" id="filterIntervenant">
+<select class="fsel" id="filterIntervenant" aria-label="Filtrer par intervenant">
 <option value="">Tous intervenants</option>
 </select>
 </div>
 <div class="tbl-header">
 <span class="tbl-title">Tâches</span>
 <div class="tbl-actions">
+<button id="exportCsvBtn" class="view-btn" title="Exporter en CSV">📥 Export</button>
 <button id="viewTable" class="view-btn view-btn-active">Tableau</button>
 <button id="viewKanban" class="view-btn">Kanban</button>
 </div>
 </div>
 <div class="tw" id="tableWrapper">
-<table>
+<table role="table">
 <thead>
 <tr>
-<th>Réf</th>
-<th>Lot</th>
-<th>Tâche</th>
-<th>Intervenant</th>
-<th>Statut</th>
-<th>Priorité</th>
-<th>Commentaire</th>
+<th scope="col">Réf</th>
+<th scope="col">Lot</th>
+<th scope="col">Tâche</th>
+<th scope="col">Intervenant</th>
+<th scope="col">Statut</th>
+<th scope="col">Priorité</th>
+<th scope="col">Commentaire</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
 </table>
 </div>
-<div id="kanbanWrapper" class="kanban" style="display:none;"></div>
+<div id="kanbanWrapper" class="kanban" style="display:none;" role="region" aria-label="Vue Kanban"></div>
 </section>
 </section>
 <!-- INTERVENANTS -->
@@ -944,7 +1019,7 @@ Taille limitée (~50 Mo) : privilégier quelques photos clés.
 </div>
 </div>
 <!-- Drawer tâches -->
-<div id="taskDrawer" class="drawer">
+<div id="taskDrawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <div class="drawer-panel">
 <button class="drawer-close" id="drawerClose" aria-label="Fermer le détail">×</button>
@@ -974,8 +1049,10 @@ Taille limitée (~50 Mo) : privilégier quelques photos clés.
 id="drawerCommentaire"
 class="drawer-textarea"
 placeholder="Ajouter un commentaire…"
+aria-label="Commentaire de la tâche"
 ></textarea>
 </div>
+<button id="drawerSaveBtn" class="drawer-save-btn">Enregistrer</button>
 </div>
 </div>
 </div>
@@ -984,6 +1061,7 @@ placeholder="Ajouter un commentaire…"
 const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
 // Constantes
 let INTERVS=["Non assigné"];
 const STATUTS=["À faire","En cours","Terminée"];
@@ -993,7 +1071,34 @@ const PHOTOS_BUCKET="photos_chantier";
 let tasks=[];
 let currentTask=null;
 const $=id=>document.getElementById(id);
-/* NAVIGATION */
+
+/* ===== UTILITAIRES ===== */
+// Debounce pour éviter les re-renders excessifs
+const debounce=(fn,delay)=>{
+let t;
+return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn.apply(this,args),delay);};
+};
+
+// Toast notifications
+function showToast(msg,type="success"){
+const container=$("toastContainer");
+const toast=document.createElement("div");
+toast.className=`toast ${type}`;
+toast.setAttribute("role","alert");
+toast.innerHTML=`
+<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+${type==="success"?'<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>':'<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'}
+</svg>
+<span>${msg}</span>
+`;
+container.appendChild(toast);
+setTimeout(()=>{
+toast.style.animation="slideOut .2s ease forwards";
+setTimeout(()=>toast.remove(),200);
+},3000);
+}
+
+/* ===== NAVIGATION ===== */
 const navItems=document.querySelectorAll(".nav-item");
 const views=document.querySelectorAll(".view-section");
 navItems.forEach(item=>{
@@ -1006,6 +1111,7 @@ v.classList.toggle("active",v.getAttribute("data-view")===view);
 });
 });
 });
+
 function setDate(){
 const el=$("lastUpdate");
 if(!el)return;
@@ -1014,6 +1120,7 @@ day:"2-digit",month:"2-digit",year:"numeric",
 hour:"2-digit",minute:"2-digit"
 });
 }
+
 function guessLot(ref){
 const n=(ref||"").toString().split(".")[0];
 return{
@@ -1029,18 +1136,21 @@ return{
 "9":"Lot 9 – Peinture"
 }[n]||"Lot "+n;
 }
+
 function normSt(v){
 const s=(v||"").toLowerCase();
 if(s.includes("cours"))return"En cours";
 if(s.includes("termin"))return"Terminée";
 return"À faire";
 }
+
 function guessPr(d,r){
 const t=((d||"")+" "+(r||"")).toLowerCase();
 if(t.includes("urgent")||t.includes("priorit"))return"Haute";
 if(t.includes("option"))return"Basse";
 return"Moyenne";
 }
+
 function sCls(s){return s==="En cours"?"sec":s==="Terminée"?"sok":"saf";}
 function pCls(p){return p==="Haute"?"ph":p==="Basse"?"pb":"pm";}
 function borderColor(s){
@@ -1049,6 +1159,7 @@ if(s==="En cours")  return "#f97316";
 if(s==="Terminée")  return "#16a34a";
 return "#dc2626";
 }
+
 function renderFilters(){
 $("filterLot").innerHTML='<option value="">Tous lots</option>';
 [...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{
@@ -1064,6 +1175,7 @@ o.value=i;o.textContent=i;
 $("filterIntervenant").appendChild(o);
 });
 }
+
 function getFiltered(){
 const q=$("searchInput").value.toLowerCase();
 const s=$("filterStatut").value;
@@ -1078,12 +1190,20 @@ return(t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||""))
 .toLowerCase().includes(q);
 });
 }
+
 async function save(id,field,val){
-await db.from("taches_noe_clery")
+const{error}=await db.from("taches_noe_clery")
 .update({[field]:val,updated_at:new Date().toISOString()})
 .eq("id",id);
-setDate();
+if(error){
+console.error(error);
+showToast("❌ Échec de la sauvegarde","error");
+return false;
 }
+setDate();
+return true;
+}
+
 function updateStats(list){
 const total=list.length;
 const af=list.filter(t=>t.statut==="À faire").length;
@@ -1094,6 +1214,7 @@ $("statAFaire").textContent=af;
 $("statEnCours").textContent=ec;
 $("statTerminees").textContent=ok;
 }
+
 function openDrawer(t){
 currentTask=t;
 document.body.classList.add("drawer-open");
@@ -1120,16 +1241,21 @@ $("drawerIntervenant").textContent=t.intervenant||"—";
 $("drawerStatut").textContent=t.statut;
 $("drawerPriorite").textContent=t.priorite;
 $("drawerCommentaire").value=t.commentaire||"";
+$("drawerSaveBtn").disabled=false;
 }
+
 function closeDrawer(){
 document.body.classList.remove("drawer-open");
 currentTask=null;
 }
+
+// Fonction de rendu avec highlight de recherche
 function render(){
 const list=getFiltered();
 const tb=$("tableBody");
 tb.innerHTML="";
 updateStats(list);
+const q=$("searchInput").value.toLowerCase().trim();
 if(!list.length){
 tb.innerHTML=`<tr><td colspan="7"><div class="empty">
 <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" style="margin:0 auto;display:block;opacity:.25">
@@ -1144,31 +1270,43 @@ list.forEach(t=>{
 const tr=document.createElement("tr");
 tr.style.borderLeft="2px solid "+borderColor(t.statut);
 tr.style.cursor="pointer";
+tr.setAttribute("role","row");
 tr.addEventListener("click",e=>{
 if(["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName)) return;
 openDrawer(t);
 });
+// Réf
 const td1=document.createElement("td");
 td1.className="r";
 td1.textContent=t.ref;
+td1.setAttribute("scope","row");
 tr.appendChild(td1);
+// Lot
 const td2=document.createElement("td");
 td2.className="l";
 td2.textContent=t.lot;
 td2.title=t.lot;
 tr.appendChild(td2);
+// Tâche avec highlight
 const td3=document.createElement("td");
 td3.className="t";
 const badge=document.createElement("span");
 badge.className="status-dot";
 badge.style.backgroundColor=borderColor(t.statut);
+badge.setAttribute("aria-hidden","true");
 td3.appendChild(badge);
-td3.appendChild(document.createTextNode(t.task));
+let taskText=t.task;
+if(q&&taskText.toLowerCase().includes(q)){
+const regex=new RegExp(`(${q})`,"gi");
+taskText=taskText.replace(regex,'<mark>$1</mark>');
+}
+td3.innerHTML+=taskText;
 tr.appendChild(td3);
+// Intervenant
 const td4=document.createElement("td");
 const si=document.createElement("select");
 si.className="si";
-si.setAttribute("aria-label","Intervenant");
+si.setAttribute("aria-label","Intervenant pour "+t.task);
 INTERVS.forEach(v=>{
 const o=document.createElement("option");
 o.value=v;o.textContent=v;
@@ -1180,13 +1318,15 @@ t.intervenant=e.target.value;
 await save(t.id,"intervenant",t.intervenant);
 renderFilters();
 if($("kanbanWrapper").style.display!=="none") renderKanban();
+showToast("✅ Intervenant mis à jour");
 });
 td4.appendChild(si);
 tr.appendChild(td4);
+// Statut
 const td5=document.createElement("td");
 const ss=document.createElement("select");
 ss.className="ss "+sCls(t.statut);
-ss.setAttribute("aria-label","Statut");
+ss.setAttribute("aria-label","Statut de "+t.task);
 STATUTS.forEach(v=>{
 const o=document.createElement("option");
 o.value=v;o.textContent=v;
@@ -1202,13 +1342,15 @@ badge.style.backgroundColor=borderColor(t.statut);
 await save(t.id,"statut",t.statut);
 updateStats(getFiltered());
 if($("kanbanWrapper").style.display!=="none") renderKanban();
+showToast(`✅ Statut : ${val}`);
 });
 td5.appendChild(ss);
 tr.appendChild(td5);
+// Priorité
 const td6=document.createElement("td");
 const sp=document.createElement("select");
 sp.className="sp "+pCls(t.priorite);
-sp.setAttribute("aria-label","Priorité");
+sp.setAttribute("aria-label","Priorité de "+t.task);
 PRIOS.forEach(v=>{
 const o=document.createElement("option");
 o.value=v;
@@ -1222,9 +1364,11 @@ t.priorite=val;
 sp.className="sp "+pCls(t.priorite);
 await save(t.id,"priorite",t.priorite);
 if($("kanbanWrapper").style.display!=="none") renderKanban();
+showToast(`✅ Priorité : ${val}`);
 });
 td6.appendChild(sp);
 tr.appendChild(td6);
+// Commentaire - avec événement "change" au lieu de "blur"
 const td7=document.createElement("td");
 td7.className="td-comment";
 const ci=document.createElement("input");
@@ -1232,11 +1376,14 @@ ci.type="text";
 ci.className="ci";
 ci.value=t.commentaire||"";
 ci.placeholder="Ajouter un commentaire…";
-ci.setAttribute("aria-label","Commentaire");
-ci.addEventListener("blur",async e=>{
+ci.setAttribute("aria-label","Commentaire pour "+t.task);
+ci.addEventListener("change",async e=>{
 t.commentaire=e.target.value;
 await save(t.id,"commentaire",t.commentaire);
+ci.classList.add("saved");
+setTimeout(()=>ci.classList.remove("saved"),800);
 if($("kanbanWrapper").style.display!=="none") renderKanban();
+showToast("💬 Commentaire enregistré");
 });
 ci.addEventListener("keydown",async e=>{
 if(e.key==="Enter"){
@@ -1252,6 +1399,8 @@ tr.appendChild(td7);
 tb.appendChild(tr);
 });
 }
+
+// Kanban avec accessibilité
 function renderKanban(){
 const list=getFiltered();
 const kw=$("kanbanWrapper");
@@ -1265,11 +1414,14 @@ cols.forEach(c=>{
 const col=document.createElement("div");
 col.className="kanban-column";
 col.dataset.statut=c.statut;
+col.setAttribute("role","group");
+col.setAttribute("aria-label",`Tâches ${c.label}`);
 const head=document.createElement("div");
 head.className="kanban-header";
 const title=document.createElement("span");
 title.className="kanban-title";
 title.textContent=c.label;
+title.id=`kanban-${c.statut.replace(/\s+/g,'-')}-label`;
 const count=document.createElement("span");
 count.className="kanban-count";
 const tasksInCol=list.filter(t=>t.statut===c.statut);
@@ -1280,6 +1432,8 @@ col.appendChild(head);
 const listEl=document.createElement("div");
 listEl.className="kanban-list";
 listEl.dataset.statut=c.statut;
+listEl.setAttribute("role","list");
+listEl.setAttribute("aria-labelledby",title.id);
 listEl.addEventListener("dragover",e=>{
 e.preventDefault();
 listEl.classList.add("drop-target");
@@ -1298,6 +1452,7 @@ await save(task.id,"statut",task.statut);
 renderKanban();
 updateStats(getFiltered());
 render();
+showToast(`✅ Déplacé dans "${c.label}"`);
 });
 tasksInCol.forEach(t=>{
 const card=document.createElement("div");
@@ -1307,10 +1462,19 @@ t.priorite==="Basse" ? "prio-basse" : "prio-moyenne"
 );
 card.draggable=true;
 card.dataset.id=t.id;
+card.setAttribute("role","listitem");
+card.setAttribute("tabindex","0");
+card.setAttribute("aria-label",`${t.task} - ${t.statut} - priorité ${t.priorite}`);
 card.addEventListener("dragstart",e=>{
 e.dataTransfer.setData("text/plain",t.id);
 });
 card.addEventListener("click",()=>openDrawer(t));
+card.addEventListener("keydown",e=>{
+if(e.key==="Enter"||e.key===" "){
+e.preventDefault();
+openDrawer(t);
+}
+});
 const lotBadge=document.createElement("div");
 lotBadge.className="kanban-badge-lot";
 lotBadge.textContent=t.lot;
@@ -1335,14 +1499,17 @@ col.appendChild(listEl);
 kw.appendChild(col);
 });
 }
+
 async function loadDB(){
 const{data,error}=await db.from("taches_noe_clery")
 .select("*")
 .order("ref",{ascending:true});
-if(error){console.error(error);return;}
+if(error){console.error(error);showToast("❌ Erreur de chargement","error");return;}
 tasks=data||[];
 renderFilters();render();setDate();
+showToast("📋 Tâches chargées");
 }
+
 async function pushDB(newTasks){
 await db.from("taches_noe_clery")
 .delete()
@@ -1360,10 +1527,36 @@ commentaire:t.commentaire
 );
 if(error){
 console.error(error);
+showToast("❌ Erreur Supabase: "+error.message,"error");
 alert("Erreur Supabase : "+error.message);
 }
 }
-// Import DPGF
+
+/* ===== EXPORT CSV ===== */
+$("exportCsvBtn")?.addEventListener("click",()=>{
+const list=getFiltered();
+if(!list.length){
+showToast("⚠️ Aucune tâche à exporter","error");
+return;
+}
+const headers=["Réf","Lot","Tâche","Intervenant","Statut","Priorité","Commentaire"];
+const rows=list.map(t=>[
+t.ref,t.lot,t.task,t.intervenant,t.statut,t.priorite,t.commentaire||""
+]);
+const csv=[headers,...rows].map(r=>
+r.map(v=>`"${(v||"").toString().replace(/"/g,'""')}"`).join(",")
+).join("\n");
+const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download=`taches-clery-${new Date().toISOString().slice(0,10)}.csv`;
+a.click();
+URL.revokeObjectURL(url);
+showToast("✓ Export CSV téléchargé");
+});
+
+/* ===== IMPORT DPGF ===== */
 $("importBtn").addEventListener("click",()=>{
 if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\nContinuer ?"))return;
 $("fileInput").click();
@@ -1415,30 +1608,28 @@ return;
 await pushDB(found);
 await loadDB();
 alert("Import terminé.");
+showToast("✅ Import DPGF terminé");
 }catch(err){
 console.error(err);
 alert("Erreur lors de la lecture du fichier Excel.");
+showToast("❌ Erreur de lecture Excel","error");
 }
 };
 reader.readAsArrayBuffer(file);
 });
-// Filtres & vues
-$("searchInput").addEventListener("input",()=>{
+
+/* ===== FILTRES DÉBOUNCÉS ===== */
+const debouncedRender=debounce(()=>{
 render();
 if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-$("filterStatut").addEventListener("change",()=>{
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-$("filterLot").addEventListener("change",()=>{
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-$("filterIntervenant").addEventListener("change",()=>{
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
+},150);
+
+$("searchInput").addEventListener("input",debouncedRender);
+$("filterStatut").addEventListener("change",debouncedRender);
+$("filterLot").addEventListener("change",debouncedRender);
+$("filterIntervenant").addEventListener("change",debouncedRender);
+
+/* ===== VUES TABLEAU / KANBAN ===== */
 $("viewTable").addEventListener("click",()=>{
 $("viewTable").classList.add("view-btn-active");
 $("viewKanban").classList.remove("view-btn-active");
@@ -1453,19 +1644,35 @@ $("tableWrapper").style.display="none";
 $("kanbanWrapper").style.display="flex";
 renderKanban();
 });
+
+/* ===== DRAWER ===== */
 $("drawerOverlay").addEventListener("click",closeDrawer);
 $("drawerClose").addEventListener("click",closeDrawer);
 window.addEventListener("keydown",e=>{
 if(e.key==="Escape") closeDrawer();
 });
-$("drawerCommentaire").addEventListener("blur",async e=>{
+
+// Sauvegarde explicite dans le drawer
+$("drawerSaveBtn")?.addEventListener("click",async()=>{
 if(!currentTask) return;
-currentTask.commentaire=e.target.value;
-await save(currentTask.id,"commentaire",currentTask.commentaire);
+const val=$("drawerCommentaire").value;
+currentTask.commentaire=val;
+await save(currentTask.id,"commentaire",val);
+const btn=$("drawerSaveBtn");
+const old=btn.textContent;
+btn.textContent="✓ Enregistré";
+btn.disabled=true;
+setTimeout(()=>{btn.textContent=old;btn.disabled=false;},1200);
 render();
 if($("kanbanWrapper").style.display!=="none") renderKanban();
+showToast("💬 Commentaire enregistré");
 });
-/* INTERVENANTS – CRUD simple */
+
+$("drawerCommentaire").addEventListener("input",()=>{
+$("drawerSaveBtn").disabled=false;
+});
+
+/* ===== INTERVENANTS – CRUD ===== */
 let intervenantsData=[];
 async function loadIntervenants(){
 const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
@@ -1499,7 +1706,10 @@ renderIntervenants();
 }
 async function saveIntervenant(id,field,val){
 const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
-if(error) console.error("Erreur save intervenant:",error);
+if(error){
+console.error("Erreur save intervenant:",error);
+showToast("❌ Erreur sauvegarde intervenant","error");
+}
 }
 async function deleteIntervenant(id){
 if(!confirm("Supprimer cet intervenant ?"))return;
@@ -1507,12 +1717,14 @@ const{error}=await db.from(INTER_TABLE).delete().eq("id",id);
 if(error){
 console.error(error);
 alert("Erreur Supabase : "+error.message);
+showToast("❌ Erreur suppression","error");
 return;
 }
 await loadIntervenants();
 renderFilters();
 render();
 if($("kanbanWrapper").style.display!=="none") renderKanban();
+showToast("🗑️ Intervenant supprimé");
 }
 function renderIntervenants(){
 const g=document.getElementById("intervenantsGrid");
@@ -1523,26 +1735,26 @@ c.className="inter-card";
 c.innerHTML=
 `<div class="inter-row">
 <span class="inter-label">Nom</span>
-<input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}">
+<input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}" aria-label="Nom">
 </div>
 <div class="inter-row">
 <span class="inter-label">Rôle</span>
-<input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}">
+<input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}" aria-label="Rôle">
 </div>
 <div class="inter-row">
 <span class="inter-label">Téléphone</span>
-<input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}">
+<input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}" aria-label="Téléphone">
 </div>
 <div class="inter-row">
 <span class="inter-label">Email</span>
-<input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}">
+<input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}" aria-label="Email">
 </div>
 <div class="inter-row">
 <span class="inter-label">Note</span>
-<input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}">
+<input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}" aria-label="Note">
 </div>
 <div class="inter-row">
-<button class="photo-delete" data-delete="${i.id}">Supprimer</button>
+<button class="photo-delete" data-delete="${i.id}" aria-label="Supprimer ${i.nom}">Supprimer</button>
 </div>`;
 g.appendChild(c);
 });
@@ -1556,6 +1768,7 @@ await saveIntervenant(id,field,e.target.value);
 await loadIntervenants();
 renderFilters();
 render();
+showToast("✅ Intervenant mis à jour");
 });
 });
 g.querySelectorAll("[data-delete]").forEach(btn=>{
@@ -1577,6 +1790,7 @@ const { data, error } = await db
 if (error) {
 console.error(error);
 alert("Erreur Supabase : " + error.message);
+showToast("❌ Erreur d'ajout","error");
 return;
 }
 if (data && data.length) {
@@ -1585,14 +1799,17 @@ intervenantsData.push(data[0]);
 await loadIntervenants();
 renderFilters();
 render();
+showToast("✅ Intervenant ajouté");
 });
-/* PHOTOS – Upload & galerie */
+
+/* ===== PHOTOS ===== */
 const photosGrid=$("photosGrid");
 const photosEmpty=$("photosEmpty");
 async function loadPhotos(){
 const{data,error}=await db.storage.from(PHOTOS_BUCKET).list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
 if(error){
 console.error(error);
+showToast("❌ Erreur chargement photos","error");
 return;
 }
 const files=data||[];
@@ -1620,15 +1837,18 @@ nameSpan.textContent=file.name;
 const delBtn=document.createElement("button");
 delBtn.className="photo-delete";
 delBtn.textContent="Suppr.";
+delBtn.setAttribute("aria-label",`Supprimer ${file.name}`);
 delBtn.addEventListener("click",async ()=>{
 if(!confirm("Supprimer cette photo ?"))return;
 const{error:delErr}=await db.storage.from(PHOTOS_BUCKET).remove([file.name]);
 if(delErr){
 console.error(delErr);
 alert("Erreur Supabase : "+delErr.message);
+showToast("❌ Erreur suppression photo","error");
 return;
 }
 loadPhotos();
+showToast("🗑️ Photo supprimée");
 });
 meta.appendChild(nameSpan);
 meta.appendChild(delBtn);
@@ -1653,12 +1873,15 @@ const { error } = await db.storage.from(PHOTOS_BUCKET).upload(path, file, { upse
 if(error){
 console.error(error);
 alert("Erreur upload photo : "+error.message);
+showToast("❌ Erreur upload","error");
 return;
 }
 }
 e.target.value="";
 loadPhotos();
+showToast("✅ Photos importées");
 });
+
 // Initialisation
 loadIntervenants();
 loadDB();
