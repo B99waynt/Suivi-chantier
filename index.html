@@ -9,946 +9,1180 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
---red:#dc2626;
---red-soft:#ef4444;
---red-dark:#991b1b;
---bg:#f3f4f6;
---card:#ffffff;
---border:#e5e7eb;
---text:#111827;
---text2:#4b5563;
---text3:#9ca3af;
---green:#16a34a;
---orange:#f97316;
---shadow:0 1px 3px rgba(15,23,42,.12);
---shadow-md:0 10px 30px rgba(15,23,42,.16);
---r:14px;
---rl:18px;
---rs:10px;
+/* Couleurs Technicombles - Nuances plus sophistiquées */
+--red:#c92a2a;
+--red-hover:#b02525;
+--red-light:#fff5f5;
+--red-border:#ffc9c9;
+--red-dark:#862e2e;
+
+/* Neutres - Gris plus froids pour côté pro */
+--bg:#f8f9fa;
+--bg-alt:#ffffff;
+--border:#dee2e6;
+--border-light:#e9ecef;
+
+/* Texte - Hiérarchie claire */
+--text:#212529;
+--text-secondary:#495057;
+--text-tertiary:#868e96;
+
+/* Statuts */
+--success:#2b8a3e;
+--success-light:#ebfbee;
+--warning:#e67700;
+--warning-light:#fff4e6;
+--info:#1864ab;
+--info-light:#e7f5ff;
+
+/* Ombres - Plus subtiles */
+--shadow-sm:0 1px 2px rgba(0,0,0,0.04);
+--shadow:0 2px 8px rgba(0,0,0,0.06);
+--shadow-md:0 4px 16px rgba(0,0,0,0.08);
+
+/* Rayons - Réduits pour côté pro */
+--r:4px;
+--r-md:6px;
+--r-lg:8px;
 }
+
 *{box-sizing:border-box;margin:0;padding:0;}
+
 body{
-font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-background:radial-gradient(circle at top left,#f9fafb,#f3f4f6);
+font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+background:var(--bg);
 color:var(--text);
 min-height:100vh;
 font-size:14px;
-display:flex;
+line-height:1.5;
+-webkit-font-smoothing:antialiased;
+-moz-osx-font-smoothing:grayscale;
 }
-::-webkit-scrollbar{width:6px;height:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:999px;}
+
+/* Scrollbars discrètes */
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#ced4da;border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:#adb5bd;}
+
 .layout{
 display:flex;
 width:100%;
 min-height:100vh;
-padding:20px;
 }
+
 .shell{
-background:#f9fafb;
-border-radius:22px;
-box-shadow:0 18px 40px rgba(15,23,42,.15);
 display:flex;
 width:100%;
-overflow:hidden;
+background:var(--bg-alt);
 }
-/* SIDEBAR */
+
+/* SIDEBAR - Plus épurée */
 .sidebar{
-width:220px;
-background:linear-gradient(180deg,#dc2626,#991b1b);
-padding:24px 16px 18px;
+width:240px;
+background:var(--red);
+padding:0;
 display:flex;
 flex-direction:column;
-border-radius:18px;
+flex-shrink:0;
 }
+
+.sidebar-header{
+padding:24px 20px;
+border-bottom:1px solid rgba(255,255,255,0.15);
+}
+
+.sidebar-logo{
+display:flex;
+align-items:center;
+gap:12px;
+color:#fff;
+}
+
+.sidebar-logo img{
+height:40px;
+width:auto;
+}
+
+.sidebar-logo-text{
+font-size:1.1rem;
+font-weight:600;
+letter-spacing:-0.02em;
+}
+
+.sidebar-logo-sub{
+font-size:0.75rem;
+opacity:0.85;
+margin-top:2px;
+font-weight:400;
+}
+
+.nav-section{
+padding:20px 12px;
+flex:1;
+}
+
 .nav-label{
-font-size:.95rem;
-color:#fecaca;
-margin:0 4px 18px;
-font-weight:700;
-text-transform:none;
-letter-spacing:.02em;
+font-size:0.7rem;
+text-transform:uppercase;
+letter-spacing:0.08em;
+color:rgba(255,255,255,0.6);
+margin:0 8px 12px;
+font-weight:600;
 }
+
 .nav-item{
 display:flex;
 align-items:center;
-padding:10px 16px;
-border-radius:999px;
-color:#ffffff;
-font-size:1rem;
-font-weight:700;
-cursor:pointer;
-opacity:.9;
-transition:background .12s,opacity .12s,transform .08s;
-}
-.nav-item.active{
-background:rgba(255,255,255,.24);
-opacity:1;
-}
-.nav-item:hover{
-background:rgba(255,255,255,.2);
-opacity:1;
-transform:translateX(1px);
-}
-.sidebar-footer{
-margin-top:auto;
-padding-top:18px;
-border-top:1px solid rgba(255,255,255,.18);
-font-size:.8rem;
-color:#fecaca;
-display:flex;
-flex-direction:column;
-gap:4px;
+gap:10px;
+padding:10px 12px;
+border-radius:var(--r);
+color:#fff;
+font-size:0.9rem;
 font-weight:500;
+cursor:pointer;
+transition:all 0.15s ease;
+margin-bottom:2px;
 }
+
+.nav-item:hover{
+background:rgba(255,255,255,0.12);
+}
+
+.nav-item.active{
+background:rgba(255,255,255,0.2);
+font-weight:600;
+}
+
+.nav-item svg{
+width:18px;
+height:18px;
+opacity:0.9;
+}
+
+.sidebar-footer{
+padding:16px 20px;
+border-top:1px solid rgba(255,255,255,0.15);
+font-size:0.75rem;
+color:rgba(255,255,255,0.7);
+}
+
 /* MAIN */
 .main{
 flex:1;
 min-width:0;
 display:flex;
 flex-direction:column;
-background:#f9fafb;
+background:var(--bg);
 }
-/* TOPBAR */
+
+/* TOPBAR - Fusionnée avec titre */
 .topbar{
-height:96px;
+height:64px;
 padding:0 32px;
 display:flex;
 align-items:center;
 justify-content:space-between;
 border-bottom:1px solid var(--border);
-background:#ffffff;
+background:var(--bg-alt);
+position:sticky;
+top:0;
+z-index:10;
 }
-.topbar-left{
+
+.topbar-title{
 display:flex;
 align-items:center;
-gap:26px;
+gap:16px;
 }
-.topbar-logo img{
-height:72px;
-width:auto;
-border-radius:0;
-background:transparent;
-object-fit:contain;
-box-shadow:none;
+
+.topbar-title h1{
+font-size:1.1rem;
+font-weight:600;
+color:var(--text);
+letter-spacing:-0.02em;
 }
+
+.topbar-title span{
+color:var(--text-tertiary);
+font-weight:400;
+}
+
 .topbar-right{
-font-size:.8rem;
-color:var(--text3);
+display:flex;
+align-items:center;
+gap:16px;
+font-size:0.8rem;
+color:var(--text-tertiary);
 }
+
+.btn-export{
+padding:8px 16px;
+background:var(--red);
+color:#fff;
+border:none;
+border-radius:var(--r);
+font-size:0.85rem;
+font-weight:500;
+cursor:pointer;
+transition:background 0.15s;
+}
+
+.btn-export:hover{
+background:var(--red-hover);
+}
+
 .main-inner{
-padding:18px 24px 20px;
+padding:24px 32px;
 display:flex;
 flex-direction:column;
-gap:14px;
+gap:24px;
+flex:1;
 overflow:auto;
 }
+
 .view-section{
 display:none;
 flex-direction:column;
-gap:14px;
+gap:24px;
 }
+
 .view-section.active{
 display:flex;
 }
+
+/* Section Header */
 .section-header{
 display:flex;
 justify-content:space-between;
-align-items:center;
+align-items:flex-start;
 }
+
 .section-title{
-font-size:1.35rem;
-font-weight:800;
-color:var(--red-dark);
+font-size:1.5rem;
+font-weight:600;
+color:var(--text);
+letter-spacing:-0.03em;
 margin-bottom:4px;
 }
+
 .section-sub{
-font-size:.85rem;
-color:var(--text3);
+font-size:0.9rem;
+color:var(--text-tertiary);
+font-weight:400;
 }
-/* STATS */
+
+/* STATS - Plus épurées */
 .stats-grid{
 display:grid;
-grid-template-columns:repeat(4,minmax(0,1fr));
-gap:10px;
+grid-template-columns:repeat(4,1fr);
+gap:16px;
 }
+
 .stat-card{
-background:var(--card);
-border-radius:18px;
+background:var(--bg-alt);
 border:1px solid var(--border);
-box-shadow:var(--shadow);
-padding:10px 12px;
+border-radius:var(--r-lg);
+padding:20px;
 display:flex;
 flex-direction:column;
-gap:4px;
+gap:8px;
+transition:box-shadow 0.15s;
 }
+
+.stat-card:hover{
+box-shadow:var(--shadow-md);
+}
+
 .stat-card-label{
-font-size:.8rem;
-color:var(--red-dark);
+font-size:0.75rem;
+text-transform:uppercase;
+letter-spacing:0.06em;
+color:var(--text-tertiary);
 font-weight:600;
 }
+
 .stat-card-value{
-font-size:1.6rem;
-font-weight:800;
-color:var(--red-dark);
+font-size:2rem;
+font-weight:700;
+color:var(--text);
+letter-spacing:-0.03em;
+line-height:1;
 }
+
+.stat-card-value.accent{
+color:var(--red);
+}
+
 .stat-card-note{
-font-size:.75rem;
-color:var(--text3);
+font-size:0.8rem;
+color:var(--text-tertiary);
 }
+
 /* PANEL */
 .panel{
-background:#ffffff;
-border-radius:20px;
-border:1px solid #fee2e2;
-box-shadow:0 18px 40px rgba(15,23,42,.09);
-padding:12px 14px 16px;
+background:var(--bg-alt);
+border:1px solid var(--border);
+border-radius:var(--r-lg);
+box-shadow:var(--shadow-sm);
+padding:20px;
 display:flex;
 flex-direction:column;
-gap:10px;
-min-height:0;
+gap:16px;
 }
+
 /* Filtres */
 .filterbar{
-display:flex;align-items:center;gap:8px;
+display:flex;
+align-items:center;
+gap:12px;
 flex-wrap:wrap;
 }
+
 .sbox{
-display:flex;align-items:center;gap:7px;
-background:#f9fafb;
+display:flex;
+align-items:center;
+gap:8px;
+background:var(--bg);
 border:1px solid var(--border);
-border-radius:999px;
-padding:6px 11px;
-flex:1;min-width:180px;max-width:260px;
+border-radius:var(--r);
+padding:8px 12px;
+flex:1;
+min-width:200px;
+max-width:280px;
+transition:border-color 0.15s;
 }
-.sbox svg{color:var(--text3);flex-shrink:0;}
+
+.sbox:focus-within{
+border-color:var(--red);
+}
+
+.sbox svg{
+color:var(--text-tertiary);
+width:16px;
+height:16px;
+flex-shrink:0;
+}
+
 .sbox input{
-border:none;background:transparent;
-font-size:.82rem;color:var(--text);
-outline:none;width:100%;
+border:none;
+background:transparent;
+font-size:0.9rem;
+color:var(--text);
+outline:none;
+width:100%;
 font-family:inherit;
 }
-.sbox input::placeholder{color:var(--text3);}
+
+.sbox input::placeholder{
+color:var(--text-tertiary);
+}
+
 .fsel{
 appearance:none;
-background:#fef2f2
-url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fca5a5' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
-no-repeat right 10px center;
-border:1.5px solid #fee2e2;
-border-radius:999px;
-padding:7px 26px 7px 12px;
-font-size:.8rem;
-color:var(--red-dark);
+background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23868e96' stroke-width='2' d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+border:1px solid var(--border);
+border-radius:var(--r);
+padding:8px 36px 8px 12px;
+font-size:0.9rem;
+color:var(--text);
 cursor:pointer;
 font-family:inherit;
-font-weight:600;
+font-weight:500;
+transition:border-color 0.15s;
 }
+
 .fsel:hover{
-background:#fee2e2
-url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23dc2626' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
-no-repeat right 10px center;
+border-color:var(--text-tertiary);
 }
+
 .fsel:focus{
 outline:none;
 border-color:var(--red);
-box-shadow:0 0 0 2px rgba(220,38,38,.18);
 }
+
 .tbl-header{
-display:flex;align-items:center;justify-content:space-between;
-gap:10px;
-flex-wrap:wrap;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:16px;
+padding-bottom:12px;
+border-bottom:1px solid var(--border-light);
 }
+
 .tbl-title{
 font-size:1rem;
-font-weight:700;
-color:var(--red-dark);
+font-weight:600;
+color:var(--text);
 }
+
 .tbl-actions{
 display:flex;
-gap:6px;
+gap:8px;
 align-items:center;
-margin-left:auto;
-margin-right:8px;
-flex-wrap:wrap;
 }
+
 .view-btn{
-border-radius:999px;
+border-radius:var(--r);
 border:1px solid var(--border);
-background:#f9fafb;
-padding:4px 9px;
-font-size:.8rem;
+background:var(--bg);
+padding:6px 12px;
+font-size:0.85rem;
 cursor:pointer;
-color:var(--text3);
-font-weight:600;
+color:var(--text-secondary);
+font-weight:500;
+transition:all 0.15s;
 }
+
+.view-btn:hover{
+background:var(--border-light);
+}
+
 .view-btn-active{
 border-color:var(--red);
-color:var(--red-dark);
-background:#fee2e2;
+color:var(--red);
+background:var(--red-light);
 }
-/* TABLE - MOBILE CARD VIEW */
+
+/* TABLE */
 .tw{
-background:#fcfcfc;
-border-radius:16px;
-box-shadow:none;
+background:var(--bg-alt);
+border:1px solid var(--border);
+border-radius:var(--r-lg);
 overflow:auto;
-border:1px solid #e5e7eb;
-max-height:55vh;
+max-height:60vh;
 }
+
 table{
 width:100%;
 border-collapse:collapse;
-font-size:.83rem;
+font-size:0.9rem;
 }
+
 thead{
-background:#f9fafb;
+background:var(--bg);
 border-bottom:1px solid var(--border);
-}
-thead th{
-padding:8px 12px;
-text-align:left;
-font-size:.68rem;
-font-weight:600;
-color:var(--red-dark);
-letter-spacing:.06em;
-text-transform:uppercase;
-white-space:nowrap;
 position:sticky;
 top:0;
 z-index:2;
-background:#f9fafb;
 }
-tbody tr{
-border-bottom:1px solid var(--border);
-border-left:2px solid transparent;
-transition:background .08s,border-left-color .08s;
-}
-tbody tr:last-child{border-bottom:none;}
-tbody tr:nth-child(even){background:#f9fafb;}
-tbody tr:hover{background:#fef2f2;}
-td{
-padding:8px 12px;
-vertical-align:middle;
+
+thead th{
+padding:12px 16px;
+text-align:left;
+font-size:0.75rem;
+font-weight:600;
+color:var(--text-tertiary);
+letter-spacing:0.04em;
+text-transform:uppercase;
 white-space:nowrap;
 }
-td.r{
-font-size:.72rem;
-font-weight:600;
-color:#6b7280;
+
+tbody tr{
+border-bottom:1px solid var(--border-light);
+transition:background 0.1s;
 }
+
+tbody tr:last-child{
+border-bottom:none;
+}
+
+tbody tr:hover{
+background:var(--red-light);
+}
+
+td{
+padding:12px 16px;
+vertical-align:middle;
+}
+
+td.r{
+font-size:0.8rem;
+font-weight:600;
+color:var(--text-tertiary);
+font-family:'SF Mono',Monaco,'Courier New',monospace;
+}
+
 td.l{
-font-size:.75rem;
-color:#6b7280;
-max-width:120px;
+font-size:0.85rem;
+color:var(--text-secondary);
+max-width:150px;
 overflow:hidden;
 text-overflow:ellipsis;
 }
+
 td.t{
 white-space:normal;
-max-width:320px;
-font-size:.9rem;
-font-weight:700;
-color:var(--red-dark);
+max-width:350px;
+font-size:0.9rem;
+font-weight:500;
+color:var(--text);
 line-height:1.4;
 display:flex;
 align-items:center;
 }
-td.td-comment{
-min-width:260px;
-width:300px;
-}
+
 .status-dot{
 display:inline-block;
-width:10px;height:10px;
+width:8px;
+height:8px;
 border-radius:50%;
-margin-right:8px;
+margin-right:10px;
 flex-shrink:0;
 }
-.ss{
+
+td.td-comment{
+min-width:250px;
+width:300px;
+}
+
+/* Selects inline */
+.ss,.sp,.si{
 appearance:none;
 border:none;
-border-radius:999px;
-padding:4px 12px;
-font-size:.75rem;
-font-weight:600;
+border-radius:var(--r);
+padding:6px 10px;
+font-size:0.85rem;
+font-weight:500;
 cursor:pointer;
 font-family:inherit;
 outline:none;
-min-width:90px;
+transition:box-shadow 0.15s;
+}
+
+.ss:focus,.sp:focus,.si:focus{
+box-shadow:0 0 0 2px var(--red-light);
+}
+
+.ss{
+min-width:100px;
 text-align:center;
 }
-.saf{background:#fee2e2;color:#b91c1c;}
-.sec{background:#ffedd5;color:#c2410c;}
-.sok{background:#dcfce7;color:#15803d;}
+
+.saf{background:var(--red-light);color:var(--red-dark);}
+.sec{background:var(--warning-light);color:var(--warning);}
+.sok{background:var(--success-light);color:var(--success);}
+
 .sp{
-appearance:none;
-border-radius:999px;
-padding:3px 9px;
-font-size:.71rem;
-font-weight:600;
-cursor:pointer;
-font-family:inherit;
-outline:none;
-border:1.5px solid transparent;
+min-width:90px;
+border:1px solid transparent;
 }
-.ph{background:#fee2e2;color:#b91c1c;border-color:#fecaca;}
-.pm{background:#ffedd5;color:#c2410c;border-color:#fed7aa;}
-.pb{background:#e5e7eb;color:#4b5563;border-color:#d1d5db;}
+
+.ph{background:var(--red-light);color:var(--red-dark);}
+.pm{background:var(--warning-light);color:var(--warning);}
+.pb{background:var(--bg);color:var(--text-secondary);border-color:var(--border);}
+
 .si{
-appearance:none;
-background:#f3f4f6;
-border:1.5px solid var(--border);
-border-radius:999px;
-padding:4px 9px;
-font-size:.8rem;
-color:var(--text2);
-cursor:pointer;
-font-family:inherit;
-outline:none;
+background:var(--bg);
+border:1px solid var(--border);
 min-width:140px;
+color:var(--text-secondary);
 }
+
 .ci{
 width:100%;
-background:#f9fafb;
-border:1.5px solid var(--border);
-border-radius:999px;
-padding:6px 11px;
-font-size:.84rem;
+background:var(--bg);
+border:1px solid var(--border);
+border-radius:var(--r);
+padding:8px 12px;
+font-size:0.9rem;
 color:var(--text);
 font-family:inherit;
 outline:none;
-min-height:30px;
-transition:border-color .15s,box-shadow .15s;
+transition:border-color 0.15s;
 }
-.ci::placeholder{color:var(--text3);font-style:italic;}
-.ci.saved{
-border-color:var(--green);
-box-shadow:0 0 0 2px rgba(22,163,74,.2);
-}
-.si:focus,.ss:focus,.sp:focus,.ci:focus{
-border-color:var(--red);
-box-shadow:0 0 0 2px rgba(220,38,38,.16);
-background:#ffffff;
-}
-.empty{text-align:center;padding:40px 20px;color:var(--text3);}
-.empty p{font-size:.9rem;font-weight:500;color:var(--text2);margin-top:12px;}
-.empty span{font-size:.8rem;}
 
-/* MOBILE CARD VIEW - VRAIE AMÉLIORATION */
-.mobile-cards{
-display:none;
-flex-direction:column;
-gap:10px;
+.ci::placeholder{
+color:var(--text-tertiary);
 }
-.mobile-card{
-background:var(--card);
-border-radius:14px;
-border:1px solid var(--border);
-border-left:4px solid transparent;
-padding:12px;
-cursor:pointer;
-transition:background .08s;
+
+.ci:focus{
+border-color:var(--red);
+background:var(--bg-alt);
 }
-.mobile-card:hover{background:#fef2f2;}
-.mobile-card-header{
-display:flex;
-justify-content:space-between;
-align-items:flex-start;
-margin-bottom:8px;
+
+.empty{
+text-align:center;
+padding:60px 20px;
+color:var(--text-tertiary);
 }
-.mobile-card-ref{
-font-size:.7rem;
-color:var(--text3);
-font-weight:600;
+
+.empty svg{
+opacity:0.3;
+margin-bottom:16px;
 }
-.mobile-card-status{
-font-size:.7rem;
-padding:2px 8px;
-border-radius:999px;
-font-weight:600;
-}
-.mobile-card-task{
-font-size:.9rem;
-font-weight:700;
-color:var(--red-dark);
-margin-bottom:8px;
-line-height:1.4;
-}
-.mobile-card-meta{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-font-size:.75rem;
-color:var(--text2);
-}
-.mobile-card-meta-item{
-display:flex;
-align-items:center;
-gap:4px;
-}
-.mobile-card-comment{
+
+.empty p{
+font-size:0.95rem;
+font-weight:500;
+color:var(--text-secondary);
 margin-top:8px;
-padding-top:8px;
-border-top:1px solid var(--border);
-font-size:.8rem;
-color:var(--text3);
-font-style:italic;
 }
 
 /* KANBAN */
 .kanban{
-margin-top:6px;
 display:flex;
-gap:10px;
+gap:16px;
 align-items:flex-start;
 overflow-x:auto;
+padding-bottom:8px;
 }
+
 .kanban-column{
-background:#f9fafb;
-border-radius:var(--rs);
+background:var(--bg);
 border:1px solid var(--border);
-min-width:240px;
-max-width:300px;
+border-radius:var(--r-lg);
+min-width:280px;
+max-width:320px;
 flex:1;
 display:flex;
 flex-direction:column;
-max-height:55vh;
+max-height:60vh;
 }
+
 .kanban-header{
-padding:8px 10px;
+padding:14px 16px;
 border-bottom:1px solid var(--border);
 display:flex;
 justify-content:space-between;
 align-items:center;
 }
+
 .kanban-title{
-font-size:.78rem;
+font-size:0.85rem;
 font-weight:600;
-color:var(--text2);
+color:var(--text);
 }
+
 .kanban-count{
-font-size:.72rem;
-color:var(--text3);
-background:#e5e7eb;
-padding:1px 7px;
+font-size:0.75rem;
+color:var(--text-tertiary);
+background:var(--bg-alt);
+border:1px solid var(--border);
+padding:2px 8px;
 border-radius:999px;
 }
+
 .kanban-list{
-padding:8px;
+padding:12px;
 overflow-y:auto;
 flex:1;
 }
+
 .kanban-card{
-background:var(--card);
-border-radius:var(--rs);
+background:var(--bg-alt);
 border:1px solid var(--border);
-padding:7px 9px;
-margin-bottom:8px;
+border-radius:var(--r);
+padding:12px;
+margin-bottom:10px;
 cursor:grab;
-font-size:.8rem;
-position:relative;
+font-size:0.85rem;
 border-left:3px solid transparent;
-transition:opacity .1s,transform .1s;
+transition:box-shadow 0.15s;
 }
+
+.kanban-card:hover{
+box-shadow:var(--shadow);
+}
+
 .kanban-card[draggable="true"]:active{
-opacity:0.7;
-transform:scale(0.98);
 cursor:grabbing;
 }
-.kanban-card.prio-haute{border-left-color:#b91c1c;}
-.kanban-card.prio-moyenne{border-left-color:#c2410c;}
-.kanban-card.prio-basse{border-left-color:#9ca3af;}
+
+.kanban-card.prio-haute{border-left-color:var(--red);}
+.kanban-card.prio-moyenne{border-left-color:var(--warning);}
+.kanban-card.prio-basse{border-left-color:var(--text-tertiary);}
+
 .kanban-badge-lot{
 display:inline-block;
-font-size:.7rem;
-padding:2px 7px;
-border-radius:999px;
-background:#fef2f2;
-color:#4b5563;
-margin-bottom:4px;
-font-weight:600;
+font-size:0.7rem;
+padding:3px 8px;
+border-radius:var(--r);
+background:var(--bg);
+color:var(--text-tertiary);
+margin-bottom:6px;
+font-weight:500;
+text-transform:uppercase;
+letter-spacing:0.04em;
 }
+
 .kanban-card-title{
 font-weight:600;
-margin-bottom:4px;
+margin-bottom:6px;
+color:var(--text);
 }
+
 .kanban-card-meta{
-font-size:.75rem;
-color:var(--text3);
+font-size:0.75rem;
+color:var(--text-tertiary);
 }
+
 .kanban-card-comment{
-margin-top:4px;
-font-size:.75rem;
-color:var(--text2);
+margin-top:8px;
+padding-top:8px;
+border-top:1px solid var(--border-light);
+font-size:0.8rem;
+color:var(--text-secondary);
+font-style:italic;
 }
+
 .kanban-list.drop-target{
-background:#fefce8;
-border-radius:var(--rs);
+background:var(--warning-light);
 }
+
 /* INTERVENANTS */
 .intervenants-grid{
 display:grid;
-grid-template-columns:repeat(3,minmax(0,1fr));
-gap:12px;
+grid-template-columns:repeat(3,1fr);
+gap:16px;
 }
+
 .inter-card{
-background:var(--card);
-border-radius:18px;
+background:var(--bg-alt);
 border:1px solid var(--border);
-box-shadow:var(--shadow);
-padding:10px 12px;
+border-radius:var(--r-lg);
+padding:16px;
 display:flex;
 flex-direction:column;
-gap:6px;
+gap:10px;
 }
+
 .inter-input{
 width:100%;
 border:1px solid var(--border);
-border-radius:999px;
-padding:6px 10px;
-font-size:.82rem;
+border-radius:var(--r);
+padding:8px 10px;
+font-size:0.85rem;
 font-family:inherit;
 outline:none;
+transition:border-color 0.15s;
 }
-.inter-input::placeholder{color:var(--text3);}
+
 .inter-input:focus{
 border-color:var(--red);
-box-shadow:0 0 0 2px rgba(220,38,38,.14);
 }
+
 .inter-label{
-font-size:.78rem;
-color:var(--text3);
+font-size:0.75rem;
+color:var(--text-tertiary);
 font-weight:500;
+text-transform:uppercase;
+letter-spacing:0.04em;
 }
+
 .inter-row{
 display:flex;
 flex-direction:column;
-gap:3px;
+gap:4px;
 }
+
 .inter-name-input{
-font-weight:700;
+font-weight:600;
 }
-/* DOCUMENTS */
-.doc-actions{
+
+.btn-add{
+padding:10px 20px;
+background:var(--red);
+color:#fff;
+border:none;
+border-radius:var(--r);
+font-size:0.9rem;
+font-weight:500;
+cursor:pointer;
+transition:background 0.15s;
+}
+
+.btn-add:hover{
+background:var(--red-hover);
+}
+
+/* DOCUMENTS & PHOTOS */
+.doc-actions,.photos-actions{
 display:flex;
 align-items:center;
-gap:10px;
-margin-top:6px;
+gap:12px;
 }
-.btn-doc-import{
-border:none;
-border-radius:999px;
-padding:8px 16px;
+
+.btn-import{
+padding:10px 20px;
 background:var(--red);
-color:#ffffff;
-font-size:.85rem;
-font-weight:700;
-cursor:pointer;
-box-shadow:0 10px 24px rgba(220,38,38,.4);
-}
-.doc-note{
-font-size:.8rem;
-color:var(--text2);
-}
-/* PHOTOS */
-.photos-actions{
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:6px;
-margin-bottom:6px;
-flex-wrap:wrap;
-}
-.btn-photo-import{
+color:#fff;
 border:none;
-border-radius:999px;
-padding:8px 16px;
-background:var(--red);
-color:#ffffff;
-font-size:.85rem;
-font-weight:700;
+border-radius:var(--r);
+font-size:0.9rem;
+font-weight:500;
 cursor:pointer;
-box-shadow:0 10px 24px rgba(220,38,38,.4);
+transition:background 0.15s;
 }
-.photos-note{
-font-size:.8rem;
-color:var(--text2);
+
+.btn-import:hover{
+background:var(--red-hover);
 }
+
+.note{
+font-size:0.85rem;
+color:var(--text-tertiary);
+}
+
 .photos-grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-gap:10px;
-margin-top:8px;
+grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+gap:16px;
 }
+
 .photo-card{
-background:#ffffff;
-border-radius:14px;
-border:1px solid #e5e7eb;
+background:var(--bg-alt);
+border:1px solid var(--border);
+border-radius:var(--r-lg);
 overflow:hidden;
-box-shadow:0 2px 8px rgba(15,23,42,.06);
-display:flex;
-flex-direction:column;
+transition:box-shadow 0.15s;
 }
+
+.photo-card:hover{
+box-shadow:var(--shadow-md);
+}
+
 .photo-card img{
 width:100%;
-height:120px;
+height:140px;
 object-fit:cover;
 display:block;
 }
+
 .photo-meta{
-padding:6px 8px;
-font-size:.75rem;
-color:#6b7280;
+padding:10px 12px;
+font-size:0.8rem;
+color:var(--text-secondary);
 display:flex;
 justify-content:space-between;
 align-items:center;
-gap:6px;
+gap:8px;
 }
+
 .photo-name{
 overflow:hidden;
 text-overflow:ellipsis;
 white-space:nowrap;
 }
-.photo-delete{
+
+.btn-delete{
 border:none;
 background:transparent;
-color:#b91c1c;
-font-size:.75rem;
+color:var(--red);
+font-size:0.8rem;
 cursor:pointer;
+font-weight:500;
 }
+
+.btn-delete:hover{
+text-decoration:underline;
+}
+
 /* DRAWER */
 .drawer{
 position:fixed;
 inset:0;
 pointer-events:none;
-z-index:120;
+z-index:100;
 }
+
 .drawer-overlay{
 position:absolute;
 inset:0;
-background:rgba(15,23,42,.35);
+background:rgba(33,37,41,0.4);
+backdrop-filter:blur(2px);
 opacity:0;
-transition:opacity .18s;
+transition:opacity 0.2s;
 }
+
 .drawer-panel{
 position:absolute;
-top:0;right:0;
+top:0;
+right:0;
 height:100%;
 width:480px;
 max-width:100%;
-background:var(--card);
-box-shadow:-12px 0 30px rgba(15,23,42,.35);
+background:var(--bg-alt);
+box-shadow:var(--shadow-md);
 transform:translateX(100%);
-transition:transform .22s;
+transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);
 display:flex;
 flex-direction:column;
-border-top-left-radius:18px;
-border-bottom-left-radius:18px;
 }
-.drawer-body{
-padding:24px 22px 20px;
-display:flex;
-flex-direction:column;
-gap:12px;
-height:100%;
-overflow:hidden;
-}
+
 .drawer-open .drawer{
 pointer-events:auto;
 }
+
 .drawer-open .drawer-overlay{
 opacity:1;
 }
+
 .drawer-open .drawer-panel{
 transform:translateX(0);
 }
+
+.drawer-header{
+padding:20px 24px;
+border-bottom:1px solid var(--border);
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+}
+
 .drawer-close{
 border:none;
 background:transparent;
-font-size:1.3rem;
+font-size:1.5rem;
 line-height:1;
-padding:8px 12px;
 cursor:pointer;
-color:var(--text3);
-align-self:flex-end;
+color:var(--text-tertiary);
+padding:4px;
+transition:color 0.15s;
 }
-.drawer-body h2{
-font-size:1rem;
-margin-bottom:4px;
+
+.drawer-close:hover{
+color:var(--text);
+}
+
+.drawer-body{
+padding:24px;
 display:flex;
-justify-content:space-between;
-align-items:center;
-gap:8px;
+flex-direction:column;
+gap:20px;
+flex:1;
+overflow:auto;
 }
-.drawer-ref{
-font-size:.8rem;
-color:var(--text3);
-margin-bottom:14px;
-}
-.drawer-status-pill{
-font-size:.7rem;
-padding:3px 8px;
-border-radius:999px;
-background:#fef2f2;
-color:var(--red-dark);
-white-space:nowrap;
+
+.drawer-title{
+font-size:1.1rem;
 font-weight:600;
+color:var(--text);
+margin-bottom:4px;
 }
+
+.drawer-ref{
+font-size:0.8rem;
+color:var(--text-tertiary);
+font-family:'SF Mono',Monaco,'Courier New',monospace;
+}
+
+.drawer-status{
+display:inline-block;
+font-size:0.75rem;
+padding:4px 10px;
+border-radius:999px;
+font-weight:600;
+margin-top:8px;
+}
+
 .drawer-field{
 display:flex;
 align-items:center;
 justify-content:space-between;
+padding:12px 0;
+border-bottom:1px solid var(--border-light);
+}
+
+.df-label{
+color:var(--text-tertiary);
+font-size:0.85rem;
+font-weight:500;
+}
+
+.df-value{
+color:var(--text);
+font-weight:500;
+font-size:0.9rem;
+}
+
+.drawer-comment-label{
+font-size:0.85rem;
+color:var(--text-tertiary);
+font-weight:500;
 margin-bottom:8px;
-font-size:.85rem;
 }
-.df-label{color:var(--text3);}
-.df-value{color:var(--text2);font-weight:500;margin-left:10px;}
-.drawer-block{
-margin-top:14px;
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-.drawer-comment-wrapper{
-background:#f9fafb;
-border-radius:var(--r);
-padding:8px;
-border:1px solid var(--border);
-}
+
 .drawer-textarea{
-min-height:70px;
-resize:vertical;
-border-radius:var(--r);
-border:1.5px solid var(--border);
-padding:7px 9px;
-font-family:inherit;
-font-size:.85rem;
 width:100%;
-background:#ffffff;
+min-height:100px;
+resize:vertical;
+border:1px solid var(--border);
+border-radius:var(--r);
+padding:12px;
+font-family:inherit;
+font-size:0.9rem;
+background:var(--bg);
+outline:none;
+transition:border-color 0.15s;
 }
-.drawer-textarea::placeholder{
-color:var(--text3);
-font-style:italic;
+
+.drawer-textarea:focus{
+border-color:var(--red);
+background:var(--bg-alt);
 }
+
 .drawer-save-btn{
-margin-top:8px;
+margin-top:auto;
 align-self:flex-end;
 border:none;
-border-radius:999px;
-padding:6px 14px;
+border-radius:var(--r);
+padding:10px 24px;
 background:var(--red);
 color:#fff;
-font-size:.8rem;
-font-weight:700;
+font-size:0.9rem;
+font-weight:500;
 cursor:pointer;
+transition:background 0.15s;
 }
+
+.drawer-save-btn:hover{
+background:var(--red-hover);
+}
+
 .drawer-save-btn:disabled{
-background:#d1d5db;
+background:var(--text-tertiary);
 cursor:not-allowed;
 }
+
 /* TOAST */
 .toast-container{
 position:fixed;
-bottom:20px;
-right:20px;
+bottom:24px;
+right:24px;
 z-index:9999;
 display:flex;
 flex-direction:column;
 gap:8px;
 }
+
 .toast{
-padding:10px 16px;
-border-radius:12px;
-font-size:.85rem;
+padding:12px 16px;
+border-radius:var(--r);
+font-size:0.9rem;
 font-weight:500;
-box-shadow:0 4px 12px rgba(0,0,0,.1);
-animation:slideIn .2s ease;
+box-shadow:var(--shadow-md);
+animation:slideIn 0.2s ease;
 display:flex;
 align-items:center;
-gap:8px;
+gap:10px;
+background:var(--bg-alt);
+border:1px solid var(--border);
 }
+
 .toast.success{
-background:#dcfce7;
-color:#15803d;
-border:1px solid #bbf7d0;
+border-left:3px solid var(--success);
 }
+
 .toast.error{
-background:#fef2f2;
-color:#b91c1c;
-border:1px solid #fecaca;
+border-left:3px solid var(--red);
 }
+
 @keyframes slideIn{
 from{transform:translateX(100%);opacity:0;}
 to{transform:translateX(0);opacity:1;}
 }
+
 @keyframes slideOut{
 from{transform:translateX(0);opacity:1;}
 to{transform:translateX(100%);opacity:0;}
 }
-/* RESPONSIVE - VRAIES AMÉLIORATIONS MOBILE */
-@media(max-width:1100px){
-.intervenants-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-}
-@media(max-width:900px){
-.layout{padding:10px;}
-.shell{border-radius:0;}
-.sidebar{display:none;}
-.topbar{border-radius:0;height:70px;}
-.topbar-logo img{height:50px;}
-.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-.tw{max-height:55vh;}
-/* CACHE LE TABLEAU SUR MOBILE, AFFICHE LES CARTES */
-table{display:none;}
-.mobile-cards{display:flex;}
-.th-mobile{display:none;}
-}
-@media(max-width:600px){
-.stats-grid{grid-template-columns:1fr;}
-.intervenants-grid{grid-template-columns:1fr;}
-.drawer-panel{width:100%;border-radius:18px 18px 0 0;}
-.filterbar{flex-direction:column;}
-.sbox{max-width:100%;}
-.tbl-actions{width:100%;justify-content:space-between;margin:8px 0;}
+
+/* RESPONSIVE */
+@media(max-width:1200px){
+.intervenants-grid{grid-template-columns:repeat(2,1fr);}
 }
 
-/* PRINT - POUR PDF */
+@media(max-width:900px){
+.sidebar{width:200px;}
+.sidebar-logo-text{font-size:1rem;}
+.stats-grid{grid-template-columns:repeat(2,1fr);}
+.intervenants-grid{grid-template-columns:1fr;}
+}
+
+@media(max-width:768px){
+.layout{flex-direction:column;}
+.sidebar{width:100%;flex-direction:row;align-items:center;padding:12px 16px;}
+.sidebar-header{display:none;}
+.nav-section{display:flex;flex-direction:row;gap:8px;padding:0;}
+.nav-label{display:none;}
+.nav-item{padding:8px 12px;font-size:0.85rem;}
+.nav-item svg{display:none;}
+.sidebar-footer{display:none;}
+.main-inner{padding:16px;}
+.topbar{padding:0 16px;height:56px;}
+.topbar-title h1{font-size:1rem;}
+.stats-grid{grid-template-columns:1fr;}
+.drawer-panel{width:100%;}
+}
+
+/* PRINT */
 @media print{
-.sidebar{display:none;}
-.tbl-actions{display:none;}
-.filterbar{display:none;}
-.tw{overflow:visible;max-height:none;}
-table{display:table !important;}
-.mobile-cards{display:none !important;}
+.sidebar,.tbl-actions,.filterbar,.btn-export,.toast-container{display:none !important;}
+.tw{overflow:visible;max-height:none;border:none;}
 .shell{box-shadow:none;}
 }
 </style>
+<!-- Inter Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<!-- Toast container -->
 <div id="toastContainer" class="toast-container"></div>
 
 <div class="layout">
 <div class="shell">
 <aside class="sidebar">
-<div class="nav-label">Menu</div>
-<div class="nav-item active" data-view-btn="taches">Tâches</div>
-<div class="nav-item" data-view-btn="intervenants">Intervenants</div>
-<div class="nav-item" data-view-btn="documents">Documents</div>
-<div class="nav-item" data-view-btn="photos">Photos</div>
+<div class="sidebar-header">
+<div class="sidebar-logo">
+<img src="technicombles_logo_small.jpg" alt="TC">
+<div>
+<div class="sidebar-logo-text">Technicombles</div>
+<div class="sidebar-logo-sub">Suivi de chantier</div>
+</div>
+</div>
+</div>
+<div class="nav-section">
+<div class="nav-label">Navigation</div>
+<div class="nav-item active" data-view-btn="taches">
+<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+</svg>
+Tâches
+</div>
+<div class="nav-item" data-view-btn="intervenants">
+<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+<path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+</svg>
+Intervenants
+</div>
+<div class="nav-item" data-view-btn="documents">
+<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+</svg>
+Documents
+</div>
+<div class="nav-item" data-view-btn="photos">
+<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+<path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+</svg>
+Photos
+</div>
+</div>
 <div class="sidebar-footer">
-<span>Suivi chantier Cléry</span>
-<span>Technicombles – Interne</span>
+Chantier Cléry • Interne
 </div>
 </aside>
 <main class="main">
 <header class="topbar">
-<div class="topbar-left">
-<div class="topbar-logo">
-<img src="technicombles_logo_small.jpg" alt="Technicombles">
-</div>
+<div class="topbar-title">
+<h1>Suivi de chantier</h1>
+<span>Cléry</span>
 </div>
 <div class="topbar-right">
 <span id="lastUpdate">—</span>
+<button id="exportPdfBtn" class="btn-export">📄 Export PDF</button>
 </div>
 </header>
 <div class="main-inner">
@@ -956,15 +1190,15 @@ table{display:table !important;}
 <section class="view-section active" data-view="taches">
 <div class="section-header">
 <div>
-<div class="section-title">Tâches du chantier</div>
-<div class="section-sub">Tableau de suivi & vue Kanban</div>
+<div class="section-title">Tâches</div>
+<div class="section-sub">Tableau de suivi et vue Kanban</div>
 </div>
 </div>
 <section class="stats-grid">
 <div class="stat-card">
-<span class="stat-card-label">Total tâches</span>
-<span class="stat-card-value" id="statTotal">0</span>
-<span class="stat-card-note">Toutes colonnes confondues</span>
+<span class="stat-card-label">Total</span>
+<span class="stat-card-value accent" id="statTotal">0</span>
+<span class="stat-card-note">Toutes tâches</span>
 </div>
 <div class="stat-card">
 <span class="stat-card-label">À faire</span>
@@ -985,52 +1219,49 @@ table{display:table !important;}
 <section class="panel">
 <div class="filterbar">
 <div class="sbox">
-<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-<circle cx="11" cy="11" r="8"></circle>
-<path d="m21 21-4.35-4.35"></path>
+<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+<circle cx="11" cy="11" r="8"/>
+<path stroke-linecap="round" d="m21 21-4.35-4.35"/>
 </svg>
-<input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" aria-label="Rechercher" />
+<input type="search" id="searchInput" placeholder="Rechercher…" />
 </div>
-<select class="fsel" id="filterStatut" aria-label="Filtrer par statut">
+<select class="fsel" id="filterStatut">
 <option value="">Tous statuts</option>
 <option value="À faire">À faire</option>
 <option value="En cours">En cours</option>
 <option value="Terminée">Terminée</option>
 </select>
-<select class="fsel" id="filterLot" aria-label="Filtrer par lot">
+<select class="fsel" id="filterLot">
 <option value="">Tous lots</option>
 </select>
-<select class="fsel" id="filterIntervenant" aria-label="Filtrer par intervenant">
+<select class="fsel" id="filterIntervenant">
 <option value="">Tous intervenants</option>
 </select>
 </div>
 <div class="tbl-header">
-<span class="tbl-title">Tâches</span>
+<span class="tbl-title">Liste des tâches</span>
 <div class="tbl-actions">
-<button id="exportPdfBtn" class="view-btn" title="Exporter en PDF">📄 PDF</button>
 <button id="viewTable" class="view-btn view-btn-active">Tableau</button>
 <button id="viewKanban" class="view-btn">Kanban</button>
 </div>
 </div>
 <div class="tw" id="tableWrapper">
-<table role="table">
+<table>
 <thead>
 <tr>
-<th scope="col">Réf</th>
-<th scope="col">Lot</th>
-<th scope="col">Tâche</th>
-<th scope="col">Intervenant</th>
-<th scope="col">Statut</th>
-<th scope="col">Priorité</th>
-<th scope="col">Commentaire</th>
+<th>Réf</th>
+<th>Lot</th>
+<th>Tâche</th>
+<th>Intervenant</th>
+<th>Statut</th>
+<th>Priorité</th>
+<th>Commentaire</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
 </table>
-<!-- VUE MOBILE CARTES -->
-<div class="mobile-cards" id="mobileCards"></div>
 </div>
-<div id="kanbanWrapper" class="kanban" style="display:none;" role="region" aria-label="Vue Kanban"></div>
+<div id="kanbanWrapper" class="kanban" style="display:none;"></div>
 </section>
 </section>
 <!-- INTERVENANTS -->
@@ -1038,13 +1269,13 @@ table{display:table !important;}
 <div class="section-header">
 <div>
 <div class="section-title">Intervenants</div>
-<div class="section-sub">Coordonnées et rôles synchronisés avec Supabase</div>
+<div class="section-sub">Coordonnées synchronisées</div>
 </div>
 </div>
 <section class="panel">
 <div class="photos-actions">
-<button id="addIntervenantBtn" class="btn-photo-import">Ajouter un intervenant</button>
-<span class="photos-note">La liste est liée à Supabase, tu peux ajouter/modifier/supprimer ici.</span>
+<button id="addIntervenantBtn" class="btn-add">+ Ajouter</button>
+<span class="note">Gérez les intervenants du chantier</span>
 </div>
 <section class="intervenants-grid" id="intervenantsGrid"></section>
 </section>
@@ -1054,15 +1285,13 @@ table{display:table !important;}
 <div class="section-header">
 <div>
 <div class="section-title">Documents</div>
-<div class="section-sub">Import du DPGF et pièces du chantier</div>
+<div class="section-sub">DPGF et pièces du chantier</div>
 </div>
 </div>
 <section class="panel">
 <div class="doc-actions">
-<button class="btn-doc-import" id="importBtn">Importer un DPGF (Excel)</button>
-<span class="doc-note">
-Sélectionne le fichier Excel DPGF pour mettre à jour toutes les tâches du chantier.
-</span>
+<button class="btn-import" id="importBtn">Importer DPGF (Excel)</button>
+<span class="note">Remplace toutes les tâches existantes</span>
 </div>
 <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" />
 </section>
@@ -1071,21 +1300,23 @@ Sélectionne le fichier Excel DPGF pour mettre à jour toutes les tâches du cha
 <section class="view-section" data-view="photos">
 <div class="section-header">
 <div>
-<div class="section-title">Photos du chantier</div>
-<div class="section-sub">Stockage dans Supabase (bucket photos_chantier)</div>
+<div class="section-title">Photos</div>
+<div class="section-sub">Galerie du chantier</div>
 </div>
 </div>
 <section class="panel">
 <div class="photos-actions">
-<button class="btn-photo-import" id="importPhotosBtn">Importer des photos</button>
-<span class="photos-note">
-Taille limitée (~50 Mo) : privilégier quelques photos clés.
-</span>
+<button class="btn-import" id="importPhotosBtn">Importer des photos</button>
+<span class="note">Stockage Supabase</span>
 </div>
 <input type="file" id="photosInput" accept="image/*" multiple style="display:none;">
 <div id="photosEmpty" class="empty" style="display:none;">
-<p>Aucune photo pour l'instant</p>
-<span>Importe des images depuis ton ordinateur.</span>
+<svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+<rect x="3" y="3" width="18" height="18" rx="2"/>
+<circle cx="8.5" cy="8.5" r="1.5"/>
+<path d="M21 15l-5-5L5 21"/>
+</svg>
+<p>Aucune photo</p>
 </div>
 <div id="photosGrid" class="photos-grid"></div>
 </section>
@@ -1094,14 +1325,19 @@ Taille limitée (~50 Mo) : privilégier quelques photos clés.
 </main>
 </div>
 </div>
-<!-- Drawer tâches -->
-<div id="taskDrawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+<!-- Drawer -->
+<div id="taskDrawer" class="drawer">
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <div class="drawer-panel">
-<button class="drawer-close" id="drawerClose" aria-label="Fermer le détail">×</button>
+<div class="drawer-header">
+<div>
+<div class="drawer-title" id="drawerTitle"></div>
+<div class="drawer-ref" id="drawerRef"></div>
+<span class="drawer-status" id="drawerStatusPill"></span>
+</div>
+<button class="drawer-close" id="drawerClose">×</button>
+</div>
 <div class="drawer-body">
-<h2 id="drawerTitle"></h2>
-<p class="drawer-ref" id="drawerRef"></p>
 <div class="drawer-field">
 <span class="df-label">Lot</span>
 <span class="df-value" id="drawerLot"></span>
@@ -1118,27 +1354,20 @@ Taille limitée (~50 Mo) : privilégier quelques photos clés.
 <span class="df-label">Priorité</span>
 <span class="df-value" id="drawerPriorite"></span>
 </div>
-<div class="drawer-block">
-<span class="df-label">Commentaire</span>
-<div class="drawer-comment-wrapper">
-<textarea
-id="drawerCommentaire"
-class="drawer-textarea"
-placeholder="Ajouter un commentaire…"
-aria-label="Commentaire de la tâche"
-></textarea>
+<div>
+<div class="drawer-comment-label">Commentaire</div>
+<textarea id="drawerCommentaire" class="drawer-textarea" placeholder="Ajouter un commentaire…"></textarea>
 </div>
 <button id="drawerSaveBtn" class="drawer-save-btn">Enregistrer</button>
 </div>
 </div>
 </div>
-</div>
+
 <script>
 const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-// Constantes
 let INTERVS=["Non assigné"];
 const STATUTS=["À faire","En cours","Terminée"];
 const PRIOS=["Basse","Moyenne","Haute"];
@@ -1148,31 +1377,19 @@ let tasks=[];
 let currentTask=null;
 const $=id=>document.getElementById(id);
 
-/* ===== UTILITAIRES ===== */
-const debounce=(fn,delay)=>{
-let t;
-return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn.apply(this,args),delay);};
-};
+/* UTILITAIRES */
+const debounce=(fn,delay)=>{let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn.apply(this,args),delay);};};
 
 function showToast(msg,type="success"){
 const container=$("toastContainer");
 const toast=document.createElement("div");
 toast.className=`toast ${type}`;
-toast.setAttribute("role","alert");
-toast.innerHTML=`
-<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-${type==="success"?'<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>':'<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'}
-</svg>
-<span>${msg}</span>
-`;
+toast.innerHTML=`<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">${type==="success"?'<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>':'<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'}</svg><span>${msg}</span>`;
 container.appendChild(toast);
-setTimeout(()=>{
-toast.style.animation="slideOut .2s ease forwards";
-setTimeout(()=>toast.remove(),200);
-},3000);
+setTimeout(()=>{toast.style.animation="slideOut .2s ease forwards";setTimeout(()=>toast.remove(),200);},3000);
 }
 
-/* ===== NAVIGATION ===== */
+/* NAVIGATION */
 const navItems=document.querySelectorAll(".nav-item");
 const views=document.querySelectorAll(".view-section");
 navItems.forEach(item=>{
@@ -1180,80 +1397,33 @@ item.addEventListener("click",()=>{
 const view=item.getAttribute("data-view-btn");
 navItems.forEach(n=>n.classList.remove("active"));
 item.classList.add("active");
-views.forEach(v=>{
-v.classList.toggle("active",v.getAttribute("data-view")===view);
-});
+views.forEach(v=>v.classList.toggle("active",v.getAttribute("data-view")===view));
 });
 });
 
 function setDate(){
 const el=$("lastUpdate");
 if(!el)return;
-el.textContent="Mise à jour : "+new Date().toLocaleString("fr-FR",{
-day:"2-digit",month:"2-digit",year:"numeric",
-hour:"2-digit",minute:"2-digit"
-});
+el.textContent=new Date().toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
 }
 
 function guessLot(ref){
 const n=(ref||"").toString().split(".")[0];
-return{
-"0":"Lot 0 – Préparation",
-"1":"Lot 1 – Démolition & GO",
-"2":"Lot 2 – Maçonnerie",
-"3":"Lot 3 – Plomberie",
-"4":"Lot 4 – Électricité",
-"5":"Lot 5 – Ventilation",
-"6":"Lot 6 – Menuiseries Ext.",
-"7":"Lot 7 – Menuiseries Int.",
-"8":"Lot 8 – Parquet",
-"9":"Lot 9 – Peinture"
-}[n]||"Lot "+n;
+return{"0":"Lot 0 – Préparation","1":"Lot 1 – Démolition & GO","2":"Lot 2 – Maçonnerie","3":"Lot 3 – Plomberie","4":"Lot 4 – Électricité","5":"Lot 5 – Ventilation","6":"Lot 6 – Menuiseries Ext.","7":"Lot 7 – Menuiseries Int.","8":"Lot 8 – Parquet","9":"Lot 9 – Peinture"}[n]||"Lot "+n;
 }
 
-function normSt(v){
-const s=(v||"").toLowerCase();
-if(s.includes("cours"))return"En cours";
-if(s.includes("termin"))return"Terminée";
-return"À faire";
-}
-
-function guessPr(d,r){
-const t=((d||"")+" "+(r||"")).toLowerCase();
-if(t.includes("urgent")||t.includes("priorit"))return"Haute";
-if(t.includes("option"))return"Basse";
-return"Moyenne";
-}
-
+function normSt(v){const s=(v||"").toLowerCase();if(s.includes("cours"))return"En cours";if(s.includes("termin"))return"Terminée";return"À faire";}
+function guessPr(d,r){const t=((d||"")+" "+(r||"")).toLowerCase();if(t.includes("urgent")||t.includes("priorit"))return"Haute";if(t.includes("option"))return"Basse";return"Moyenne";}
 function sCls(s){return s==="En cours"?"sec":s==="Terminée"?"sok":"saf";}
 function pCls(p){return p==="Haute"?"ph":p==="Basse"?"pb":"pm";}
-function borderColor(s){
-if(s==="À faire")   return "#ef4444";
-if(s==="En cours")  return "#f97316";
-if(s==="Terminée")  return "#16a34a";
-return "#dc2626";
-}
-
-function statusLabel(s){
-if(s==="À faire")   return {bg:"#fee2e2",color:"#b91c1c",text:"À faire"};
-if(s==="En cours")  return {bg:"#ffedd5",color:"#c2410c",text:"En cours"};
-return {bg:"#dcfce7",color:"#15803d",text:"Terminée"};
-}
+function borderColor(s){if(s==="À faire")return"#ef4444";if(s==="En cours")return"#f97316";if(s==="Terminée")return"#16a34a";return"#dc2626";}
+function statusStyle(s){if(s==="À faire")return{bg:"#fff5f5",color:"#c92a2a"};if(s==="En cours")return{bg:"#fff4e6",color:"#e67700"};return{bg:"#ebfbee",color:"#2b8a3e"};}
 
 function renderFilters(){
 $("filterLot").innerHTML='<option value="">Tous lots</option>';
-[...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{
-const o=document.createElement("option");
-o.value=l;o.textContent=l;
-$("filterLot").appendChild(o);
-});
+[...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{const o=document.createElement("option");o.value=l;o.textContent=l;$("filterLot").appendChild(o);});
 $("filterIntervenant").innerHTML='<option value="">Tous intervenants</option>';
-[...new Set(tasks.map(t=>t.intervenant))].sort().forEach(i=>{
-if(!i)return;
-const o=document.createElement("option");
-o.value=i;o.textContent=i;
-$("filterIntervenant").appendChild(o);
-});
+[...new Set(tasks.map(t=>t.intervenant))].sort().forEach(i=>{if(!i)return;const o=document.createElement("option");o.value=i;o.textContent=i;$("filterIntervenant").appendChild(o);});
 }
 
 function getFiltered(){
@@ -1266,49 +1436,33 @@ if(s&&t.statut!==s)return false;
 if(l&&t.lot!==l)return false;
 if(iv&&t.intervenant!==iv)return false;
 if(!q)return true;
-return(t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||""))
-.toLowerCase().includes(q);
+return(t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||"")).toLowerCase().includes(q);
 });
 }
 
 async function save(id,field,val){
-const{error}=await db.from("taches_noe_clery")
-.update({[field]:val,updated_at:new Date().toISOString()})
-.eq("id",id);
-if(error){
-console.error(error);
-showToast("❌ Échec de la sauvegarde","error");
-return false;
-}
-setDate();
-return true;
+const{error}=await db.from("taches_noe_clery").update({[field]:val,updated_at:new Date().toISOString()}).eq("id",id);
+if(error){console.error(error);showToast("Échec sauvegarde","error");return false;}
+setDate();return true;
 }
 
 function updateStats(list){
-const total=list.length;
-const af=list.filter(t=>t.statut==="À faire").length;
-const ec=list.filter(t=>t.statut==="En cours").length;
-const ok=list.filter(t=>t.statut==="Terminée").length;
-$("statTotal").textContent=total;
-$("statAFaire").textContent=af;
-$("statEnCours").textContent=ec;
-$("statTerminees").textContent=ok;
+$("statTotal").textContent=list.length;
+$("statAFaire").textContent=list.filter(t=>t.statut==="À faire").length;
+$("statEnCours").textContent=list.filter(t=>t.statut==="En cours").length;
+$("statTerminees").textContent=list.filter(t=>t.statut==="Terminée").length;
 }
 
 function openDrawer(t){
 currentTask=t;
 document.body.classList.add("drawer-open");
-const titleEl=$("drawerTitle");
-titleEl.innerHTML="";
-titleEl.appendChild(document.createTextNode(t.task));
-const pill=document.createElement("span");
-pill.className="drawer-status-pill";
+$("drawerTitle").textContent=t.task;
+$("drawerRef").textContent="Réf : "+t.ref;
+const st=statusStyle(t.statut);
+const pill=$("drawerStatusPill");
 pill.textContent=t.statut;
-const st=statusLabel(t.statut);
 pill.style.background=st.bg;
 pill.style.color=st.color;
-titleEl.appendChild(pill);
-$("drawerRef").textContent="Réf : "+t.ref;
 $("drawerLot").textContent=t.lot;
 $("drawerIntervenant").textContent=t.intervenant||"—";
 $("drawerStatut").textContent=t.statut;
@@ -1317,366 +1471,105 @@ $("drawerCommentaire").value=t.commentaire||"";
 $("drawerSaveBtn").disabled=false;
 }
 
-function closeDrawer(){
-document.body.classList.remove("drawer-open");
-currentTask=null;
-}
+function closeDrawer(){document.body.classList.remove("drawer-open");currentTask=null;}
 
-// Rendu tableau desktop
-function renderTable(list,q){
+function render(){
+const list=getFiltered();
 const tb=$("tableBody");
 tb.innerHTML="";
-if(!list.length)return;
+updateStats(list);
+const q=$("searchInput").value.toLowerCase().trim();
+if(!list.length){
+tb.innerHTML=`<tr><td colspan="7"><div class="empty"><svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p>Aucune tâche trouvée</p></div></td></tr>`;
+return;
+}
 list.forEach(t=>{
 const tr=document.createElement("tr");
-tr.style.borderLeft="2px solid "+borderColor(t.statut);
+tr.style.borderLeft="3px solid "+borderColor(t.statut);
 tr.style.cursor="pointer";
-tr.setAttribute("role","row");
-tr.addEventListener("click",e=>{
-if(["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName)) return;
-openDrawer(t);
-});
-// Réf
-const td1=document.createElement("td");
-td1.className="r";
-td1.textContent=t.ref;
-tr.appendChild(td1);
-// Lot
-const td2=document.createElement("td");
-td2.className="l";
-td2.textContent=t.lot;
-td2.title=t.lot;
-tr.appendChild(td2);
-// Tâche
-const td3=document.createElement("td");
-td3.className="t";
-const badge=document.createElement("span");
-badge.className="status-dot";
-badge.style.backgroundColor=borderColor(t.statut);
-badge.setAttribute("aria-hidden","true");
-td3.appendChild(badge);
-let taskText=t.task;
-if(q&&taskText.toLowerCase().includes(q)){
-const regex=new RegExp(`(${q})`,"gi");
-taskText=taskText.replace(regex,'<mark style="background:#fef08a;padding:0 3px;border-radius:3px;">$1</mark>');
-}
-td3.innerHTML+=taskText;
-tr.appendChild(td3);
-// Intervenant
+tr.addEventListener("click",e=>{if(["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName))return;openDrawer(t);});
+const td1=document.createElement("td");td1.className="r";td1.textContent=t.ref;tr.appendChild(td1);
+const td2=document.createElement("td");td2.className="l";td2.textContent=t.lot;tr.appendChild(td2);
+const td3=document.createElement("td");td3.className="t";
+const badge=document.createElement("span");badge.className="status-dot";badge.style.backgroundColor=borderColor(t.statut);td3.appendChild(badge);
+td3.appendChild(document.createTextNode(t.task));tr.appendChild(td3);
 const td4=document.createElement("td");
-const si=document.createElement("select");
-si.className="si";
-INTERVS.forEach(v=>{
-const o=document.createElement("option");
-o.value=v;o.textContent=v;
-if(v===t.intervenant)o.selected=true;
-si.appendChild(o);
-});
-si.addEventListener("change",async e=>{
-t.intervenant=e.target.value;
-await save(t.id,"intervenant",t.intervenant);
-renderFilters();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-showToast("✅ Intervenant mis à jour");
-});
-td4.appendChild(si);
-tr.appendChild(td4);
-// Statut
+const si=document.createElement("select");si.className="si";
+INTERVS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.intervenant)o.selected=true;si.appendChild(o);});
+si.addEventListener("change",async e=>{t.intervenant=e.target.value;await save(t.id,"intervenant",t.intervenant);renderFilters();if($("kanbanWrapper").style.display!=="none")renderKanban();showToast("Intervenant mis à jour");});
+td4.appendChild(si);tr.appendChild(td4);
 const td5=document.createElement("td");
-const ss=document.createElement("select");
-ss.className="ss "+sCls(t.statut);
-STATUTS.forEach(v=>{
-const o=document.createElement("option");
-o.value=v;o.textContent=v;
-if(v===t.statut)o.selected=true;
-ss.appendChild(o);
-});
-ss.addEventListener("change",async e=>{
-const val=e.target.value;
-t.statut=val;
-ss.className="ss "+sCls(t.statut);
-tr.style.borderLeft="2px solid "+borderColor(t.statut);
-badge.style.backgroundColor=borderColor(t.statut);
-await save(t.id,"statut",t.statut);
-updateStats(getFiltered());
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-showToast(`✅ Statut : ${val}`);
-});
-td5.appendChild(ss);
-tr.appendChild(td5);
-// Priorité
+const ss=document.createElement("select");ss.className="ss "+sCls(t.statut);
+STATUTS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.statut)o.selected=true;ss.appendChild(o);});
+ss.addEventListener("change",async e=>{const val=e.target.value;t.statut=val;ss.className="ss "+sCls(t.statut);tr.style.borderLeft="3px solid "+borderColor(t.statut);badge.style.backgroundColor=borderColor(t.statut);await save(t.id,"statut",t.statut);updateStats(getFiltered());if($("kanbanWrapper").style.display!=="none")renderKanban();showToast("Statut : "+val);});
+td5.appendChild(ss);tr.appendChild(td5);
 const td6=document.createElement("td");
-const sp=document.createElement("select");
-sp.className="sp "+pCls(t.priorite);
-PRIOS.forEach(v=>{
-const o=document.createElement("option");
-o.value=v;
-o.textContent=v;
-if(v===t.priorite)o.selected=true;
-sp.appendChild(o);
-});
-sp.addEventListener("change",async e=>{
-const val=e.target.value;
-t.priorite=val;
-sp.className="sp "+pCls(t.priorite);
-await save(t.id,"priorite",t.priorite);
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-showToast(`✅ Priorité : ${val}`);
-});
-td6.appendChild(sp);
-tr.appendChild(td6);
-// Commentaire
-const td7=document.createElement("td");
-td7.className="td-comment";
-const ci=document.createElement("input");
-ci.type="text";
-ci.className="ci";
-ci.value=t.commentaire||"";
-ci.placeholder="Ajouter un commentaire…";
-ci.addEventListener("change",async e=>{
-t.commentaire=e.target.value;
-await save(t.id,"commentaire",t.commentaire);
-ci.classList.add("saved");
-setTimeout(()=>ci.classList.remove("saved"),800);
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-showToast("💬 Commentaire enregistré");
-});
-ci.addEventListener("keydown",async e=>{
-if(e.key==="Enter"){
-e.preventDefault();
-ci.blur();
-}
-});
-td7.appendChild(ci);
-tr.appendChild(td7);
+const sp=document.createElement("select");sp.className="sp "+pCls(t.priorite);
+PRIOS.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if(v===t.priorite)o.selected=true;sp.appendChild(o);});
+sp.addEventListener("change",async e=>{const val=e.target.value;t.priorite=val;sp.className="sp "+pCls(t.priorite);await save(t.id,"priorite",t.priorite);if($("kanbanWrapper").style.display!=="none")renderKanban();showToast("Priorité : "+val);});
+td6.appendChild(sp);tr.appendChild(td6);
+const td7=document.createElement("td");td7.className="td-comment";
+const ci=document.createElement("input");ci.type="text";ci.className="ci";ci.value=t.commentaire||"";ci.placeholder="Ajouter un commentaire…";
+ci.addEventListener("change",async e=>{t.commentaire=e.target.value;await save(t.id,"commentaire",t.commentaire);if($("kanbanWrapper").style.display!=="none")renderKanban();showToast("Commentaire enregistré");});
+ci.addEventListener("keydown",async e=>{if(e.key==="Enter"){e.preventDefault();ci.blur();}});
+td7.appendChild(ci);tr.appendChild(td7);
 tb.appendChild(tr);
 });
 }
 
-// Rendu cartes mobile
-function renderMobileCards(list){
-const mc=$("mobileCards");
-mc.innerHTML="";
-if(!list.length)return;
-list.forEach(t=>{
-const card=document.createElement("div");
-card.className="mobile-card";
-card.style.borderLeftColor=borderColor(t.statut);
-card.addEventListener("click",()=>openDrawer(t));
-const st=statusLabel(t.statut);
-card.innerHTML=`
-<div class="mobile-card-header">
-<span class="mobile-card-ref">${t.ref}</span>
-<span class="mobile-card-status" style="background:${st.bg};color:${st.color}">${st.text}</span>
-</div>
-<div class="mobile-card-task">${t.task}</div>
-<div class="mobile-card-meta">
-<span class="mobile-card-meta-item">📁 ${t.lot}</span>
-<span class="mobile-card-meta-item">👤 ${t.intervenant||"Non assigné"}</span>
-<span class="mobile-card-meta-item">⚡ ${t.priorite}</span>
-</div>
-${t.commentaire?`<div class="mobile-card-comment">💬 ${t.commentaire}</div>`:''}
-`;
-mc.appendChild(card);
-});
-}
-
-function render(){
-const list=getFiltered();
-updateStats(list);
-const q=$("searchInput").value.toLowerCase().trim();
-if(!list.length){
-$("tableBody").innerHTML=`<tr><td colspan="7"><div class="empty">
-<svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" style="margin:0 auto;display:block;opacity:.25">
-<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-</svg>
-<p>Aucune tâche trouvée</p>
-<span>Modifie les filtres ou importe ton DPGF</span>
-</div></td></tr>`;
-$("mobileCards").innerHTML="";
-return;
-}
-renderTable(list,q);
-renderMobileCards(list);
-}
-
 function renderKanban(){
 const list=getFiltered();
-const kw=$("kanbanWrapper");
-kw.innerHTML="";
-const cols=[
-{statut:"À faire", label:"À faire"},
-{statut:"En cours", label:"En cours"},
-{statut:"Terminée", label:"Terminées"}
-];
+const kw=$("kanbanWrapper");kw.innerHTML="";
+const cols=[{statut:"À faire",label:"À faire"},{statut:"En cours",label:"En cours"},{statut:"Terminée",label:"Terminées"}];
 cols.forEach(c=>{
-const col=document.createElement("div");
-col.className="kanban-column";
-col.dataset.statut=c.statut;
-const head=document.createElement("div");
-head.className="kanban-header";
-const title=document.createElement("span");
-title.className="kanban-title";
-title.textContent=c.label;
-const count=document.createElement("span");
-count.className="kanban-count";
-const tasksInCol=list.filter(t=>t.statut===c.statut);
-count.textContent=tasksInCol.length;
-head.appendChild(title);
-head.appendChild(count);
-col.appendChild(head);
-const listEl=document.createElement("div");
-listEl.className="kanban-list";
-listEl.dataset.statut=c.statut;
-listEl.addEventListener("dragover",e=>{
-e.preventDefault();
-listEl.classList.add("drop-target");
-});
-listEl.addEventListener("dragleave",()=>{
-listEl.classList.remove("drop-target");
-});
-listEl.addEventListener("drop",async e=>{
-e.preventDefault();
-listEl.classList.remove("drop-target");
-const id=e.dataTransfer.getData("text/plain");
-const task=tasks.find(t=>t.id===id);
-if(!task) return;
-task.statut=c.statut;
-await save(task.id,"statut",task.statut);
-renderKanban();
-updateStats(getFiltered());
-render();
-showToast(`✅ Déplacé dans "${c.label}"`);
-});
-tasksInCol.forEach(t=>{
+const col=document.createElement("div");col.className="kanban-column";col.dataset.statut=c.statut;
+const head=document.createElement("div");head.className="kanban-header";
+const title=document.createElement("span");title.className="kanban-title";title.textContent=c.label;
+const count=document.createElement("span");count.className="kanban-count";count.textContent=list.filter(t=>t.statut===c.statut).length;
+head.appendChild(title);head.appendChild(count);col.appendChild(head);
+const listEl=document.createElement("div");listEl.className="kanban-list";listEl.dataset.statut=c.statut;
+listEl.addEventListener("dragover",e=>{e.preventDefault();listEl.classList.add("drop-target");});
+listEl.addEventListener("dragleave",()=>listEl.classList.remove("drop-target"));
+listEl.addEventListener("drop",async e=>{e.preventDefault();listEl.classList.remove("drop-target");const id=e.dataTransfer.getData("text/plain");const task=tasks.find(t=>t.id===id);if(!task)return;task.statut=c.statut;await save(task.id,"statut",task.statut);renderKanban();updateStats(getFiltered());render();showToast("Déplacé : "+c.label);});
+list.filter(t=>t.statut===c.statut).forEach(t=>{
 const card=document.createElement("div");
-card.className="kanban-card " + (
-t.priorite==="Haute" ? "prio-haute" :
-t.priorite==="Basse" ? "prio-basse" : "prio-moyenne"
-);
-card.draggable=true;
-card.dataset.id=t.id;
-card.addEventListener("dragstart",e=>{
-e.dataTransfer.setData("text/plain",t.id);
-});
+card.className="kanban-card "+(t.priorite==="Haute"?"prio-haute":t.priorite==="Basse"?"prio-basse":"prio-moyenne");
+card.draggable=true;card.dataset.id=t.id;
+card.addEventListener("dragstart",e=>e.dataTransfer.setData("text/plain",t.id));
 card.addEventListener("click",()=>openDrawer(t));
-const lotBadge=document.createElement("div");
-lotBadge.className="kanban-badge-lot";
-lotBadge.textContent=t.lot;
-card.appendChild(lotBadge);
-const title=document.createElement("div");
-title.className="kanban-card-title";
-title.textContent=t.task;
-card.appendChild(title);
-const meta=document.createElement("div");
-meta.className="kanban-card-meta";
-meta.textContent=`${t.ref} · ${t.intervenant||"Non assigné"} · ${t.priorite}`;
-card.appendChild(meta);
-if(t.commentaire){
-const com=document.createElement("div");
-com.className="kanban-card-comment";
-com.textContent=t.commentaire;
-card.appendChild(com);
-}
+card.innerHTML=`<div class="kanban-badge-lot">${t.lot}</div><div class="kanban-card-title">${t.task}</div><div class="kanban-card-meta">${t.ref} · ${t.intervenant||"Non assigné"} · ${t.priorite}</div>${t.commentaire?`<div class="kanban-card-comment">${t.commentaire}</div>`:""}`;
 listEl.appendChild(card);
 });
-col.appendChild(listEl);
-kw.appendChild(col);
+col.appendChild(listEl);kw.appendChild(col);
 });
 }
 
 async function loadDB(){
-const{data,error}=await db.from("taches_noe_clery")
-.select("*")
-.order("ref",{ascending:true});
-if(error){console.error(error);showToast("❌ Erreur de chargement","error");return;}
-tasks=data||[];
-renderFilters();render();setDate();
-showToast("📋 Tâches chargées");
+const{data,error}=await db.from("taches_noe_clery").select("*").order("ref",{ascending:true});
+if(error){console.error(error);showToast("Erreur chargement","error");return;}
+tasks=data||[];renderFilters();render();setDate();showToast("Tâches chargées");
 }
 
 async function pushDB(newTasks){
-await db.from("taches_noe_clery")
-.delete()
-.neq("id","00000000-0000-0000-0000-000000000000");
-const{error}=await db.from("taches_noe_clery").insert(
-newTasks.map(t=>({
-ref:t.ref,
-lot:t.lot,
-task:t.task,
-intervenant:t.intervenant,
-statut:t.statut,
-priorite:t.priorite,
-commentaire:t.commentaire
-}))
-);
-if(error){
-console.error(error);
-showToast("❌ Erreur Supabase: "+error.message,"error");
-}
+await db.from("taches_noe_clery").delete().neq("id","00000000-0000-0000-0000-000000000000");
+const{error}=await db.from("taches_noe_clery").insert(newTasks.map(t=>({ref:t.ref,lot:t.lot,task:t.task,intervenant:t.intervenant,statut:t.statut,priorite:t.priorite,commentaire:t.commentaire})));
+if(error){console.error(error);showToast("Erreur Supabase","error");}
 }
 
-/* ===== EXPORT PDF ===== */
+/* EXPORT PDF */
 $("exportPdfBtn")?.addEventListener("click",async()=>{
 const list=getFiltered();
-if(!list.length){
-showToast("⚠️ Aucune tâche à exporter","error");
-return;
-}
-showToast("📄 Génération du PDF...");
+if(!list.length){showToast("Aucune tâche à exporter","error");return;}
+showToast("Génération PDF...");
 const element=document.createElement("div");
-element.style.padding="20px";
-element.style.fontFamily="Arial, sans-serif";
-element.innerHTML=`
-<h2 style="color:#991b1b;margin-bottom:10px;">Suivi Chantier – Cléry</h2>
-<p style="color:#6b7280;margin-bottom:20px;">Généré le ${new Date().toLocaleString("fr-FR")}</p>
-<p style="margin-bottom:10px;"><strong>${list.length} tâche(s)</strong> - Filtres actifs : ${$("filterStatut").value||"Tous"} | ${$("filterLot").value||"Tous lots"}</p>
-<table style="width:100%;border-collapse:collapse;font-size:11px;">
-<thead>
-<tr style="background:#f9fafb;">
-<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Réf</th>
-<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Lot</th>
-<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Tâche</th>
-<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Intervenant</th>
-<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Statut</th>
-<th style="border:1px solid #e5e7eb;padding:8px;text-align:left;">Priorité</th>
-</tr>
-</thead>
-<tbody>
-${list.map(t=>`
-<tr>
-<td style="border:1px solid #e5e7eb;padding:8px;">${t.ref}</td>
-<td style="border:1px solid #e5e7eb;padding:8px;">${t.lot}</td>
-<td style="border:1px solid #e5e7eb;padding:8px;">${t.task}</td>
-<td style="border:1px solid #e5e7eb;padding:8px;">${t.intervenant||"-"}</td>
-<td style="border:1px solid #e5e7eb;padding:8px;">${t.statut}</td>
-<td style="border:1px solid #e5e7eb;padding:8px;">${t.priorite}</td>
-</tr>
-`).join("")}
-</tbody>
-</table>
-`;
-const opt={
-margin:10,
-filename:`suivi-chantier-${new Date().toISOString().slice(0,10)}.pdf`,
-image:{type:"jpeg",quality:0.98},
-html2canvas:{scale:2},
-jsPDF:{unit:"mm",format:"a4",orientation:"landscape"}
-};
-try{
-await html2pdf().set(opt).from(element).save();
-showToast("✓ PDF téléchargé");
-}catch(err){
-console.error(err);
-showToast("❌ Erreur génération PDF","error");
-}
+element.style.padding="20px";element.style.fontFamily="Inter, sans-serif";
+element.innerHTML=`<h2 style="color:#c92a2a;margin-bottom:10px;">Suivi Chantier – Cléry</h2><p style="color:#868e96;margin-bottom:20px;">${new Date().toLocaleString("fr-FR")}</p><table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="background:#f8f9fa;"><th style="border:1px solid #dee2e6;padding:8px;text-align:left;">Réf</th><th style="border:1px solid #dee2e6;padding:8px;text-align:left;">Lot</th><th style="border:1px solid #dee2e6;padding:8px;text-align:left;">Tâche</th><th style="border:1px solid #dee2e6;padding:8px;text-align:left;">Intervenant</th><th style="border:1px solid #dee2e6;padding:8px;text-align:left;">Statut</th><th style="border:1px solid #dee2e6;padding:8px;text-align:left;">Priorité</th></tr></thead><tbody>${list.map(t=>`<tr><td style="border:1px solid #dee2e6;padding:8px;">${t.ref}</td><td style="border:1px solid #dee2e6;padding:8px;">${t.lot}</td><td style="border:1px solid #dee2e6;padding:8px;">${t.task}</td><td style="border:1px solid #dee2e6;padding:8px;">${t.intervenant||"-"}</td><td style="border:1px solid #dee2e6;padding:8px;">${t.statut}</td><td style="border:1px solid #dee2e6;padding:8px;">${t.priorite}</td></tr>`).join("")}</tbody></table>`;
+const opt={margin:10,filename:`suivi-chantier-${new Date().toISOString().slice(0,10)}.pdf`,image:{type:"jpeg",quality:0.98},html2canvas:{scale:2},jsPDF:{unit:"mm",format:"a4",orientation:"landscape"}};
+try{await html2pdf().set(opt).from(element).save();showToast("PDF téléchargé");}catch(err){console.error(err);showToast("Erreur PDF","error");}
 });
 
-/* ===== IMPORT DPGF ===== */
-$("importBtn").addEventListener("click",()=>{
-if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\nContinuer ?"))return;
-$("fileInput").click();
-});
+/* IMPORT DPGF */
+$("importBtn").addEventListener("click",()=>{if(!confirm("Importer le DPGF va remplacer toutes les tâches. Continuer ?"))return;$("fileInput").click();});
 $("fileInput").addEventListener("change",e=>{
 const file=e.target.files[0];if(!file)return;
 const reader=new FileReader();
@@ -1686,11 +1579,7 @@ const wb=XLSX.read(new Uint8Array(ev.target.result),{type:"array"});
 let found=[];
 wb.SheetNames.forEach(sn=>{
 const json=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1});
-let hi=-1;
-for(let i=0;i<json.length;i++){
-const f=(json[i][0]||"").toString().toLowerCase();
-if(f.includes("rf")||f.includes("réf")){hi=i;break;}
-}
+let hi=-1;for(let i=0;i<json.length;i++){const f=(json[i][0]||"").toString().toLowerCase();if(f.includes("rf")||f.includes("réf")){hi=i;break;}}
 if(hi===-1)return;
 const hdr=json[hi].map(h=>(h||"").toString().toLowerCase().trim());
 const ri=hdr.findIndex(h=>h.includes("rf")||h.includes("réf"));
@@ -1706,301 +1595,83 @@ if(!ref||!desc||ref.includes("---"))continue;
 const resp=(row[rpi]||"").toString().trim();
 const statut=(row[sti]||"").toString().trim();
 const rem=(row[rmi]||"").toString().trim();
-found.push({
-ref,
-lot:guessLot(ref),
-task:desc,
-intervenant:["à faire","faire",""].includes(resp.toLowerCase())?"Non assigné":resp,
-statut:normSt(statut),
-priorite:guessPr(desc,rem),
-commentaire:rem
-});
+found.push({ref,lot:guessLot(ref),task:desc,intervenant:["à faire","faire",""].includes(resp.toLowerCase())?"Non assigné":resp,statut:normSt(statut),priorite:guessPr(desc,rem),commentaire:rem});
 }
 });
-if(!found.length){
-alert("Aucune tâche trouvée dans ce fichier.");
-return;
-}
-await pushDB(found);
-await loadDB();
-alert("Import terminé.");
-showToast("✅ Import DPGF terminé");
-}catch(err){
-console.error(err);
-alert("Erreur lors de la lecture du fichier Excel.");
-showToast("❌ Erreur de lecture Excel","error");
-}
+if(!found.length){alert("Aucune tâche trouvée.");return;}
+await pushDB(found);await loadDB();alert("Import terminé.");showToast("Import DPGF terminé");
+}catch(err){console.error(err);alert("Erreur lecture Excel.");showToast("Erreur Excel","error");}
 };
 reader.readAsArrayBuffer(file);
 });
 
-/* ===== FILTRES ===== */
-const debouncedRender=debounce(()=>{
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-},150);
-
+/* FILTRES */
+const debouncedRender=debounce(()=>{render();if($("kanbanWrapper").style.display!=="none")renderKanban();},150);
 $("searchInput").addEventListener("input",debouncedRender);
 $("filterStatut").addEventListener("change",debouncedRender);
 $("filterLot").addEventListener("change",debouncedRender);
 $("filterIntervenant").addEventListener("change",debouncedRender);
 
-/* ===== VUES ===== */
-$("viewTable").addEventListener("click",()=>{
-$("viewTable").classList.add("view-btn-active");
-$("viewKanban").classList.remove("view-btn-active");
-$("tableWrapper").style.display="block";
-$("kanbanWrapper").style.display="none";
-render();
-});
-$("viewKanban").addEventListener("click",()=>{
-$("viewKanban").classList.add("view-btn-active");
-$("viewTable").classList.remove("view-btn-active");
-$("tableWrapper").style.display="none";
-$("kanbanWrapper").style.display="flex";
-renderKanban();
-});
+/* VUES */
+$("viewTable").addEventListener("click",()=>{$("viewTable").classList.add("view-btn-active");$("viewKanban").classList.remove("view-btn-active");$("tableWrapper").style.display="block";$("kanbanWrapper").style.display="none";render();});
+$("viewKanban").addEventListener("click",()=>{$("viewKanban").classList.add("view-btn-active");$("viewTable").classList.remove("view-btn-active");$("tableWrapper").style.display="none";$("kanbanWrapper").style.display="flex";renderKanban();});
 
-/* ===== DRAWER ===== */
+/* DRAWER */
 $("drawerOverlay").addEventListener("click",closeDrawer);
 $("drawerClose").addEventListener("click",closeDrawer);
-window.addEventListener("keydown",e=>{
-if(e.key==="Escape") closeDrawer();
-});
+window.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();});
+$("drawerSaveBtn")?.addEventListener("click",async()=>{if(!currentTask)return;const val=$("drawerCommentaire").value;currentTask.commentaire=val;await save(currentTask.id,"commentaire",val);const btn=$("drawerSaveBtn");const old=btn.textContent;btn.textContent="✓ Enregistré";btn.disabled=true;setTimeout(()=>{btn.textContent="Enregistrer";btn.disabled=false;},1200);render();if($("kanbanWrapper").style.display!=="none")renderKanban();showToast("Commentaire enregistré");});
+$("drawerCommentaire").addEventListener("input",()=>{$("drawerSaveBtn").disabled=false;});
 
-$("drawerSaveBtn")?.addEventListener("click",async()=>{
-if(!currentTask) return;
-const val=$("drawerCommentaire").value;
-currentTask.commentaire=val;
-await save(currentTask.id,"commentaire",val);
-const btn=$("drawerSaveBtn");
-const old=btn.textContent;
-btn.textContent="✓ Enregistré";
-btn.disabled=true;
-setTimeout(()=>{btn.textContent=old;btn.disabled=false;},1200);
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-showToast("💬 Commentaire enregistré");
-});
-
-$("drawerCommentaire").addEventListener("input",()=>{
-$("drawerSaveBtn").disabled=false;
-});
-
-/* ===== INTERVENANTS ===== */
+/* INTERVENANTS */
 let intervenantsData=[];
 async function loadIntervenants(){
 const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
 if(error||!data||!data.length){
-const defaults=[
-{id:1,nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
-{id:2,nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
-{id:3,nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
-{id:4,nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
-{id:5,nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
-{id:6,nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
-];
-if(!error){
-await db.from(INTER_TABLE).insert(
-defaults.map(d=>({
-id:d.id,
-nom:d.nom,
-role:d.role,
-tel:d.tel,
-mail:d.mail,
-note:d.note
-}))
-);
-}
+const defaults=[{id:1,nom:"Techni Combles",role:"Entreprise principale",tel:"",mail:"",note:""},{id:2,nom:"Home Work Peinture",role:"Peinture",tel:"",mail:"",note:""},{id:3,nom:"Pro Martins",role:"Maçonnerie",tel:"",mail:"",note:""},{id:4,nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},{id:5,nom:"Tiago",role:"Plomberie",tel:"",mail:"",note:""},{id:6,nom:"HK Menuiserie",role:"Menuiseries",tel:"",mail:"",note:""}];
+if(!error){await db.from(INTER_TABLE).insert(defaults.map(d=>({id:d.id,nom:d.nom,role:d.role,tel:d.tel,mail:d.mail,note:d.note})));}
 intervenantsData=defaults;
-} else {
-intervenantsData=data;
-}
-INTERVS=["Non assigné", ...intervenantsData.map(i=>i.nom).filter(Boolean)];
+}else{intervenantsData=data;}
+INTERVS=["Non assigné",...intervenantsData.map(i=>i.nom).filter(Boolean)];
 renderIntervenants();
 }
-async function saveIntervenant(id,field,val){
-const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
-if(error){
-console.error("Erreur save intervenant:",error);
-showToast("❌ Erreur sauvegarde intervenant","error");
-}
-}
-async function deleteIntervenant(id){
-if(!confirm("Supprimer cet intervenant ?"))return;
-const{error}=await db.from(INTER_TABLE).delete().eq("id",id);
-if(error){
-console.error(error);
-alert("Erreur Supabase : "+error.message);
-showToast("❌ Erreur suppression","error");
-return;
-}
-await loadIntervenants();
-renderFilters();
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-showToast("🗑️ Intervenant supprimé");
-}
+async function saveIntervenant(id,field,val){const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);if(error){console.error(error);showToast("Erreur sauvegarde","error");}}
+async function deleteIntervenant(id){if(!confirm("Supprimer ?"))return;const{error}=await db.from(INTER_TABLE).delete().eq("id",id);if(error){console.error(error);showToast("Erreur suppression","error");return;}await loadIntervenants();renderFilters();render();showToast("Intervenant supprimé");}
 function renderIntervenants(){
-const g=document.getElementById("intervenantsGrid");
-g.innerHTML="";
+const g=document.getElementById("intervenantsGrid");g.innerHTML="";
 intervenantsData.forEach(i=>{
-const c=document.createElement("div");
-c.className="inter-card";
-c.innerHTML=
-`<div class="inter-row">
-<span class="inter-label">Nom</span>
-<input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}" aria-label="Nom">
-</div>
-<div class="inter-row">
-<span class="inter-label">Rôle</span>
-<input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}" aria-label="Rôle">
-</div>
-<div class="inter-row">
-<span class="inter-label">Téléphone</span>
-<input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}" aria-label="Téléphone">
-</div>
-<div class="inter-row">
-<span class="inter-label">Email</span>
-<input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}" aria-label="Email">
-</div>
-<div class="inter-row">
-<span class="inter-label">Note</span>
-<input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}" aria-label="Note">
-</div>
-<div class="inter-row">
-<button class="photo-delete" data-delete="${i.id}" aria-label="Supprimer ${i.nom}">Supprimer</button>
-</div>`;
+const c=document.createElement("div");c.className="inter-card";
+c.innerHTML=`<div class="inter-row"><span class="inter-label">Nom</span><input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}"></div><div class="inter-row"><span class="inter-label">Rôle</span><input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}"></div><div class="inter-row"><span class="inter-label">Téléphone</span><input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}"></div><div class="inter-row"><span class="inter-label">Email</span><input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}"></div><div class="inter-row"><span class="inter-label">Note</span><input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}"></div><div class="inter-row"><button class="btn-delete" data-delete="${i.id}">Supprimer</button></div>`;
 g.appendChild(c);
 });
-g.querySelectorAll(".inter-input").forEach(inp=>{
-inp.addEventListener("change",async e=>{
-const id=parseInt(e.target.getAttribute("data-id"),10);
-const field=e.target.getAttribute("data-field");
-const item=intervenantsData.find(x=>x.id===id);
-if(item) item[field]=e.target.value;
-await saveIntervenant(id,field,e.target.value);
-await loadIntervenants();
-renderFilters();
-render();
-showToast("✅ Intervenant mis à jour");
-});
-});
-g.querySelectorAll("[data-delete]").forEach(btn=>{
-btn.addEventListener("click",e=>{
-const id=parseInt(e.target.getAttribute("data-delete"),10);
-deleteIntervenant(id);
-});
-});
+g.querySelectorAll(".inter-input").forEach(inp=>{inp.addEventListener("change",async e=>{const id=parseInt(e.target.getAttribute("data-id"),10);const field=e.target.getAttribute("data-field");const item=intervenantsData.find(x=>x.id===id);if(item)item[field]=e.target.value;await saveIntervenant(id,field,e.target.value);await loadIntervenants();renderFilters();render();showToast("Intervenant mis à jour");});});
+g.querySelectorAll("[data-delete]").forEach(btn=>{btn.addEventListener("click",e=>{const id=parseInt(e.target.getAttribute("data-delete"),10);deleteIntervenant(id);});});
 }
-$("addIntervenantBtn").addEventListener("click", async () => {
-const nom = prompt("Nom de l'intervenant ?");
-if (!nom) return;
-const newId =
-(intervenantsData.length ? Math.max(...intervenantsData.map(i => i.id || 0)) : 0) + 1;
-const { data, error } = await db
-.from(INTER_TABLE)
-.insert({ id: newId, nom, role: "", tel: "", mail: "", note: "" })
-.select();
-if (error) {
-console.error(error);
-alert("Erreur Supabase : " + error.message);
-showToast("❌ Erreur d'ajout","error");
-return;
-}
-if (data && data.length) {
-intervenantsData.push(data[0]);
-}
-await loadIntervenants();
-renderFilters();
-render();
-showToast("✅ Intervenant ajouté");
-});
+$("addIntervenantBtn").addEventListener("click",async()=>{const nom=prompt("Nom ?");if(!nom)return;const newId=(intervenantsData.length?Math.max(...intervenantsData.map(i=>i.id||0)):0)+1;const{data,error}=await db.from(INTER_TABLE).insert({id:newId,nom,role:"",tel:"",mail:"",note:""}).select();if(error){console.error(error);showToast("Erreur ajout","error");return;}if(data&&data.length)intervenantsData.push(data[0]);await loadIntervenants();renderFilters();render();showToast("Intervenant ajouté");});
 
-/* ===== PHOTOS ===== */
-const photosGrid=$("photosGrid");
-const photosEmpty=$("photosEmpty");
+/* PHOTOS */
+const photosGrid=$("photosGrid");const photosEmpty=$("photosEmpty");
 async function loadPhotos(){
 const{data,error}=await db.storage.from(PHOTOS_BUCKET).list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
-if(error){
-console.error(error);
-showToast("❌ Erreur chargement photos","error");
-return;
-}
-const files=data||[];
-photosGrid.innerHTML="";
-if(!files.length){
-photosEmpty.style.display="block";
-return;
-}
+if(error){console.error(error);showToast("Erreur photos","error");return;}
+const files=data||[];photosGrid.innerHTML="";
+if(!files.length){photosEmpty.style.display="block";return;}
 photosEmpty.style.display="none";
 files.forEach(file=>{
 const publicUrl=db.storage.from(PHOTOS_BUCKET).getPublicUrl(file.name).data.publicUrl;
-const card=document.createElement("div");
-card.className="photo-card";
-const img=document.createElement("img");
-img.src=publicUrl;
-img.alt=file.name;
-img.loading="lazy";
-img.addEventListener("click",()=>window.open(publicUrl,"_blank"));
-card.appendChild(img);
-const meta=document.createElement("div");
-meta.className="photo-meta";
-const nameSpan=document.createElement("span");
-nameSpan.className="photo-name";
-nameSpan.textContent=file.name;
-const delBtn=document.createElement("button");
-delBtn.className="photo-delete";
-delBtn.textContent="Suppr.";
-delBtn.setAttribute("aria-label",`Supprimer ${file.name}`);
-delBtn.addEventListener("click",async ()=>{
-if(!confirm("Supprimer cette photo ?"))return;
-const{error:delErr}=await db.storage.from(PHOTOS_BUCKET).remove([file.name]);
-if(delErr){
-console.error(delErr);
-alert("Erreur Supabase : "+delErr.message);
-showToast("❌ Erreur suppression photo","error");
-return;
-}
-loadPhotos();
-showToast("🗑️ Photo supprimée");
-});
-meta.appendChild(nameSpan);
-meta.appendChild(delBtn);
-card.appendChild(meta);
-photosGrid.appendChild(card);
+const card=document.createElement("div");card.className="photo-card";
+const img=document.createElement("img");img.src=publicUrl;img.alt=file.name;img.loading="lazy";img.addEventListener("click",()=>window.open(publicUrl,"_blank"));card.appendChild(img);
+const meta=document.createElement("div");meta.className="photo-meta";
+const nameSpan=document.createElement("span");nameSpan.className="photo-name";nameSpan.textContent=file.name;
+const delBtn=document.createElement("button");delBtn.className="btn-delete";delBtn.textContent="Suppr.";delBtn.addEventListener("click",async()=>{if(!confirm("Supprimer ?"))return;const{error:delErr}=await db.storage.from(PHOTOS_BUCKET).remove([file.name]);if(delErr){console.error(delErr);showToast("Erreur suppression","error");return;}loadPhotos();showToast("Photo supprimée");});
+meta.appendChild(nameSpan);meta.appendChild(delBtn);card.appendChild(meta);photosGrid.appendChild(card);
 });
 }
-$("importPhotosBtn").addEventListener("click",()=>{
-$("photosInput").click();
-});
-$("photosInput").addEventListener("change",async e=>{
-const files=[...e.target.files];
-if(!files.length)return;
-for(const file of files){
-const safeName = file.name
-.toLowerCase()
-.replace(/\s+/g,"-")
-.replace(/[^a-z0-9.\-_]/g,"");
-const timestamp = Date.now();
-const path = `${timestamp}-${safeName || "photo"}`;
-const { error } = await db.storage.from(PHOTOS_BUCKET).upload(path, file, { upsert: false });
-if(error){
-console.error(error);
-alert("Erreur upload photo : "+error.message);
-showToast("❌ Erreur upload","error");
-return;
-}
-}
-e.target.value="";
-loadPhotos();
-showToast("✅ Photos importées");
-});
+$("importPhotosBtn").addEventListener("click",()=>{$("photosInput").click();});
+$("photosInput").addEventListener("change",async e=>{const files=[...e.target.files];if(!files.length)return;for(const file of files){const safeName=file.name.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9.\-_]/g,"");const path=`${Date.now()}-${safeName||"photo"}`;const{error}=await db.storage.from(PHOTOS_BUCKET).upload(path,file,{upsert:false});if(error){console.error(error);showToast("Erreur upload","error");return;}}e.target.value="";loadPhotos();showToast("Photos importées");});
 
-// Initialisation
-loadIntervenants();
-loadDB();
-loadPhotos();
+/* INIT */
+loadIntervenants();loadDB();loadPhotos();
 </script>
 </body>
 </html>
