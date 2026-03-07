@@ -8,6 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root{
 --red:#c92a2a;
 --red-hover:#b02525;
@@ -870,6 +872,44 @@ to{transform:translateX(100%);opacity:0;}
 .main-inner{padding:16px;}
 .topbar{padding:0 16px;}
 .mobile-card{padding:12px;}
+
+/* Drawer mobile optimisé */
+.drawer-panel{
+width:100%;
+border-radius:18px 18px 0 0;
+}
+
+.drawer-header{
+padding:16px 20px;
+}
+
+.drawer-body{
+padding:20px;
+gap:16px;
+}
+
+.drawer-title{
+font-size:1rem;
+}
+
+.drawer-ref{
+font-size:0.75rem;
+}
+
+.drawer-field{
+font-size:0.85rem;
+padding:10px 0;
+}
+
+.drawer-textarea{
+font-size:0.85rem;
+min-height:80px;
+}
+
+.drawer-save-btn{
+padding:12px 20px;
+font-size:0.9rem;
+}
 }
 
 @media print{
