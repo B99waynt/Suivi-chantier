@@ -1,1668 +1,1779 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Suivi Chantier – Cléry</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
-<style>
-:root{
---red:#dc2626;
---red-soft:#ef4444;
---red-dark:#991b1b;
---bg:#f3f4f6;
---card:#ffffff;
---border:#e5e7eb;
---text:#111827;
---text2:#4b5563;
---text3:#9ca3af;
---green:#16a34a;
---orange:#f97316;
---shadow:0 1px 3px rgba(15,23,42,.12);
---shadow-md:0 10px 30px rgba(15,23,42,.16);
---r:14px;
---rl:18px;
---rs:10px;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{
-font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-background:radial-gradient(circle at top left,#f9fafb,#f3f4f6);
-color:var(--text);
-min-height:100vh;
-font-size:14px;
-display:flex;
-}
-::-webkit-scrollbar{width:6px;height:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:999px;}
-.layout{
-display:flex;
-width:100%;
-min-height:100vh;
-padding:20px;
-}
-.shell{
-background:#f9fafb;
-border-radius:22px;
-box-shadow:0 18px 40px rgba(15,23,42,.15);
-display:flex;
-width:100%;
-overflow:hidden;
-}
-/* SIDEBAR - ROUGE TECHNOCOMBLES */
-.sidebar{
-width:220px;
-background:linear-gradient(180deg,#dc2626,#991b1b);
-padding:24px 16px 18px;
-display:flex;
-flex-direction:column;
-border-radius:18px;
-}
-.nav-label{
-font-size:.95rem;
-color:#fecaca;
-margin:0 4px 18px;
-font-weight:700;
-text-transform:none;
-letter-spacing:.02em;
-}
-.nav-item{
-display:flex;
-align-items:center;
-padding:10px 16px;
-border-radius:999px;
-color:#ffffff;
-font-size:1rem;
-font-weight:700;
-cursor:pointer;
-opacity:.9;
-transition:background .12s,opacity .12s,transform .08s;
-}
-.nav-item.active{
-background:rgba(255,255,255,.24);
-opacity:1;
-}
-.nav-item:hover{
-background:rgba(255,255,255,.2);
-opacity:1;
-transform:translateX(1px);
-}
-.sidebar-footer{
-margin-top:auto;
-padding-top:18px;
-border-top:1px solid rgba(255,255,255,.18);
-font-size:.8rem;
-color:#fecaca;
-display:flex;
-flex-direction:column;
-gap:4px;
-font-weight:500;
-}
-/* MAIN - THÈME CLAIR GRIS/BLANC */
-.main{
-flex:1;
-min-width:0;
-display:flex;
-flex-direction:column;
-background:#f9fafb;
-}
-/* TOPBAR */
-.topbar{
-height:96px;
-padding:0 32px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-border-bottom:1px solid var(--border);
-background:#ffffff;
-}
-.topbar-left{
-display:flex;
-align-items:center;
-gap:26px;
-}
-.topbar-logo img{
-height:72px;
-width:auto;
-border-radius:0;
-background:transparent;
-object-fit:contain;
-box-shadow:none;
-}
-.topbar-right{
-font-size:.8rem;
-color:var(--text3);
-}
-.main-inner{
-padding:18px 24px 20px;
-display:flex;
-flex-direction:column;
-gap:14px;
-overflow:auto;
-}
-.view-section{
-display:none;
-flex-direction:column;
-gap:14px;
-}
-.view-section.active{
-display:flex;
-}
-.section-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-.section-title{
-font-size:1.35rem;
-font-weight:800;
-color:var(--red-dark);
-margin-bottom:4px;
-}
-.section-sub{
-font-size:.85rem;
-color:var(--text3);
-}
-/* STATS */
-.stats-grid{
-display:grid;
-grid-template-columns:repeat(4,minmax(0,1fr));
-gap:10px;
-}
-.stat-card{
-background:var(--card);
-border-radius:18px;
-border:1px solid var(--border);
-box-shadow:var(--shadow);
-padding:10px 12px;
-display:flex;
-flex-direction:column;
-gap:4px;
-}
-.stat-card-label{
-font-size:.8rem;
-color:var(--red-dark);
-font-weight:600;
-}
-.stat-card-value{
-font-size:1.6rem;
-font-weight:800;
-color:var(--red-dark);
-}
-.stat-card-note{
-font-size:.75rem;
-color:var(--text3);
-}
-/* PANEL GÉNÉRIQUE */
-.panel{
-background:#ffffff;
-border-radius:20px;
-border:1px solid #fee2e2;
-box-shadow:0 18px 40px rgba(15,23,42,.09);
-padding:12px 14px 16px;
-display:flex;
-flex-direction:column;
-gap:10px;
-min-height:0;
-}
-/* Filtres tâches */
-.filterbar{
-display:flex;align-items:center;gap:8px;
-flex-wrap:wrap;
-}
-.sbox{
-display:flex;align-items:center;gap:7px;
-background:#f9fafb;
-border:1px solid var(--border);
-border-radius:999px;
-padding:6px 11px;
-flex:1;min-width:180px;max-width:260px;
-}
-.sbox svg{color:var(--text3);flex-shrink:0;}
-.sbox input{
-border:none;background:transparent;
-font-size:.82rem;color:var(--text);
-outline:none;width:100%;
-font-family:inherit;
-}
-.sbox input::placeholder{color:var(--text3);}
-.fsel{
-appearance:none;
-background:#fef2f2
-url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fca5a5' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
-no-repeat right 10px center;
-border:1.5px solid #fee2e2;
-border-radius:999px;
-padding:7px 26px 7px 12px;
-font-size:.8rem;
-color:var(--red-dark);
-cursor:pointer;
-font-family:inherit;
-font-weight:600;
-}
-.fsel:hover{
-background:#fee2e2
-url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23dc2626' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
-no-repeat right 10px center;
-}
-.fsel:focus{
-outline:none;
-border-color:var(--red);
-box-shadow:0 0 0 2px rgba(220,38,38,.18);
-}
-.tbl-header{
-display:flex;align-items:center;justify-content:space-between;
-gap:10px;
-}
-.tbl-title{
-font-size:1rem;
-font-weight:700;
-color:var(--red-dark);
-}
-.tbl-actions{
-display:flex;
-gap:6px;
-align-items:center;
-margin-left:auto;
-margin-right:8px;
-}
-.view-btn{
-border-radius:999px;
-border:1px solid var(--border);
-background:#f9fafb;
-padding:4px 9px;
-font-size:.8rem;
-cursor:pointer;
-color:var(--text3);
-font-weight:600;
-}
-.view-btn-active{
-border-color:var(--red);
-color:var(--red-dark);
-background:#fee2e2;
-}
-.tw{
-background:#fcfcfc;
-border-radius:16px;
-box-shadow:none;
-overflow:auto;
-border:1px solid #e5e7eb;
-max-height:55vh;
-}
-table{
-width:100%;
-border-collapse:collapse;
-font-size:.83rem;
-}
-thead{
-background:#f9fafb;
-border-bottom:1px solid var(--border);
-}
-thead th{
-padding:8px 12px;
-text-align:left;
-font-size:.68rem;
-font-weight:600;
-color:var(--red-dark);
-letter-spacing:.06em;
-text-transform:uppercase;
-white-space:nowrap;
-position:sticky;
-top:0;
-z-index:2;
-background:#f9fafb;
-}
-tbody tr{
-border-bottom:1px solid var(--border);
-border-left:2px solid transparent;
-transition:background .08s,border-left-color .08s;
-}
-tbody tr:last-child{border-bottom:none;}
-tbody tr:nth-child(even){
-background:#f9fafb;
-}
-tbody tr:hover{
-background:#fef2f2;
-}
-td{
-padding:8px 12px;
-vertical-align:middle;
-white-space:nowrap;
-}
-td.r{
-font-size:.72rem;
-font-weight:600;
-color:#6b7280;
-}
-td.l{
-font-size:.75rem;
-color:#6b7280;
-max-width:120px;
-overflow:hidden;
-text-overflow:ellipsis;
-}
-td.t{
-white-space:normal;
-max-width:320px;
-font-size:.9rem;
-font-weight:600;
-color:var(--red-dark);
-line-height:1.4;
-display:flex;
-align-items:center;
-}
-td.td-comment{
-min-width:260px;
-width:300px;
-}
-.status-dot{
-display:inline-block;
-width:8px;height:8px;
-border-radius:50%;
-margin-right:6px;
-flex-shrink:0;
-}
-.ss{
-appearance:none;
-border:none;
-border-radius:999px;
-padding:3px 10px;
-font-size:.73rem;
-font-weight:600;
-cursor:pointer;
-font-family:inherit;
-outline:none;
-}
-.saf{background:#fee2e2;color:#b91c1c;}
-.sec{background:#ffedd5;color:#c2410c;}
-.sok{background:#dcfce7;color:#15803d;}
-.sp{
-appearance:none;
-border-radius:999px;
-padding:3px 9px;
-font-size:.71rem;
-font-weight:600;
-cursor:pointer;
-font-family:inherit;
-outline:none;
-border:1.5px solid transparent;
-}
-.ph{background:#fee2e2;color:#b91c1c;border-color:#fecaca;}
-.pm{background:#ffedd5;color:#c2410c;border-color:#fed7aa;}
-.pb{background:#e5e7eb;color:#4b5563;border-color:#d1d5db;}
-.si{
-appearance:none;
-background:#f3f4f6;
-border:1.5px solid var(--border);
-border-radius:999px;
-padding:4px 9px;
-font-size:.8rem;
-color:var(--text2);
-cursor:pointer;
-font-family:inherit;
-outline:none;
-min-width:140px;
-}
-.ci{
-width:100%;
-background:#f9fafb;
-border:1.5px solid var(--border);
-border-radius:999px;
-padding:6px 11px;
-font-size:.84rem;
-color:var(--text);
-font-family:inherit;
-outline:none;
-min-height:30px;
-}
-.ci::placeholder{color:var(--text3);font-style:italic;}
-.si:focus,
-.ss:focus,
-.sp:focus,
-.ci:focus{
-border-color:var(--red);
-box-shadow:0 0 0 2px rgba(220,38,38,.16);
-background:#ffffff;
-}
-.empty{text-align:center;padding:40px 20px;color:var(--text3);}
-.empty p{font-size:.9rem;font-weight:500;color:var(--text2);margin-top:12px;}
-.empty span{font-size:.8rem;}
-/* KANBAN */
-.kanban{
-margin-top:6px;
-display:flex;
-gap:10px;
-align-items:flex-start;
-overflow-x:auto;
-}
-.kanban-column{
-background:#f9fafb;
-border-radius:var(--rs);
-border:1px solid var(--border);
-min-width:240px;
-max-width:300px;
-flex:1;
-display:flex;
-flex-direction:column;
-max-height:55vh;
-}
-.kanban-header{
-padding:8px 10px;
-border-bottom:1px solid var(--border);
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-.kanban-title{
-font-size:.78rem;
-font-weight:600;
-color:var(--text2);
-}
-.kanban-count{
-font-size:.72rem;
-color:var(--text3);
-background:#e5e7eb;
-padding:1px 7px;
-border-radius:999px;
-}
-.kanban-list{
-padding:8px;
-overflow-y:auto;
-flex:1;
-}
-.kanban-card{
-background:var(--card);
-border-radius:var(--rs);
-border:1px solid var(--border);
-padding:7px 9px;
-margin-bottom:8px;
-cursor:grab;
-font-size:.8rem;
-position:relative;
-border-left:3px solid transparent;
-}
-.kanban-card.prio-haute{border-left-color:#b91c1c;}
-.kanban-card.prio-moyenne{border-left-color:#c2410c;}
-.kanban-card.prio-basse{border-left-color:#9ca3af;}
-.kanban-badge-lot{
-display:inline-block;
-font-size:.7rem;
-padding:2px 7px;
-border-radius:999px;
-background:#fef2f2;
-color:#4b5563;
-margin-bottom:4px;
-font-weight:600;
-}
-.kanban-card-title{
-font-weight:600;
-margin-bottom:4px;
-}
-.kanban-card-meta{
-font-size:.75rem;
-color:var(--text3);
-}
-.kanban-card-comment{
-margin-top:4px;
-font-size:.75rem;
-color:var(--text2);
-}
-.kanban-list.drop-target{
-background:#fefce8;
-border-radius:var(--rs);
-}
-/* INTERVENANTS */
-.intervenants-grid{
-display:grid;
-grid-template-columns:repeat(3,minmax(0,1fr));
-gap:12px;
-}
-.inter-card{
-background:var(--card);
-border-radius:18px;
-border:1px solid var(--border);
-box-shadow:var(--shadow);
-padding:10px 12px;
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-.inter-input{
-width:100%;
-border:1px solid var(--border);
-border-radius:999px;
-padding:6px 10px;
-font-size:.82rem;
-font-family:inherit;
-outline:none;
-}
-.inter-input::placeholder{color:var(--text3);}
-.inter-input:focus{
-border-color:var(--red);
-box-shadow:0 0 0 2px rgba(220,38,38,.14);
-}
-.inter-label{
-font-size:.78rem;
-color:var(--text3);
-font-weight:500;
-}
-.inter-row{
-display:flex;
-flex-direction:column;
-gap:3px;
-}
-.inter-name-input{
-font-weight:700;
-}
-/* DOCUMENTS */
-.doc-actions{
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:6px;
-}
-.btn-doc-import{
-border:none;
-border-radius:999px;
-padding:8px 16px;
-background:var(--red);
-color:#ffffff;
-font-size:.85rem;
-font-weight:700;
-cursor:pointer;
-box-shadow:0 10px 24px rgba(220,38,38,.4);
-}
-.doc-note{
-font-size:.8rem;
-color:var(--text2);
-}
-/* DRAWER */
-.drawer{
-position:fixed;
-inset:0;
-pointer-events:none;
-z-index:120;
-}
-.drawer-overlay{
-position:absolute;
-inset:0;
-background:rgba(15,23,42,.35);
-opacity:0;
-transition:opacity .18s;
-}
-.drawer-panel{
-position:absolute;
-top:0;right:0;
-height:100%;
-width:480px;
-max-width:100%;
-background:var(--card);
-box-shadow:-12px 0 30px rgba(15,23,42,.35);
-transform:translateX(100%);
-transition:transform .22s;
-display:flex;
-flex-direction:column;
-border-top-left-radius:18px;
-border-bottom-left-radius:18px;
-}
-.drawer-body{
-padding:24px 22px 20px;
-display:flex;
-flex-direction:column;
-gap:12px;
-height:100%;
-overflow:hidden;
-}
-.drawer-open .drawer{
-pointer-events:auto;
-}
-.drawer-open .drawer-overlay{
-opacity:1;
-}
-.drawer-open .drawer-panel{
-transform:translateX(0);
-}
-.drawer-close{
-border:none;
-background:transparent;
-font-size:1.3rem;
-line-height:1;
-padding:8px 12px;
-cursor:pointer;
-color:var(--text3);
-align-self:flex-end;
-}
-.drawer-body h2{
-font-size:1rem;
-margin-bottom:4px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:8px;
-}
-.drawer-ref{
-font-size:.8rem;
-color:var(--text3);
-margin-bottom:14px;
-}
-.drawer-status-pill{
-font-size:.7rem;
-padding:3px 8px;
-border-radius:999px;
-background:#fef2f2;
-color:var(--red-dark);
-white-space:nowrap;
-font-weight:600;
-}
-.drawer-field{
-display:flex;
-align-items:center;
-justify-content:space-between;
-margin-bottom:8px;
-font-size:.85rem;
-}
-.df-label{color:var(--text3);}
-.df-value{color:var(--text2);font-weight:500;margin-left:10px;}
-.drawer-block{
-margin-top:14px;
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-.drawer-comment-wrapper{
-background:#f9fafb;
-border-radius:var(--r);
-padding:8px;
-border:1px solid var(--border);
-}
-.drawer-textarea{
-min-height:70px;
-resize:vertical;
-border-radius:var(--r);
-border:1.5px solid var(--border);
-padding:7px 9px;
-font-family:inherit;
-font-size:.85rem;
-width:100%;
-background:#ffffff;
-}
-.drawer-textarea::placeholder{
-color:var(--text3);
-font-style:italic;
-}
-/* PHOTOS */
-.photos-actions{
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:6px;
-margin-bottom:6px;
-flex-wrap:wrap;
-}
-.btn-photo-import{
-border:none;
-border-radius:999px;
-padding:8px 16px;
-background:var(--red);
-color:#ffffff;
-font-size:.85rem;
-font-weight:700;
-cursor:pointer;
-box-shadow:0 10px 24px rgba(220,38,38,.4);
-}
-.photos-note{
-font-size:.8rem;
-color:var(--text2);
-}
-.photos-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-gap:10px;
-margin-top:8px;
-}
-.photo-card{
-background:#ffffff;
-border-radius:14px;
-border:1px solid #e5e7eb;
-overflow:hidden;
-box-shadow:0 2px 8px rgba(15,23,42,.06);
-display:flex;
-flex-direction:column;
-}
-.photo-card img{
-width:100%;
-height:120px;
-object-fit:cover;
-display:block;
-}
-.photo-meta{
-padding:6px 8px;
-font-size:.75rem;
-color:#6b7280;
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:6px;
-}
-.photo-name{
-overflow:hidden;
-text-overflow:ellipsis;
-white-space:nowrap;
-}
-.photo-delete{
-border:none;
-background:transparent;
-color:#b91c1c;
-font-size:.75rem;
-cursor:pointer;
-}
-@media(max-width:1100px){
-.intervenants-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-}
-@media(max-width:900px){
-.layout{padding:10px;}
-.shell{border-radius:0;}
-.sidebar{display:none;}
-.topbar{border-radius:0;}
-.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-.tw{max-height:55vh;}
-table{min-width:750px;}
-th:nth-child(2),td:nth-child(2){display:none;}
-}
-@media(max-width:600px){
-.stats-grid{grid-template-columns:1fr;}
-.intervenants-grid{grid-template-columns:1fr;}
-.drawer-panel{width:100%;border-radius:18px 18px 0 0;}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suivi Chantier – Cléry</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+  <style>
+    :root{
+      --violet:#7c3aed;
+      --violet-soft:#a855f7;
+      --violet-dark:#4c1d95;
+      --bg:#f3f4f6;
+      --card:#ffffff;
+      --border:#e5e7eb;
+      --text:#111827;
+      --text2:#4b5563;
+      --text3:#9ca3af;
+      --green:#16a34a;
+      --orange:#f97316;
+      --red:#ef4444;
+      --shadow:0 1px 3px rgba(15,23,42,.12);
+      --shadow-md:0 10px 30px rgba(15,23,42,.16);
+      --r:14px;
+      --rl:18px;
+      --rs:10px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      background:radial-gradient(circle at top left,#f5f3ff,#eef2ff);
+      color:var(--text);
+      min-height:100vh;
+      font-size:14px;
+      display:flex;
+    }
+    ::-webkit-scrollbar{width:6px;height:6px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:999px;}
+
+    .layout{
+      display:flex;
+      width:100%;
+      min-height:100vh;
+      padding:20px;
+    }
+    .shell{
+      background:#f9fafb;
+      border-radius:22px;
+      box-shadow:0 18px 40px rgba(15,23,42,.15);
+      display:flex;
+      width:100%;
+      overflow:hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar{
+      width:220px;
+      background:linear-gradient(180deg,#7c3aed,#6d28d9);
+      padding:24px 16px 18px;
+      display:flex;
+      flex-direction:column;
+      border-radius:18px;
+    }
+    .nav-label{
+      font-size:.95rem;
+      color:#f9f5ff;
+      margin:0 4px 18px;
+      font-weight:700;
+      text-transform:none;
+      letter-spacing:.02em;
+    }
+    .nav-item{
+      display:flex;
+      align-items:center;
+      padding:10px 16px;
+      border-radius:999px;
+      color:#ffffff;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      opacity:.9;
+      transition:background .12s,opacity .12s,transform .08s;
+    }
+    .nav-item.active{
+      background:rgba(255,255,255,.24);
+      opacity:1;
+    }
+    .nav-item:hover{
+      background:rgba(255,255,255,.2);
+      opacity:1;
+      transform:translateX(1px);
+    }
+    .sidebar-footer{
+      margin-top:auto;
+      padding-top:18px;
+      border-top:1px solid rgba(255,255,255,.18);
+      font-size:.8rem;
+      color:#ede9fe;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-weight:500;
+    }
+
+    /* MAIN */
+    .main{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      background:#f9fafb;
+    }
+
+    /* TOPBAR */
+    .topbar{
+      height:96px;
+      padding:0 32px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      background:#ffffff;
+    }
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:26px;
+    }
+    .topbar-logo img{
+      height:72px;
+      width:auto;
+      border-radius:0;
+      background:transparent;
+      object-fit:contain;
+      box-shadow:none;
+    }
+    .topbar-right{
+      font-size:.8rem;
+      color:var(--text3);
+    }
+
+    .main-inner{
+      padding:18px 24px 20px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:auto;
+    }
+    .view-section{
+      display:none;
+      flex-direction:column;
+      gap:14px;
+    }
+    .view-section.active{
+      display:flex;
+    }
+
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .section-title{
+      font-size:1.35rem;
+      font-weight:800;
+      color:var(--violet-dark);
+      margin-bottom:4px;
+    }
+    .section-sub{
+      font-size:.85rem;
+      color:var(--text3);
+    }
+
+    /* STATS */
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+    .stat-card{
+      background:var(--card);
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      padding:10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .stat-card-label{
+      font-size:.8rem;
+      color:var(--violet-dark);
+      font-weight:600;
+    }
+    .stat-card-value{
+      font-size:1.6rem;
+      font-weight:800;
+      color:var(--violet-dark);
+    }
+    .stat-card-note{
+      font-size:.75rem;
+      color:var(--text3);
+    }
+
+    /* PANEL GÉNÉRIQUE */
+    .panel{
+      background:#ffffff;
+      border-radius:20px;
+      border:1px solid #e0e7ff;
+      box-shadow:0 18px 40px rgba(15,23,42,.09);
+      padding:12px 14px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:0;
+    }
+
+    /* Filtres tâches */
+    .filterbar{
+      display:flex;align-items:center;gap:8px;
+      flex-wrap:wrap;
+    }
+    .sbox{
+      display:flex;align-items:center;gap:7px;
+      background:#f9fafb;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:6px 11px;
+      flex:1;min-width:180px;max-width:260px;
+    }
+    .sbox svg{color:var(--text3);flex-shrink:0;}
+    .sbox input{
+      border:none;background:transparent;
+      font-size:.82rem;color:var(--text);
+      outline:none;width:100%;
+      font-family:inherit;
+    }
+    .sbox input::placeholder{color:var(--text3);}
+
+    .fsel{
+      appearance:none;
+      background:#f9f5ff
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b8cf5' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
+        no-repeat right 10px center;
+      border:1.5px solid #e0e7ff;
+      border-radius:999px;
+      padding:7px 26px 7px 12px;
+      font-size:.8rem;
+      color:var(--violet-dark);
+      cursor:pointer;
+      font-family:inherit;
+      font-weight:600;
+    }
+    .fsel:hover{
+      background:#ede9fe
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237c3aed' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
+        no-repeat right 10px center;
+    }
+    .fsel:focus{
+      outline:none;
+      border-color:var(--violet);
+      box-shadow:0 0 0 2px rgba(124,58,237,.18);
+    }
+
+    .tbl-header{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;
+    }
+    .tbl-title{
+      font-size:1rem;
+      font-weight:700;
+      color:var(--violet-dark);
+    }
+    .tbl-actions{
+      display:flex;
+      gap:6px;
+      align-items:center;
+      margin-left:auto;
+      margin-right:8px;
+    }
+    .view-btn{
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#f9fafb;
+      padding:4px 9px;
+      font-size:.8rem;
+      cursor:pointer;
+      color:var(--text3);
+      font-weight:600;
+    }
+    .view-btn-active{
+      border-color:var(--violet);
+      color:var(--violet-dark);
+      background:#ede9fe;
+    }
+
+    .tw{
+      background:#fcfcff;
+      border-radius:16px;
+      box-shadow:none;
+      overflow:auto;
+      border:1px solid #e5e7f5;
+      max-height:55vh;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.83rem;
+    }
+    thead{
+      background:#f9fafb;
+      border-bottom:1px solid var(--border);
+    }
+    thead th{
+      padding:8px 12px;
+      text-align:left;
+      font-size:.68rem;
+      font-weight:600;
+      color:var(--violet-dark);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      white-space:nowrap;
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:#f9fafb;
+    }
+    tbody tr{
+      border-bottom:1px solid var(--border);
+      border-left:2px solid transparent;
+      transition:background .08s,border-left-color .08s;
+    }
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:nth-child(even){
+      background:#f9fafb;
+    }
+    tbody tr:hover{
+      background:#eef2ff;
+    }
+    td{
+      padding:8px 12px;
+      vertical-align:middle;
+      white-space:nowrap;
+    }
+    td.r{
+      font-size:.72rem;
+      font-weight:600;
+      color:#6b7280;
+    }
+    td.l{
+      font-size:.75rem;
+      color:#6b7280;
+      max-width:120px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    td.t{
+      white-space:normal;
+      max-width:320px;
+      font-size:.9rem;
+      font-weight:600;
+      color:var(--violet-dark);
+      line-height:1.4;
+      display:flex;
+      align-items:center;
+    }
+    td.td-comment{
+      min-width:260px;
+      width:300px;
+    }
+
+    .status-dot{
+      display:inline-block;
+      width:8px;height:8px;
+      border-radius:50%;
+      margin-right:6px;
+      flex-shrink:0;
+    }
+
+    .ss{
+      appearance:none;
+      border:none;
+      border-radius:999px;
+      padding:3px 10px;
+      font-size:.73rem;
+      font-weight:600;
+      cursor:pointer;
+      font-family:inherit;
+      outline:none;
+    }
+    .saf{background:#fee2e2;color:#b91c1c;}
+    .sec{background:#ffedd5;color:#c2410c;}
+    .sok{background:#dcfce7;color:#15803d;}
+    .sp{
+      appearance:none;
+      border-radius:999px;
+      padding:3px 9px;
+      font-size:.71rem;
+      font-weight:600;
+      cursor:pointer;
+      font-family:inherit;
+      outline:none;
+      border:1.5px solid transparent;
+    }
+    .ph{background:#fee2e2;color:#b91c1c;border-color:#fecaca;}
+    .pm{background:#ffedd5;color:#c2410c;border-color:#fed7aa;}
+    .pb{background:#e5e7eb;color:#4b5563;border-color:#d1d5db;}
+
+    .si{
+      appearance:none;
+      background:#f3f4f6;
+      border:1.5px solid var(--border);
+      border-radius:999px;
+      padding:4px 9px;
+      font-size:.8rem;
+      color:var(--text2);
+      cursor:pointer;
+      font-family:inherit;
+      outline:none;
+      min-width:140px;
+    }
+
+    .ci{
+      width:100%;
+      background:#f9fafb;
+      border:1.5px solid var(--border);
+      border-radius:999px;
+      padding:6px 11px;
+      font-size:.84rem;
+      color:var(--text);
+      font-family:inherit;
+      outline:none;
+      min-height:30px;
+    }
+    .ci::placeholder{color:var(--text3);font-style:italic;}
+    .si:focus,
+    .ss:focus,
+    .sp:focus,
+    .ci:focus{
+      border-color:var(--violet);
+      box-shadow:0 0 0 2px rgba(124,58,237,.16);
+      background:#ffffff;
+    }
+
+    .empty{text-align:center;padding:40px 20px;color:var(--text3);}
+    .empty p{font-size:.9rem;font-weight:500;color:var(--text2);margin-top:12px;}
+    .empty span{font-size:.8rem;}
+
+    /* KANBAN */
+    .kanban{
+      margin-top:6px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      overflow-x:auto;
+    }
+    .kanban-column{
+      background:#f9fafb;
+      border-radius:var(--rs);
+      border:1px solid var(--border);
+      min-width:240px;
+      max-width:300px;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      max-height:55vh;
+    }
+    .kanban-header{
+      padding:8px 10px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .kanban-title{
+      font-size:.78rem;
+      font-weight:600;
+      color:var(--text2);
+    }
+    .kanban-count{
+      font-size:.72rem;
+      color:var(--text3);
+      background:#e5e7eb;
+      padding:1px 7px;
+      border-radius:999px;
+    }
+    .kanban-list{
+      padding:8px;
+      overflow-y:auto;
+      flex:1;
+    }
+    .kanban-card{
+      background:var(--card);
+      border-radius:var(--rs);
+      border:1px solid var(--border);
+      padding:7px 9px;
+      margin-bottom:8px;
+      cursor:grab;
+      font-size:.8rem;
+      position:relative;
+      border-left:3px solid transparent;
+    }
+    .kanban-card.prio-haute{border-left-color:#b91c1c;}
+    .kanban-card.prio-moyenne{border-left-color:#c2410c;}
+    .kanban-card.prio-basse{border-left-color:#9ca3af;}
+
+    .kanban-badge-lot{
+      display:inline-block;
+      font-size:.7rem;
+      padding:2px 7px;
+      border-radius:999px;
+      background:#eef2ff;
+      color:#4b5563;
+      margin-bottom:4px;
+      font-weight:600;
+    }
+    .kanban-card-title{
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    .kanban-card-meta{
+      font-size:.75rem;
+      color:var(--text3);
+    }
+    .kanban-card-comment{
+      margin-top:4px;
+      font-size:.75rem;
+      color:var(--text2);
+    }
+    .kanban-list.drop-target{
+      background:#fefce8;
+      border-radius:var(--rs);
+    }
+
+    /* INTERVENANTS */
+    .intervenants-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+    .inter-card{
+      background:var(--card);
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      padding:10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .inter-input{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:.82rem;
+      font-family:inherit;
+      outline:none;
+    }
+    .inter-input::placeholder{color:var(--text3);}
+    .inter-input:focus{
+      border-color:var(--violet);
+      box-shadow:0 0 0 2px rgba(124,58,237,.14);
+    }
+    .inter-label{
+      font-size:.78rem;
+      color:var(--text3);
+      font-weight:500;
+    }
+    .inter-row{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+    .inter-name-input{
+      font-weight:700;
+    }
+
+    /* DOCUMENTS */
+    .doc-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:6px;
+    }
+    .btn-doc-import{
+      border:none;
+      border-radius:999px;
+      padding:8px 16px;
+      background:var(--violet);
+      color:#ffffff;
+      font-size:.85rem;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(124,58,237,.4);
+    }
+    .doc-note{
+      font-size:.8rem;
+      color:var(--text2);
+    }
+
+    /* DRAWER */
+    .drawer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:120;
+    }
+    .drawer-overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(15,23,42,.35);
+      opacity:0;
+      transition:opacity .18s;
+    }
+    .drawer-panel{
+      position:absolute;
+      top:0;right:0;
+      height:100%;
+      width:480px;
+      max-width:100%;
+      background:var(--card);
+      box-shadow:-12px 0 30px rgba(15,23,42,.35);
+      transform:translateX(100%);
+      transition:transform .22s;
+      display:flex;
+      flex-direction:column;
+      border-top-left-radius:18px;
+      border-bottom-left-radius:18px;
+    }
+    .drawer-body{
+      padding:24px 22px 20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      height:100%;
+      overflow:hidden;
+    }
+    .drawer-open .drawer{
+      pointer-events:auto;
+    }
+    .drawer-open .drawer-overlay{
+      opacity:1;
+    }
+    .drawer-open .drawer-panel{
+      transform:translateX(0);
+    }
+    .drawer-close{
+      border:none;
+      background:transparent;
+      font-size:1.3rem;
+      line-height:1;
+      padding:8px 12px;
+      cursor:pointer;
+      color:var(--text3);
+      align-self:flex-end;
+    }
+    .drawer-body h2{
+      font-size:1rem;
+      margin-bottom:4px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+    .drawer-ref{
+      font-size:.8rem;
+      color:var(--text3);
+      margin-bottom:14px;
+    }
+    .drawer-status-pill{
+      font-size:.7rem;
+      padding:3px 8px;
+      border-radius:999px;
+      background:#eef2ff;
+      color:#4b5563;
+      white-space:nowrap;
+      font-weight:600;
+    }
+    .drawer-field{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:8px;
+      font-size:.85rem;
+    }
+    .df-label{color:var(--text3);}
+    .df-value{color:var(--text2);font-weight:500;margin-left:10px;}
+    .drawer-block{
+      margin-top:14px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .drawer-comment-wrapper{
+      background:#f9fafb;
+      border-radius:var(--r);
+      padding:8px;
+      border:1px solid var(--border);
+    }
+    .drawer-textarea{
+      min-height:70px;
+      resize:vertical;
+      border-radius:var(--r);
+      border:1.5px solid var(--border);
+      padding:7px 9px;
+      font-family:inherit;
+      font-size:.85rem;
+      width:100%;
+      background:#ffffff;
+    }
+    .drawer-textarea::placeholder{
+      color:var(--text3);
+      font-style:italic;
+    }
+
+    /* PHOTOS */
+    .photos-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:6px;
+      margin-bottom:6px;
+      flex-wrap:wrap;
+    }
+    .btn-photo-import{
+      border:none;
+      border-radius:999px;
+      padding:8px 16px;
+      background:#7c3aed;
+      color:#ffffff;
+      font-size:.85rem;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(124,58,237,.4);
+    }
+    .photos-note{
+      font-size:.8rem;
+      color:var(--text2);
+    }
+    .photos-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+      gap:10px;
+      margin-top:8px;
+    }
+    .photo-card{
+      background:#ffffff;
+      border-radius:14px;
+      border:1px solid #e5e7eb;
+      overflow:hidden;
+      box-shadow:0 2px 8px rgba(15,23,42,.06);
+      display:flex;
+      flex-direction:column;
+    }
+    .photo-card img{
+      width:100%;
+      height:120px;
+      object-fit:cover;
+      display:block;
+    }
+    .photo-meta{
+      padding:6px 8px;
+      font-size:.75rem;
+      color:#6b7280;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+    }
+    .photo-name{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .photo-delete{
+      border:none;
+      background:transparent;
+      color:#b91c1c;
+      font-size:.75rem;
+      cursor:pointer;
+    }
+
+    @media(max-width:1100px){
+      .intervenants-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    @media(max-width:900px){
+      .layout{padding:10px;}
+      .shell{border-radius:0;}
+      .sidebar{display:none;}
+      .topbar{border-radius:0;}
+      .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .tw{max-height:55vh;}
+      table{min-width:750px;}
+      th:nth-child(2),td:nth-child(2){display:none;}
+    }
+    @media(max-width:600px){
+      .stats-grid{grid-template-columns:1fr;}
+      .intervenants-grid{grid-template-columns:1fr;}
+      .drawer-panel{width:100%;border-radius:18px 18px 0 0;}
+    }
+  </style>
 </head>
 <body>
 <div class="layout">
-<div class="shell">
-<aside class="sidebar">
-<div class="nav-label">Menu</div>
-<div class="nav-item active" data-view-btn="taches">Tâches</div>
-<div class="nav-item" data-view-btn="intervenants">Intervenants</div>
-<div class="nav-item" data-view-btn="documents">Documents</div>
-<div class="nav-item" data-view-btn="photos">Photos</div>
-<div class="sidebar-footer">
-<span>Suivi chantier Cléry</span>
-<span>Technicombles – Interne</span>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="nav-label">Menu</div>
+      <div class="nav-item active" data-view-btn="taches">Tâches</div>
+      <div class="nav-item" data-view-btn="intervenants">Intervenants</div>
+      <div class="nav-item" data-view-btn="documents">Documents</div>
+      <div class="nav-item" data-view-btn="photos">Photos</div>
+      <div class="sidebar-footer">
+        <span>Suivi chantier Cléry</span>
+        <span>Technicombles – Interne</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-logo">
+            <img src="technicombles_logo_small.jpg" alt="Technicombles">
+          </div>
+        </div>
+        <div class="topbar-right">
+          <span id="lastUpdate">—</span>
+        </div>
+      </header>
+
+      <div class="main-inner">
+        <!-- TÂCHES -->
+        <section class="view-section active" data-view="taches">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Tâches du chantier</div>
+              <div class="section-sub">Tableau de suivi & vue Kanban</div>
+            </div>
+          </div>
+
+          <section class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-card-label">Total tâches</span>
+              <span class="stat-card-value" id="statTotal">0</span>
+              <span class="stat-card-note">Toutes colonnes confondues</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card-label">À faire</span>
+              <span class="stat-card-value" id="statAFaire">0</span>
+              <span class="stat-card-note">Non démarrées</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card-label">En cours</span>
+              <span class="stat-card-value" id="statEnCours">0</span>
+              <span class="stat-card-note">En production</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card-label">Terminées</span>
+              <span class="stat-card-value" id="statTerminees">0</span>
+              <span class="stat-card-note">Clôturées</span>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="filterbar">
+              <div class="sbox">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" />
+              </div>
+              <select class="fsel" id="filterStatut">
+                <option value="">Tous statuts</option>
+                <option value="À faire">À faire</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminée">Terminée</option>
+              </select>
+              <select class="fsel" id="filterLot">
+                <option value="">Tous lots</option>
+              </select>
+              <select class="fsel" id="filterIntervenant">
+                <option value="">Tous intervenants</option>
+              </select>
+            </div>
+
+            <div class="tbl-header">
+              <span class="tbl-title">Tâches</span>
+              <div class="tbl-actions">
+                <button id="viewTable" class="view-btn view-btn-active">Tableau</button>
+                <button id="viewKanban" class="view-btn">Kanban</button>
+              </div>
+            </div>
+
+            <div class="tw" id="tableWrapper">
+              <table>
+                <thead>
+                <tr>
+                  <th>Réf</th>
+                  <th>Lot</th>
+                  <th>Tâche</th>
+                  <th>Intervenant</th>
+                  <th>Statut</th>
+                  <th>Priorité</th>
+                  <th>Commentaire</th>
+                </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+              </table>
+            </div>
+
+            <div id="kanbanWrapper" class="kanban" style="display:none;"></div>
+          </section>
+        </section>
+
+        <!-- INTERVENANTS -->
+        <section class="view-section" data-view="intervenants">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Intervenants</div>
+              <div class="section-sub">Coordonnées et rôles synchronisés avec Supabase</div>
+            </div>
+          </div>
+          <section class="panel">
+            <div class="photos-actions">
+              <button id="addIntervenantBtn" class="btn-photo-import">Ajouter un intervenant</button>
+              <span class="photos-note">La liste est liée à Supabase, tu peux ajouter/modifier/supprimer ici.</span>
+            </div>
+            <section class="intervenants-grid" id="intervenantsGrid"></section>
+          </section>
+        </section>
+
+        <!-- DOCUMENTS -->
+        <section class="view-section" data-view="documents">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Documents</div>
+              <div class="section-sub">Import du DPGF et pièces du chantier</div>
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="doc-actions">
+              <button class="btn-doc-import" id="importBtn">Importer un DPGF (Excel)</button>
+              <span class="doc-note">
+                Sélectionne le fichier Excel DPGF pour mettre à jour toutes les tâches du chantier.
+              </span>
+            </div>
+            <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" />
+          </section>
+        </section>
+
+        <!-- PHOTOS -->
+        <section class="view-section" data-view="photos">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Photos du chantier</div>
+              <div class="section-sub">Stockage dans Supabase (bucket photos_chantier)</div>
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="photos-actions">
+              <button class="btn-photo-import" id="importPhotosBtn">Importer des photos</button>
+              <span class="photos-note">
+                Taille limitée (~50 Mo) : privilégier quelques photos clés.
+              </span>
+            </div>
+            <input type="file" id="photosInput" accept="image/*" multiple style="display:none;">
+            <div id="photosEmpty" class="empty" style="display:none;">
+              <p>Aucune photo pour l’instant</p>
+              <span>Importe des images depuis ton ordinateur.</span>
+            </div>
+            <div id="photosGrid" class="photos-grid"></div>
+          </section>
+        </section>
+      </div>
+    </main>
+  </div>
 </div>
-</aside>
-<main class="main">
-<header class="topbar">
-<div class="topbar-left">
-<div class="topbar-logo">
-<img src="technicombles_logo_small.jpg" alt="Technicombles">
-</div>
-</div>
-<div class="topbar-right">
-<span id="lastUpdate">—</span>
-</div>
-</header>
-<div class="main-inner">
-<!-- TÂCHES -->
-<section class="view-section active" data-view="taches">
-<div class="section-header">
-<div>
-<div class="section-title">Tâches du chantier</div>
-<div class="section-sub">Tableau de suivi & vue Kanban</div>
-</div>
-</div>
-<section class="stats-grid">
-<div class="stat-card">
-<span class="stat-card-label">Total tâches</span>
-<span class="stat-card-value" id="statTotal">0</span>
-<span class="stat-card-note">Toutes colonnes confondues</span>
-</div>
-<div class="stat-card">
-<span class="stat-card-label">À faire</span>
-<span class="stat-card-value" id="statAFaire">0</span>
-<span class="stat-card-note">Non démarrées</span>
-</div>
-<div class="stat-card">
-<span class="stat-card-label">En cours</span>
-<span class="stat-card-value" id="statEnCours">0</span>
-<span class="stat-card-note">En production</span>
-</div>
-<div class="stat-card">
-<span class="stat-card-label">Terminées</span>
-<span class="stat-card-value" id="statTerminees">0</span>
-<span class="stat-card-note">Clôturées</span>
-</div>
-</section>
-<section class="panel">
-<div class="filterbar">
-<div class="sbox">
-<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-<circle cx="11" cy="11" r="8"></circle>
-<path d="m21 21-4.35-4.35"></path>
-</svg>
-<input type="search" id="searchInput" placeholder="Rechercher une tâche, un lot…" />
-</div>
-<select class="fsel" id="filterStatut">
-<option value="">Tous statuts</option>
-<option value="À faire">À faire</option>
-<option value="En cours">En cours</option>
-<option value="Terminée">Terminée</option>
-</select>
-<select class="fsel" id="filterLot">
-<option value="">Tous lots</option>
-</select>
-<select class="fsel" id="filterIntervenant">
-<option value="">Tous intervenants</option>
-</select>
-</div>
-<div class="tbl-header">
-<span class="tbl-title">Tâches</span>
-<div class="tbl-actions">
-<button id="viewTable" class="view-btn view-btn-active">Tableau</button>
-<button id="viewKanban" class="view-btn">Kanban</button>
-</div>
-</div>
-<div class="tw" id="tableWrapper">
-<table>
-<thead>
-<tr>
-<th>Réf</th>
-<th>Lot</th>
-<th>Tâche</th>
-<th>Intervenant</th>
-<th>Statut</th>
-<th>Priorité</th>
-<th>Commentaire</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
-</div>
-<div id="kanbanWrapper" class="kanban" style="display:none;"></div>
-</section>
-</section>
-<!-- INTERVENANTS -->
-<section class="view-section" data-view="intervenants">
-<div class="section-header">
-<div>
-<div class="section-title">Intervenants</div>
-<div class="section-sub">Coordonnées et rôles synchronisés avec Supabase</div>
-</div>
-</div>
-<section class="panel">
-<div class="photos-actions">
-<button id="addIntervenantBtn" class="btn-photo-import">Ajouter un intervenant</button>
-<span class="photos-note">La liste est liée à Supabase, tu peux ajouter/modifier/supprimer ici.</span>
-</div>
-<section class="intervenants-grid" id="intervenantsGrid"></section>
-</section>
-</section>
-<!-- DOCUMENTS -->
-<section class="view-section" data-view="documents">
-<div class="section-header">
-<div>
-<div class="section-title">Documents</div>
-<div class="section-sub">Import du DPGF et pièces du chantier</div>
-</div>
-</div>
-<section class="panel">
-<div class="doc-actions">
-<button class="btn-doc-import" id="importBtn">Importer un DPGF (Excel)</button>
-<span class="doc-note">
-Sélectionne le fichier Excel DPGF pour mettre à jour toutes les tâches du chantier.
-</span>
-</div>
-<input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" />
-</section>
-</section>
-<!-- PHOTOS -->
-<section class="view-section" data-view="photos">
-<div class="section-header">
-<div>
-<div class="section-title">Photos du chantier</div>
-<div class="section-sub">Stockage dans Supabase (bucket photos_chantier)</div>
-</div>
-</div>
-<section class="panel">
-<div class="photos-actions">
-<button class="btn-photo-import" id="importPhotosBtn">Importer des photos</button>
-<span class="photos-note">
-Taille limitée (~50 Mo) : privilégier quelques photos clés.
-</span>
-</div>
-<input type="file" id="photosInput" accept="image/*" multiple style="display:none;">
-<div id="photosEmpty" class="empty" style="display:none;">
-<p>Aucune photo pour l'instant</p>
-<span>Importe des images depuis ton ordinateur.</span>
-</div>
-<div id="photosGrid" class="photos-grid"></div>
-</section>
-</section>
-</div>
-</main>
-</div>
-</div>
+
 <!-- Drawer tâches -->
 <div id="taskDrawer" class="drawer">
-<div class="drawer-overlay" id="drawerOverlay"></div>
-<div class="drawer-panel">
-<button class="drawer-close" id="drawerClose" aria-label="Fermer le détail">×</button>
-<div class="drawer-body">
-<h2 id="drawerTitle"></h2>
-<p class="drawer-ref" id="drawerRef"></p>
-<div class="drawer-field">
-<span class="df-label">Lot</span>
-<span class="df-value" id="drawerLot"></span>
-</div>
-<div class="drawer-field">
-<span class="df-label">Intervenant</span>
-<span class="df-value" id="drawerIntervenant"></span>
-</div>
-<div class="drawer-field">
-<span class="df-label">Statut</span>
-<span class="df-value" id="drawerStatut"></span>
-</div>
-<div class="drawer-field">
-<span class="df-label">Priorité</span>
-<span class="df-value" id="drawerPriorite"></span>
-</div>
-<div class="drawer-block">
-<span class="df-label">Commentaire</span>
-<div class="drawer-comment-wrapper">
-<textarea
-id="drawerCommentaire"
-class="drawer-textarea"
-placeholder="Ajouter un commentaire…"
-></textarea>
-</div>
-</div>
-</div>
-</div>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer-panel">
+    <button class="drawer-close" id="drawerClose" aria-label="Fermer le détail">×</button>
+    <div class="drawer-body">
+      <h2 id="drawerTitle"></h2>
+      <p class="drawer-ref" id="drawerRef"></p>
+
+      <div class="drawer-field">
+        <span class="df-label">Lot</span>
+        <span class="df-value" id="drawerLot"></span>
+      </div>
+      <div class="drawer-field">
+        <span class="df-label">Intervenant</span>
+        <span class="df-value" id="drawerIntervenant"></span>
+      </div>
+      <div class="drawer-field">
+        <span class="df-label">Statut</span>
+        <span class="df-value" id="drawerStatut"></span>
+      </div>
+      <div class="drawer-field">
+        <span class="df-label">Priorité</span>
+        <span class="df-value" id="drawerPriorite"></span>
+      </div>
+
+      <div class="drawer-block">
+        <span class="df-label">Commentaire</span>
+        <div class="drawer-comment-wrapper">
+          <textarea
+            id="drawerCommentaire"
+            class="drawer-textarea"
+            placeholder="Ajouter un commentaire…"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
-const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-// Constantes
-let INTERVS=["Non assigné"];
-const STATUTS=["À faire","En cours","Terminée"];
-const PRIOS=["Basse","Moyenne","Haute"];
-const INTER_TABLE="intervenants_clery";
-const PHOTOS_BUCKET="photos_chantier";
-let tasks=[];
-let currentTask=null;
-const $=id=>document.getElementById(id);
-/* NAVIGATION */
-const navItems=document.querySelectorAll(".nav-item");
-const views=document.querySelectorAll(".view-section");
-navItems.forEach(item=>{
-item.addEventListener("click",()=>{
-const view=item.getAttribute("data-view-btn");
-navItems.forEach(n=>n.classList.remove("active"));
-item.classList.add("active");
-views.forEach(v=>{
-v.classList.toggle("active",v.getAttribute("data-view")===view);
+  const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
+  const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
+  const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+  // Constantes
+  let INTERVS=["Non assigné"];
+  const STATUTS=["À faire","En cours","Terminée"];
+  const PRIOS=["Basse","Moyenne","Haute"];
+  const INTER_TABLE="intervenants_clery";
+  const PHOTOS_BUCKET="photos_chantier";
+
+  let tasks=[];
+  let currentTask=null;
+  const $=id=>document.getElementById(id);
+
+  /* NAVIGATION */
+  const navItems=document.querySelectorAll(".nav-item");
+  const views=document.querySelectorAll(".view-section");
+  navItems.forEach(item=>{
+    item.addEventListener("click",()=>{
+      const view=item.getAttribute("data-view-btn");
+      navItems.forEach(n=>n.classList.remove("active"));
+      item.classList.add("active");
+      views.forEach(v=>{
+        v.classList.toggle("active",v.getAttribute("data-view")===view);
+      });
+    });
+  });
+
+  function setDate(){
+    const el=$("lastUpdate");
+    if(!el)return;
+    el.textContent="Mise à jour : "+new Date().toLocaleString("fr-FR",{
+      day:"2-digit",month:"2-digit",year:"numeric",
+      hour:"2-digit",minute:"2-digit"
+    });
+  }
+
+  function guessLot(ref){
+    const n=(ref||"").toString().split(".")[0];
+    return{
+      "0":"Lot 0 – Préparation",
+      "1":"Lot 1 – Démolition & GO",
+      "2":"Lot 2 – Maçonnerie",
+      "3":"Lot 3 – Plomberie",
+      "4":"Lot 4 – Électricité",
+      "5":"Lot 5 – Ventilation",
+      "6":"Lot 6 – Menuiseries Ext.",
+      "7":"Lot 7 – Menuiseries Int.",
+      "8":"Lot 8 – Parquet",
+      "9":"Lot 9 – Peinture"
+    }[n]||"Lot "+n;
+  }
+
+  function normSt(v){
+    const s=(v||"").toLowerCase();
+    if(s.includes("cours"))return"En cours";
+    if(s.includes("termin"))return"Terminée";
+    return"À faire";
+  }
+
+  function guessPr(d,r){
+    const t=((d||"")+" "+(r||"")).toLowerCase();
+    if(t.includes("urgent")||t.includes("priorit"))return"Haute";
+    if(t.includes("option"))return"Basse";
+    return"Moyenne";
+  }
+
+  function sCls(s){return s==="En cours"?"sec":s==="Terminée"?"sok":"saf";}
+  function pCls(p){return p==="Haute"?"ph":p==="Basse"?"pb":"pm";}
+  function borderColor(s){
+    if(s==="À faire")   return "#ef4444";
+    if(s==="En cours")  return "#f97316";
+    if(s==="Terminée")  return "#16a34a";
+    return "#7c3aed";
+  }
+
+  function renderFilters(){
+    $("filterLot").innerHTML='<option value="">Tous lots</option>';
+    [...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{
+      const o=document.createElement("option");
+      o.value=l;o.textContent=l;
+      $("filterLot").appendChild(o);
+    });
+    $("filterIntervenant").innerHTML='<option value="">Tous intervenants</option>';
+    [...new Set(tasks.map(t=>t.intervenant))].sort().forEach(i=>{
+      if(!i)return;
+      const o=document.createElement("option");
+      o.value=i;o.textContent=i;
+      $("filterIntervenant").appendChild(o);
+    });
+  }
+
+  function getFiltered(){
+    const q=$("searchInput").value.toLowerCase();
+    const s=$("filterStatut").value;
+    const l=$("filterLot").value;
+    const iv=$("filterIntervenant").value;
+    return tasks.filter(t=>{
+      if(s&&t.statut!==s)return false;
+      if(l&&t.lot!==l)return false;
+      if(iv&&t.intervenant!==iv)return false;
+      if(!q)return true;
+      return(t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||""))
+        .toLowerCase().includes(q);
+    });
+  }
+
+  async function save(id,field,val){
+    await db.from("taches_noe_clery")
+      .update({[field]:val,updated_at:new Date().toISOString()})
+      .eq("id",id);
+    setDate();
+  }
+
+  function updateStats(list){
+    const total=list.length;
+    const af=list.filter(t=>t.statut==="À faire").length;
+    const ec=list.filter(t=>t.statut==="En cours").length;
+    const ok=list.filter(t=>t.statut==="Terminée").length;
+    $("statTotal").textContent=total;
+    $("statAFaire").textContent=af;
+    $("statEnCours").textContent=ec;
+    $("statTerminees").textContent=ok;
+  }
+
+  function openDrawer(t){
+    currentTask=t;
+    document.body.classList.add("drawer-open");
+    const titleEl=$("drawerTitle");
+    titleEl.innerHTML="";
+    titleEl.appendChild(document.createTextNode(t.task));
+    const pill=document.createElement("span");
+    pill.className="drawer-status-pill";
+    pill.textContent=t.statut;
+    if(t.statut==="À faire"){
+      pill.style.background="#fee2e2";
+      pill.style.color="#b91c1c";
+    }else if(t.statut==="En cours"){
+      pill.style.background="#ffedd5";
+      pill.style.color="#c2410c";
+    }else{
+      pill.style.background="#dcfce7";
+      pill.style.color="#15803d";
+    }
+    titleEl.appendChild(pill);
+
+    $("drawerRef").textContent="Réf : "+t.ref;
+    $("drawerLot").textContent=t.lot;
+    $("drawerIntervenant").textContent=t.intervenant||"—";
+    $("drawerStatut").textContent=t.statut;
+    $("drawerPriorite").textContent=t.priorite;
+    $("drawerCommentaire").value=t.commentaire||"";
+  }
+
+  function closeDrawer(){
+    document.body.classList.remove("drawer-open");
+    currentTask=null;
+  }
+
+  function render(){
+    const list=getFiltered();
+    const tb=$("tableBody");
+    tb.innerHTML="";
+    updateStats(list);
+
+    if(!list.length){
+      tb.innerHTML=`<tr><td colspan="7"><div class="empty">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" style="margin:0 auto;display:block;opacity:.25">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <p>Aucune tâche trouvée</p>
+        <span>Modifie les filtres ou importe ton DPGF</span>
+      </div></td></tr>`;
+      return;
+    }
+
+    list.forEach(t=>{
+      const tr=document.createElement("tr");
+      tr.style.borderLeft="2px solid "+borderColor(t.statut);
+      tr.style.cursor="pointer";
+      tr.addEventListener("click",e=>{
+        if(["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName)) return;
+        openDrawer(t);
+      });
+
+      const td1=document.createElement("td");
+      td1.className="r";
+      td1.textContent=t.ref;
+      tr.appendChild(td1);
+
+      const td2=document.createElement("td");
+      td2.className="l";
+      td2.textContent=t.lot;
+      td2.title=t.lot;
+      tr.appendChild(td2);
+
+      const td3=document.createElement("td");
+      td3.className="t";
+      const badge=document.createElement("span");
+      badge.className="status-dot";
+      badge.style.backgroundColor=borderColor(t.statut);
+      td3.appendChild(badge);
+      td3.appendChild(document.createTextNode(t.task));
+      tr.appendChild(td3);
+
+      const td4=document.createElement("td");
+      const si=document.createElement("select");
+      si.className="si";
+      si.setAttribute("aria-label","Intervenant");
+      INTERVS.forEach(v=>{
+        const o=document.createElement("option");
+        o.value=v;o.textContent=v;
+        if(v===t.intervenant)o.selected=true;
+        si.appendChild(o);
+      });
+      si.addEventListener("change",async e=>{
+        t.intervenant=e.target.value;
+        await save(t.id,"intervenant",t.intervenant);
+        renderFilters();
+        if($("kanbanWrapper").style.display!=="none") renderKanban();
+      });
+      td4.appendChild(si);
+      tr.appendChild(td4);
+
+      const td5=document.createElement("td");
+      const ss=document.createElement("select");
+      ss.className="ss "+sCls(t.statut);
+      ss.setAttribute("aria-label","Statut");
+      STATUTS.forEach(v=>{
+        const o=document.createElement("option");
+        o.value=v;o.textContent=v;
+        if(v===t.statut)o.selected=true;
+        ss.appendChild(o);
+      });
+      ss.addEventListener("change",async e=>{
+        const val=e.target.value;
+        t.statut=val;
+        ss.className="ss "+sCls(t.statut);
+        tr.style.borderLeft="2px solid "+borderColor(t.statut);
+        badge.style.backgroundColor=borderColor(t.statut);
+        await save(t.id,"statut",t.statut);
+        updateStats(getFiltered());
+        if($("kanbanWrapper").style.display!=="none") renderKanban();
+      });
+      td5.appendChild(ss);
+      tr.appendChild(td5);
+
+      const td6=document.createElement("td");
+      const sp=document.createElement("select");
+      sp.className="sp "+pCls(t.priorite);
+      sp.setAttribute("aria-label","Priorité");
+      PRIOS.forEach(v=>{
+        const o=document.createElement("option");
+        o.value=v;
+        o.textContent=v;
+        if(v===t.priorite)o.selected=true;
+        sp.appendChild(o);
+      });
+      sp.addEventListener("change",async e=>{
+        const val=e.target.value;
+        t.priorite=val;
+        sp.className="sp "+pCls(t.priorite);
+        await save(t.id,"priorite",t.priorite);
+        if($("kanbanWrapper").style.display!=="none") renderKanban();
+      });
+      td6.appendChild(sp);
+      tr.appendChild(td6);
+
+      const td7=document.createElement("td");
+      td7.className="td-comment";
+      const ci=document.createElement("input");
+      ci.type="text";
+      ci.className="ci";
+      ci.value=t.commentaire||"";
+      ci.placeholder="Ajouter un commentaire…";
+      ci.setAttribute("aria-label","Commentaire");
+      ci.addEventListener("blur",async e=>{
+        t.commentaire=e.target.value;
+        await save(t.id,"commentaire",t.commentaire);
+        if($("kanbanWrapper").style.display!=="none") renderKanban();
+      });
+      ci.addEventListener("keydown",async e=>{
+        if(e.key==="Enter"){
+          e.preventDefault();
+          t.commentaire=e.target.value;
+          await save(t.id,"commentaire",t.commentaire);
+          ci.blur();
+          if($("kanbanWrapper").style.display!=="none") renderKanban();
+        }
+      });
+      td7.appendChild(ci);
+      tr.appendChild(td7);
+
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderKanban(){
+    const list=getFiltered();
+    const kw=$("kanbanWrapper");
+    kw.innerHTML="";
+
+    const cols=[
+      {statut:"À faire", label:"À faire"},
+      {statut:"En cours", label:"En cours"},
+      {statut:"Terminée", label:"Terminées"}
+    ];
+
+    cols.forEach(c=>{
+      const col=document.createElement("div");
+      col.className="kanban-column";
+      col.dataset.statut=c.statut;
+
+      const head=document.createElement("div");
+      head.className="kanban-header";
+      const title=document.createElement("span");
+      title.className="kanban-title";
+      title.textContent=c.label;
+      const count=document.createElement("span");
+      count.className="kanban-count";
+      const tasksInCol=list.filter(t=>t.statut===c.statut);
+      count.textContent=tasksInCol.length;
+      head.appendChild(title);
+      head.appendChild(count);
+      col.appendChild(head);
+
+      const listEl=document.createElement("div");
+      listEl.className="kanban-list";
+      listEl.dataset.statut=c.statut;
+
+      listEl.addEventListener("dragover",e=>{
+        e.preventDefault();
+        listEl.classList.add("drop-target");
+      });
+      listEl.addEventListener("dragleave",()=>{
+        listEl.classList.remove("drop-target");
+      });
+      listEl.addEventListener("drop",async e=>{
+        e.preventDefault();
+        listEl.classList.remove("drop-target");
+        const id=e.dataTransfer.getData("text/plain");
+        const task=tasks.find(t=>t.id===id);
+        if(!task) return;
+        task.statut=c.statut;
+        await save(task.id,"statut",task.statut);
+        renderKanban();
+        updateStats(getFiltered());
+        render();
+      });
+
+      tasksInCol.forEach(t=>{
+        const card=document.createElement("div");
+        card.className="kanban-card " + (
+          t.priorite==="Haute" ? "prio-haute" :
+          t.priorite==="Basse" ? "prio-basse" : "prio-moyenne"
+        );
+        card.draggable=true;
+        card.dataset.id=t.id;
+        card.addEventListener("dragstart",e=>{
+          e.dataTransfer.setData("text/plain",t.id);
+        });
+        card.addEventListener("click",()=>openDrawer(t));
+
+        const lotBadge=document.createElement("div");
+        lotBadge.className="kanban-badge-lot";
+        lotBadge.textContent=t.lot;
+        card.appendChild(lotBadge);
+
+        const title=document.createElement("div");
+        title.className="kanban-card-title";
+        title.textContent=t.task;
+        card.appendChild(title);
+
+        const meta=document.createElement("div");
+        meta.className="kanban-card-meta";
+        meta.textContent=`${t.ref} · ${t.intervenant||"Non assigné"} · ${t.priorite}`;
+        card.appendChild(meta);
+
+        if(t.commentaire){
+          const com=document.createElement("div");
+          com.className="kanban-card-comment";
+          com.textContent=t.commentaire;
+          card.appendChild(com);
+        }
+
+        listEl.appendChild(card);
+      });
+
+      col.appendChild(listEl);
+      kw.appendChild(col);
+    });
+  }
+
+  async function loadDB(){
+    const{data,error}=await db.from("taches_noe_clery")
+      .select("*")
+      .order("ref",{ascending:true});
+    if(error){console.error(error);return;}
+    tasks=data||[];
+    renderFilters();render();setDate();
+  }
+
+  async function pushDB(newTasks){
+    await db.from("taches_noe_clery")
+      .delete()
+      .neq("id","00000000-0000-0000-0000-000000000000");
+    const{error}=await db.from("taches_noe_clery").insert(
+      newTasks.map(t=>({
+        ref:t.ref,
+        lot:t.lot,
+        task:t.task,
+        intervenant:t.intervenant,
+        statut:t.statut,
+        priorite:t.priorite,
+        commentaire:t.commentaire
+      }))
+    );
+    if(error){
+      console.error(error);
+      alert("Erreur Supabase : "+error.message);
+    }
+  }
+  // Import DPGF
+  $("importBtn").addEventListener("click",()=>{
+    if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\n\nContinuer ?"))return;
+    $("fileInput").click();
+  });
+
+  $("fileInput").addEventListener("change",e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=async ev=>{
+      try{
+        const wb=XLSX.read(new Uint8Array(ev.target.result),{type:"array"});
+        let found=[];
+        wb.SheetNames.forEach(sn=>{
+          const json=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1});
+          let hi=-1;
+          for(let i=0;i<json.length;i++){
+            const f=(json[i][0]||"").toString().toLowerCase();
+            if(f.includes("rf")||f.includes("réf")){hi=i;break;}
+          }
+          if(hi===-1)return;
+          const hdr=json[hi].map(h=>(h||"").toString().toLowerCase().trim());
+          const ri=hdr.findIndex(h=>h.includes("rf")||h.includes("réf"));
+          const di=hdr.findIndex(h=>h.includes("description")||h.includes("tche")||h.includes("tâche"));
+          const rpi=hdr.findIndex(h=>h.includes("responsable"));
+          const sti=hdr.findIndex(h=>h.includes("statut"));
+          const rmi=hdr.findIndex(h=>h.includes("remarque")||h.includes("observation"));
+          for(let i=hi+1;i<json.length;i++){
+            const row=json[i];
+            const ref=(row[ri]||"").toString().trim();
+            const desc=(row[di]||"").toString().trim();
+            if(!ref||!desc||ref.includes("---"))continue;
+            const resp=(row[rpi]||"").toString().trim();
+            const statut=(row[sti]||"").toString().trim();
+            const rem=(row[rmi]||"").toString().trim();
+            found.push({
+              ref,
+              lot:guessLot(ref),
+              task:desc,
+              intervenant:["à faire","faire",""].includes(resp.toLowerCase())?"Non assigné":resp,
+              statut:normSt(statut),
+              priorite:guessPr(desc,rem),
+              commentaire:rem
+            });
+          }
+        });
+        if(!found.length){
+          alert("Aucune tâche trouvée dans ce fichier.");
+          return;
+        }
+        await pushDB(found);
+        await loadDB();
+        alert("Import terminé.");
+      }catch(err){
+        console.error(err);
+        alert("Erreur lors de la lecture du fichier Excel.");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  // Filtres & vues
+  $("searchInput").addEventListener("input",()=>{
+    render();
+    if($("kanbanWrapper").style.display!=="none") renderKanban();
+  });
+  $("filterStatut").addEventListener("change",()=>{
+    render();
+    if($("kanbanWrapper").style.display!=="none") renderKanban();
+  });
+  $("filterLot").addEventListener("change",()=>{
+    render();
+    if($("kanbanWrapper").style.display!=="none") renderKanban();
+  });
+  $("filterIntervenant").addEventListener("change",()=>{
+    render();
+    if($("kanbanWrapper").style.display!=="none") renderKanban();
+  });
+
+  $("viewTable").addEventListener("click",()=>{
+    $("viewTable").classList.add("view-btn-active");
+    $("viewKanban").classList.remove("view-btn-active");
+    $("tableWrapper").style.display="block";
+    $("kanbanWrapper").style.display="none";
+    render();
+  });
+
+  $("viewKanban").addEventListener("click",()=>{
+    $("viewKanban").classList.add("view-btn-active");
+    $("viewTable").classList.remove("view-btn-active");
+    $("tableWrapper").style.display="none";
+    $("kanbanWrapper").style.display="flex";
+    renderKanban();
+  });
+
+  $("drawerOverlay").addEventListener("click",closeDrawer);
+  $("drawerClose").addEventListener("click",closeDrawer);
+  window.addEventListener("keydown",e=>{
+    if(e.key==="Escape") closeDrawer();
+  });
+  $("drawerCommentaire").addEventListener("blur",async e=>{
+    if(!currentTask) return;
+    currentTask.commentaire=e.target.value;
+    await save(currentTask.id,"commentaire",currentTask.commentaire);
+    render();
+    if($("kanbanWrapper").style.display!=="none") renderKanban();
+  });
+
+  /* INTERVENANTS – CRUD simple */
+  let intervenantsData=[];
+
+  async function loadIntervenants(){
+    const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
+    if(error||!data||!data.length){
+      const defaults=[
+        {id:1,nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
+        {id:2,nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
+        {id:3,nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
+        {id:4,nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
+        {id:5,nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
+        {id:6,nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
+      ];
+      if(!error){
+        await db.from(INTER_TABLE).insert(
+          defaults.map(d=>({
+            id:d.id,
+            nom:d.nom,
+            role:d.role,
+            tel:d.tel,
+            mail:d.mail,
+            note:d.note
+          }))
+        );
+      }
+      intervenantsData=defaults;
+    } else {
+      intervenantsData=data;
+    }
+
+    INTERVS=["Non assigné", ...intervenantsData.map(i=>i.nom).filter(Boolean)];
+    renderIntervenants();
+  }
+
+  async function saveIntervenant(id,field,val){
+    const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
+    if(error) console.error("Erreur save intervenant:",error);
+  }
+
+  async function deleteIntervenant(id){
+    if(!confirm("Supprimer cet intervenant ?"))return;
+    const{error}=await db.from(INTER_TABLE).delete().eq("id",id);
+    if(error){
+      console.error(error);
+      alert("Erreur Supabase : "+error.message);
+      return;
+    }
+    await loadIntervenants();
+    renderFilters();
+    render();
+    if($("kanbanWrapper").style.display!=="none") renderKanban();
+  }
+
+  function renderIntervenants(){
+    const g=document.getElementById("intervenantsGrid");
+    g.innerHTML="";
+    intervenantsData.forEach(i=>{
+      const c=document.createElement("div");
+      c.className="inter-card";
+      c.innerHTML=
+        `<div class="inter-row">
+          <span class="inter-label">Nom</span>
+          <input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <span class="inter-label">Rôle</span>
+          <input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <span class="inter-label">Téléphone</span>
+          <input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <span class="inter-label">Email</span>
+          <input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <span class="inter-label">Note</span>
+          <input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}">
+        </div>
+        <div class="inter-row">
+          <button class="photo-delete" data-delete="${i.id}">Supprimer</button>
+        </div>`;
+      g.appendChild(c);
+    });
+    g.querySelectorAll(".inter-input").forEach(inp=>{
+      inp.addEventListener("change",async e=>{
+        const id=parseInt(e.target.getAttribute("data-id"),10);
+        const field=e.target.getAttribute("data-field");
+        const item=intervenantsData.find(x=>x.id===id);
+        if(item) item[field]=e.target.value;
+        await saveIntervenant(id,field,e.target.value);
+        await loadIntervenants();
+        renderFilters();
+        render();
+      });
+    });
+    g.querySelectorAll("[data-delete]").forEach(btn=>{
+      btn.addEventListener("click",e=>{
+        const id=parseInt(e.target.getAttribute("data-delete"),10);
+        deleteIntervenant(id);
+      });
+    });
+  }
+
+  $("addIntervenantBtn").addEventListener("click", async () => {
+  const nom = prompt("Nom de l’intervenant ?");
+  if (!nom) return;
+
+  const newId =
+    (intervenantsData.length ? Math.max(...intervenantsData.map(i => i.id || 0)) : 0) + 1;
+
+  const { data, error } = await db
+    .from(INTER_TABLE)
+    .insert({ id: newId, nom, role: "", tel: "", mail: "", note: "" })
+    .select();
+
+  if (error) {
+    console.error(error);
+    alert("Erreur Supabase : " + error.message);
+    return;
+  }
+
+  if (data && data.length) {
+    intervenantsData.push(data[0]);
+  }
+  await loadIntervenants();
+  renderFilters();
+  render();
 });
-});
-});
-function setDate(){
-const el=$("lastUpdate");
-if(!el)return;
-el.textContent="Mise à jour : "+new Date().toLocaleString("fr-FR",{
-day:"2-digit",month:"2-digit",year:"numeric",
-hour:"2-digit",minute:"2-digit"
-});
-}
-function guessLot(ref){
-const n=(ref||"").toString().split(".")[0];
-return{
-"0":"Lot 0 – Préparation",
-"1":"Lot 1 – Démolition & GO",
-"2":"Lot 2 – Maçonnerie",
-"3":"Lot 3 – Plomberie",
-"4":"Lot 4 – Électricité",
-"5":"Lot 5 – Ventilation",
-"6":"Lot 6 – Menuiseries Ext.",
-"7":"Lot 7 – Menuiseries Int.",
-"8":"Lot 8 – Parquet",
-"9":"Lot 9 – Peinture"
-}[n]||"Lot "+n;
-}
-function normSt(v){
-const s=(v||"").toLowerCase();
-if(s.includes("cours"))return"En cours";
-if(s.includes("termin"))return"Terminée";
-return"À faire";
-}
-function guessPr(d,r){
-const t=((d||"")+" "+(r||"")).toLowerCase();
-if(t.includes("urgent")||t.includes("priorit"))return"Haute";
-if(t.includes("option"))return"Basse";
-return"Moyenne";
-}
-function sCls(s){return s==="En cours"?"sec":s==="Terminée"?"sok":"saf";}
-function pCls(p){return p==="Haute"?"ph":p==="Basse"?"pb":"pm";}
-function borderColor(s){
-if(s==="À faire")   return "#ef4444";
-if(s==="En cours")  return "#f97316";
-if(s==="Terminée")  return "#16a34a";
-return "#dc2626";
-}
-function renderFilters(){
-$("filterLot").innerHTML='<option value="">Tous lots</option>';
-[...new Set(tasks.map(t=>t.lot))].sort().forEach(l=>{
-const o=document.createElement("option");
-o.value=l;o.textContent=l;
-$("filterLot").appendChild(o);
-});
-$("filterIntervenant").innerHTML='<option value="">Tous intervenants</option>';
-[...new Set(tasks.map(t=>t.intervenant))].sort().forEach(i=>{
-if(!i)return;
-const o=document.createElement("option");
-o.value=i;o.textContent=i;
-$("filterIntervenant").appendChild(o);
-});
-}
-function getFiltered(){
-const q=$("searchInput").value.toLowerCase();
-const s=$("filterStatut").value;
-const l=$("filterLot").value;
-const iv=$("filterIntervenant").value;
-return tasks.filter(t=>{
-if(s&&t.statut!==s)return false;
-if(l&&t.lot!==l)return false;
-if(iv&&t.intervenant!==iv)return false;
-if(!q)return true;
-return(t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||""))
-.toLowerCase().includes(q);
-});
-}
-async function save(id,field,val){
-await db.from("taches_noe_clery")
-.update({[field]:val,updated_at:new Date().toISOString()})
-.eq("id",id);
-setDate();
-}
-function updateStats(list){
-const total=list.length;
-const af=list.filter(t=>t.statut==="À faire").length;
-const ec=list.filter(t=>t.statut==="En cours").length;
-const ok=list.filter(t=>t.statut==="Terminée").length;
-$("statTotal").textContent=total;
-$("statAFaire").textContent=af;
-$("statEnCours").textContent=ec;
-$("statTerminees").textContent=ok;
-}
-function openDrawer(t){
-currentTask=t;
-document.body.classList.add("drawer-open");
-const titleEl=$("drawerTitle");
-titleEl.innerHTML="";
-titleEl.appendChild(document.createTextNode(t.task));
-const pill=document.createElement("span");
-pill.className="drawer-status-pill";
-pill.textContent=t.statut;
-if(t.statut==="À faire"){
-pill.style.background="#fee2e2";
-pill.style.color="#b91c1c";
-}else if(t.statut==="En cours"){
-pill.style.background="#ffedd5";
-pill.style.color="#c2410c";
-}else{
-pill.style.background="#dcfce7";
-pill.style.color="#15803d";
-}
-titleEl.appendChild(pill);
-$("drawerRef").textContent="Réf : "+t.ref;
-$("drawerLot").textContent=t.lot;
-$("drawerIntervenant").textContent=t.intervenant||"—";
-$("drawerStatut").textContent=t.statut;
-$("drawerPriorite").textContent=t.priorite;
-$("drawerCommentaire").value=t.commentaire||"";
-}
-function closeDrawer(){
-document.body.classList.remove("drawer-open");
-currentTask=null;
-}
-function render(){
-const list=getFiltered();
-const tb=$("tableBody");
-tb.innerHTML="";
-updateStats(list);
-if(!list.length){
-tb.innerHTML=`<tr><td colspan="7"><div class="empty">
-<svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" style="margin:0 auto;display:block;opacity:.25">
-<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-</svg>
-<p>Aucune tâche trouvée</p>
-<span>Modifie les filtres ou importe ton DPGF</span>
-</div></td></tr>`;
-return;
-}
-list.forEach(t=>{
-const tr=document.createElement("tr");
-tr.style.borderLeft="2px solid "+borderColor(t.statut);
-tr.style.cursor="pointer";
-tr.addEventListener("click",e=>{
-if(["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName)) return;
-openDrawer(t);
-});
-const td1=document.createElement("td");
-td1.className="r";
-td1.textContent=t.ref;
-tr.appendChild(td1);
-const td2=document.createElement("td");
-td2.className="l";
-td2.textContent=t.lot;
-td2.title=t.lot;
-tr.appendChild(td2);
-const td3=document.createElement("td");
-td3.className="t";
-const badge=document.createElement("span");
-badge.className="status-dot";
-badge.style.backgroundColor=borderColor(t.statut);
-td3.appendChild(badge);
-td3.appendChild(document.createTextNode(t.task));
-tr.appendChild(td3);
-const td4=document.createElement("td");
-const si=document.createElement("select");
-si.className="si";
-si.setAttribute("aria-label","Intervenant");
-INTERVS.forEach(v=>{
-const o=document.createElement("option");
-o.value=v;o.textContent=v;
-if(v===t.intervenant)o.selected=true;
-si.appendChild(o);
-});
-si.addEventListener("change",async e=>{
-t.intervenant=e.target.value;
-await save(t.id,"intervenant",t.intervenant);
-renderFilters();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-td4.appendChild(si);
-tr.appendChild(td4);
-const td5=document.createElement("td");
-const ss=document.createElement("select");
-ss.className="ss "+sCls(t.statut);
-ss.setAttribute("aria-label","Statut");
-STATUTS.forEach(v=>{
-const o=document.createElement("option");
-o.value=v;o.textContent=v;
-if(v===t.statut)o.selected=true;
-ss.appendChild(o);
-});
-ss.addEventListener("change",async e=>{
-const val=e.target.value;
-t.statut=val;
-ss.className="ss "+sCls(t.statut);
-tr.style.borderLeft="2px solid "+borderColor(t.statut);
-badge.style.backgroundColor=borderColor(t.statut);
-await save(t.id,"statut",t.statut);
-updateStats(getFiltered());
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-td5.appendChild(ss);
-tr.appendChild(td5);
-const td6=document.createElement("td");
-const sp=document.createElement("select");
-sp.className="sp "+pCls(t.priorite);
-sp.setAttribute("aria-label","Priorité");
-PRIOS.forEach(v=>{
-const o=document.createElement("option");
-o.value=v;
-o.textContent=v;
-if(v===t.priorite)o.selected=true;
-sp.appendChild(o);
-});
-sp.addEventListener("change",async e=>{
-const val=e.target.value;
-t.priorite=val;
-sp.className="sp "+pCls(t.priorite);
-await save(t.id,"priorite",t.priorite);
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-td6.appendChild(sp);
-tr.appendChild(td6);
-const td7=document.createElement("td");
-td7.className="td-comment";
-const ci=document.createElement("input");
-ci.type="text";
-ci.className="ci";
-ci.value=t.commentaire||"";
-ci.placeholder="Ajouter un commentaire…";
-ci.setAttribute("aria-label","Commentaire");
-ci.addEventListener("blur",async e=>{
-t.commentaire=e.target.value;
-await save(t.id,"commentaire",t.commentaire);
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-ci.addEventListener("keydown",async e=>{
-if(e.key==="Enter"){
-e.preventDefault();
-t.commentaire=e.target.value;
-await save(t.id,"commentaire",t.commentaire);
-ci.blur();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-}
-});
-td7.appendChild(ci);
-tr.appendChild(td7);
-tb.appendChild(tr);
-});
-}
-function renderKanban(){
-const list=getFiltered();
-const kw=$("kanbanWrapper");
-kw.innerHTML="";
-const cols=[
-{statut:"À faire", label:"À faire"},
-{statut:"En cours", label:"En cours"},
-{statut:"Terminée", label:"Terminées"}
-];
-cols.forEach(c=>{
-const col=document.createElement("div");
-col.className="kanban-column";
-col.dataset.statut=c.statut;
-const head=document.createElement("div");
-head.className="kanban-header";
-const title=document.createElement("span");
-title.className="kanban-title";
-title.textContent=c.label;
-const count=document.createElement("span");
-count.className="kanban-count";
-const tasksInCol=list.filter(t=>t.statut===c.statut);
-count.textContent=tasksInCol.length;
-head.appendChild(title);
-head.appendChild(count);
-col.appendChild(head);
-const listEl=document.createElement("div");
-listEl.className="kanban-list";
-listEl.dataset.statut=c.statut;
-listEl.addEventListener("dragover",e=>{
-e.preventDefault();
-listEl.classList.add("drop-target");
-});
-listEl.addEventListener("dragleave",()=>{
-listEl.classList.remove("drop-target");
-});
-listEl.addEventListener("drop",async e=>{
-e.preventDefault();
-listEl.classList.remove("drop-target");
-const id=e.dataTransfer.getData("text/plain");
-const task=tasks.find(t=>t.id===id);
-if(!task) return;
-task.statut=c.statut;
-await save(task.id,"statut",task.statut);
-renderKanban();
-updateStats(getFiltered());
-render();
-});
-tasksInCol.forEach(t=>{
-const card=document.createElement("div");
-card.className="kanban-card " + (
-t.priorite==="Haute" ? "prio-haute" :
-t.priorite==="Basse" ? "prio-basse" : "prio-moyenne"
-);
-card.draggable=true;
-card.dataset.id=t.id;
-card.addEventListener("dragstart",e=>{
-e.dataTransfer.setData("text/plain",t.id);
-});
-card.addEventListener("click",()=>openDrawer(t));
-const lotBadge=document.createElement("div");
-lotBadge.className="kanban-badge-lot";
-lotBadge.textContent=t.lot;
-card.appendChild(lotBadge);
-const title=document.createElement("div");
-title.className="kanban-card-title";
-title.textContent=t.task;
-card.appendChild(title);
-const meta=document.createElement("div");
-meta.className="kanban-card-meta";
-meta.textContent=`${t.ref} · ${t.intervenant||"Non assigné"} · ${t.priorite}`;
-card.appendChild(meta);
-if(t.commentaire){
-const com=document.createElement("div");
-com.className="kanban-card-comment";
-com.textContent=t.commentaire;
-card.appendChild(com);
-}
-listEl.appendChild(card);
-});
-col.appendChild(listEl);
-kw.appendChild(col);
-});
-}
-async function loadDB(){
-const{data,error}=await db.from("taches_noe_clery")
-.select("*")
-.order("ref",{ascending:true});
-if(error){console.error(error);return;}
-tasks=data||[];
-renderFilters();render();setDate();
-}
-async function pushDB(newTasks){
-await db.from("taches_noe_clery")
-.delete()
-.neq("id","00000000-0000-0000-0000-000000000000");
-const{error}=await db.from("taches_noe_clery").insert(
-newTasks.map(t=>({
-ref:t.ref,
-lot:t.lot,
-task:t.task,
-intervenant:t.intervenant,
-statut:t.statut,
-priorite:t.priorite,
-commentaire:t.commentaire
-}))
-);
-if(error){
-console.error(error);
-alert("Erreur Supabase : "+error.message);
-}
-}
-// Import DPGF
-$("importBtn").addEventListener("click",()=>{
-if(!confirm("Importer le DPGF va remplacer toutes les tâches existantes.\nContinuer ?"))return;
-$("fileInput").click();
-});
-$("fileInput").addEventListener("change",e=>{
-const file=e.target.files[0];if(!file)return;
-const reader=new FileReader();
-reader.onload=async ev=>{
-try{
-const wb=XLSX.read(new Uint8Array(ev.target.result),{type:"array"});
-let found=[];
-wb.SheetNames.forEach(sn=>{
-const json=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1});
-let hi=-1;
-for(let i=0;i<json.length;i++){
-const f=(json[i][0]||"").toString().toLowerCase();
-if(f.includes("rf")||f.includes("réf")){hi=i;break;}
-}
-if(hi===-1)return;
-const hdr=json[hi].map(h=>(h||"").toString().toLowerCase().trim());
-const ri=hdr.findIndex(h=>h.includes("rf")||h.includes("réf"));
-const di=hdr.findIndex(h=>h.includes("description")||h.includes("tche")||h.includes("tâche"));
-const rpi=hdr.findIndex(h=>h.includes("responsable"));
-const sti=hdr.findIndex(h=>h.includes("statut"));
-const rmi=hdr.findIndex(h=>h.includes("remarque")||h.includes("observation"));
-for(let i=hi+1;i<json.length;i++){
-const row=json[i];
-const ref=(row[ri]||"").toString().trim();
-const desc=(row[di]||"").toString().trim();
-if(!ref||!desc||ref.includes("---"))continue;
-const resp=(row[rpi]||"").toString().trim();
-const statut=(row[sti]||"").toString().trim();
-const rem=(row[rmi]||"").toString().trim();
-found.push({
-ref,
-lot:guessLot(ref),
-task:desc,
-intervenant:["à faire","faire",""].includes(resp.toLowerCase())?"Non assigné":resp,
-statut:normSt(statut),
-priorite:guessPr(desc,rem),
-commentaire:rem
-});
-}
-});
-if(!found.length){
-alert("Aucune tâche trouvée dans ce fichier.");
-return;
-}
-await pushDB(found);
-await loadDB();
-alert("Import terminé.");
-}catch(err){
-console.error(err);
-alert("Erreur lors de la lecture du fichier Excel.");
-}
-};
-reader.readAsArrayBuffer(file);
-});
-// Filtres & vues
-$("searchInput").addEventListener("input",()=>{
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-$("filterStatut").addEventListener("change",()=>{
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-$("filterLot").addEventListener("change",()=>{
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-$("filterIntervenant").addEventListener("change",()=>{
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-$("viewTable").addEventListener("click",()=>{
-$("viewTable").classList.add("view-btn-active");
-$("viewKanban").classList.remove("view-btn-active");
-$("tableWrapper").style.display="block";
-$("kanbanWrapper").style.display="none";
-render();
-});
-$("viewKanban").addEventListener("click",()=>{
-$("viewKanban").classList.add("view-btn-active");
-$("viewTable").classList.remove("view-btn-active");
-$("tableWrapper").style.display="none";
-$("kanbanWrapper").style.display="flex";
-renderKanban();
-});
-$("drawerOverlay").addEventListener("click",closeDrawer);
-$("drawerClose").addEventListener("click",closeDrawer);
-window.addEventListener("keydown",e=>{
-if(e.key==="Escape") closeDrawer();
-});
-$("drawerCommentaire").addEventListener("blur",async e=>{
-if(!currentTask) return;
-currentTask.commentaire=e.target.value;
-await save(currentTask.id,"commentaire",currentTask.commentaire);
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-});
-/* INTERVENANTS – CRUD simple */
-let intervenantsData=[];
-async function loadIntervenants(){
-const{data,error}=await db.from(INTER_TABLE).select("*").order("id",{ascending:true});
-if(error||!data||!data.length){
-const defaults=[
-{id:1,nom:"Techni Combles",role:"Entreprise principale / charpente - isolation",tel:"",mail:"",note:""},
-{id:2,nom:"Home Work Peinture",role:"Peinture & finitions intérieures",tel:"",mail:"",note:""},
-{id:3,nom:"Pro Martins",role:"Maçonnerie / plâtrerie",tel:"",mail:"",note:""},
-{id:4,nom:"Interelec",role:"Électricité",tel:"",mail:"",note:""},
-{id:5,nom:"Tiago",role:"Plomberie / sanitaires",tel:"",mail:"",note:""},
-{id:6,nom:"HK Menuiserie",role:"Menuiseries intérieures / extérieures",tel:"",mail:"",note:""},
-];
-if(!error){
-await db.from(INTER_TABLE).insert(
-defaults.map(d=>({
-id:d.id,
-nom:d.nom,
-role:d.role,
-tel:d.tel,
-mail:d.mail,
-note:d.note
-}))
-);
-}
-intervenantsData=defaults;
-} else {
-intervenantsData=data;
-}
-INTERVS=["Non assigné", ...intervenantsData.map(i=>i.nom).filter(Boolean)];
-renderIntervenants();
-}
-async function saveIntervenant(id,field,val){
-const{error}=await db.from(INTER_TABLE).update({[field]:val}).eq("id",id);
-if(error) console.error("Erreur save intervenant:",error);
-}
-async function deleteIntervenant(id){
-if(!confirm("Supprimer cet intervenant ?"))return;
-const{error}=await db.from(INTER_TABLE).delete().eq("id",id);
-if(error){
-console.error(error);
-alert("Erreur Supabase : "+error.message);
-return;
-}
-await loadIntervenants();
-renderFilters();
-render();
-if($("kanbanWrapper").style.display!=="none") renderKanban();
-}
-function renderIntervenants(){
-const g=document.getElementById("intervenantsGrid");
-g.innerHTML="";
-intervenantsData.forEach(i=>{
-const c=document.createElement("div");
-c.className="inter-card";
-c.innerHTML=
-`<div class="inter-row">
-<span class="inter-label">Nom</span>
-<input class="inter-input inter-name-input" value="${i.nom||""}" data-field="nom" data-id="${i.id}">
-</div>
-<div class="inter-row">
-<span class="inter-label">Rôle</span>
-<input class="inter-input" value="${i.role||""}" data-field="role" data-id="${i.id}">
-</div>
-<div class="inter-row">
-<span class="inter-label">Téléphone</span>
-<input class="inter-input" value="${i.tel||""}" data-field="tel" data-id="${i.id}">
-</div>
-<div class="inter-row">
-<span class="inter-label">Email</span>
-<input class="inter-input" value="${i.mail||""}" data-field="mail" data-id="${i.id}">
-</div>
-<div class="inter-row">
-<span class="inter-label">Note</span>
-<input class="inter-input" value="${i.note||""}" data-field="note" data-id="${i.id}">
-</div>
-<div class="inter-row">
-<button class="photo-delete" data-delete="${i.id}">Supprimer</button>
-</div>`;
-g.appendChild(c);
-});
-g.querySelectorAll(".inter-input").forEach(inp=>{
-inp.addEventListener("change",async e=>{
-const id=parseInt(e.target.getAttribute("data-id"),10);
-const field=e.target.getAttribute("data-field");
-const item=intervenantsData.find(x=>x.id===id);
-if(item) item[field]=e.target.value;
-await saveIntervenant(id,field,e.target.value);
-await loadIntervenants();
-renderFilters();
-render();
-});
-});
-g.querySelectorAll("[data-delete]").forEach(btn=>{
-btn.addEventListener("click",e=>{
-const id=parseInt(e.target.getAttribute("data-delete"),10);
-deleteIntervenant(id);
-});
-});
-}
-$("addIntervenantBtn").addEventListener("click", async () => {
-const nom = prompt("Nom de l'intervenant ?");
-if (!nom) return;
-const newId =
-(intervenantsData.length ? Math.max(...intervenantsData.map(i => i.id || 0)) : 0) + 1;
-const { data, error } = await db
-.from(INTER_TABLE)
-.insert({ id: newId, nom, role: "", tel: "", mail: "", note: "" })
-.select();
-if (error) {
-console.error(error);
-alert("Erreur Supabase : " + error.message);
-return;
-}
-if (data && data.length) {
-intervenantsData.push(data[0]);
-}
-await loadIntervenants();
-renderFilters();
-render();
-});
-/* PHOTOS – Upload & galerie */
-const photosGrid=$("photosGrid");
-const photosEmpty=$("photosEmpty");
-async function loadPhotos(){
-const{data,error}=await db.storage.from(PHOTOS_BUCKET).list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
-if(error){
-console.error(error);
-return;
-}
-const files=data||[];
-photosGrid.innerHTML="";
-if(!files.length){
-photosEmpty.style.display="block";
-return;
-}
-photosEmpty.style.display="none";
-files.forEach(file=>{
-const publicUrl=db.storage.from(PHOTOS_BUCKET).getPublicUrl(file.name).data.publicUrl;
-const card=document.createElement("div");
-card.className="photo-card";
-const img=document.createElement("img");
-img.src=publicUrl;
-img.alt=file.name;
-img.loading="lazy";
-img.addEventListener("click",()=>window.open(publicUrl,"_blank"));
-card.appendChild(img);
-const meta=document.createElement("div");
-meta.className="photo-meta";
-const nameSpan=document.createElement("span");
-nameSpan.className="photo-name";
-nameSpan.textContent=file.name;
-const delBtn=document.createElement("button");
-delBtn.className="photo-delete";
-delBtn.textContent="Suppr.";
-delBtn.addEventListener("click",async ()=>{
-if(!confirm("Supprimer cette photo ?"))return;
-const{error:delErr}=await db.storage.from(PHOTOS_BUCKET).remove([file.name]);
-if(delErr){
-console.error(delErr);
-alert("Erreur Supabase : "+delErr.message);
-return;
-}
-loadPhotos();
-});
-meta.appendChild(nameSpan);
-meta.appendChild(delBtn);
-card.appendChild(meta);
-photosGrid.appendChild(card);
-});
-}
-$("importPhotosBtn").addEventListener("click",()=>{
-$("photosInput").click();
-});
+
+
+  /* PHOTOS – Upload & galerie */
+  const photosGrid=$("photosGrid");
+  const photosEmpty=$("photosEmpty");
+
+  async function loadPhotos(){
+    const{data,error}=await db.storage.from(PHOTOS_BUCKET).list("",{limit:100,offset:0,sortBy:{column:"created_at",order:"desc"}});
+    if(error){
+      console.error(error);
+      return;
+    }
+    const files=data||[];
+    photosGrid.innerHTML="";
+    if(!files.length){
+      photosEmpty.style.display="block";
+      return;
+    }
+    photosEmpty.style.display="none";
+
+    files.forEach(file=>{
+      const publicUrl=db.storage.from(PHOTOS_BUCKET).getPublicUrl(file.name).data.publicUrl;
+      const card=document.createElement("div");
+      card.className="photo-card";
+      const img=document.createElement("img");
+      img.src=publicUrl;
+      img.alt=file.name;
+      img.loading="lazy";
+      img.addEventListener("click",()=>window.open(publicUrl,"_blank"));
+      card.appendChild(img);
+
+      const meta=document.createElement("div");
+      meta.className="photo-meta";
+      const nameSpan=document.createElement("span");
+      nameSpan.className="photo-name";
+      nameSpan.textContent=file.name;
+      const delBtn=document.createElement("button");
+      delBtn.className="photo-delete";
+      delBtn.textContent="Suppr.";
+      delBtn.addEventListener("click",async ()=>{
+        if(!confirm("Supprimer cette photo ?"))return;
+        const{error:delErr}=await db.storage.from(PHOTOS_BUCKET).remove([file.name]);
+        if(delErr){
+          console.error(delErr);
+          alert("Erreur Supabase : "+delErr.message);
+          return;
+        }
+        loadPhotos();
+      });
+      meta.appendChild(nameSpan);
+      meta.appendChild(delBtn);
+      card.appendChild(meta);
+
+      photosGrid.appendChild(card);
+    });
+  }
+
+  $("importPhotosBtn").addEventListener("click",()=>{
+    $("photosInput").click();
+  });
+
 $("photosInput").addEventListener("change",async e=>{
-const files=[...e.target.files];
-if(!files.length)return;
-for(const file of files){
-const safeName = file.name
-.toLowerCase()
-.replace(/\s+/g,"-")
-.replace(/[^a-z0-9.\-_]/g,"");
-const timestamp = Date.now();
-const path = `${timestamp}-${safeName || "photo"}`;
-const { error } = await db.storage.from(PHOTOS_BUCKET).upload(path, file, { upsert: false });
-if(error){
-console.error(error);
-alert("Erreur upload photo : "+error.message);
-return;
-}
-}
-e.target.value="";
-loadPhotos();
+  const files=[...e.target.files];
+  if(!files.length)return;
+
+  for(const file of files){
+    const safeName = file.name
+      .toLowerCase()
+      .replace(/\s+/g,"-")
+      .replace(/[^a-z0-9.\-_]/g,"");
+
+    const timestamp = Date.now();
+    const path = `${timestamp}-${safeName || "photo"}`;
+
+    const { error } = await db.storage.from(PHOTOS_BUCKET).upload(path, file, { upsert: false });
+    if(error){
+      console.error(error);
+      alert("Erreur upload photo : "+error.message);
+      return;
+    }
+  }
+
+  e.target.value="";
+  loadPhotos();
 });
-// Initialisation
-loadIntervenants();
-loadDB();
-loadPhotos();
+
+  // Initialisation
+  loadIntervenants();
+  loadDB();
+  loadPhotos();
 </script>
 </body>
 </html>
+
