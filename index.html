@@ -13,21 +13,28 @@
 <style>
 :root{
 --red:#c92a2a;
---red-hover:#b02525;
---red-light:#fff5f5;
+--red-hover:#a82222;
+--red-light:#fff0f0;
 --red-dark:#862e2e;
---bg:#f8f9fa;
+--sidebar:#c92a2a;
+--sidebar-dark:#a82222;
+--sidebar-active:rgba(255,255,255,0.18);
+--sidebar-hover:rgba(255,255,255,0.10);
+--sidebar-text:rgba(255,255,255,0.85);
+--sidebar-text-muted:rgba(255,255,255,0.55);
+--header-bg:#ffffff;
+--bg:#f4f5f7;
 --card:#ffffff;
---border:#dee2e6;
---text:#212529;
---text2:#495057;
---text3:#868e96;
+--border:#e2e8f0;
+--text:#1a202c;
+--text2:#4a5568;
+--text3:#a0aec0;
 --green:#2b8a3e;
 --orange:#e67700;
---shadow:0 1px 2px rgba(0,0,0,0.04);
---shadow-md:0 4px 16px rgba(0,0,0,0.08);
---r:4px;
---rl:8px;
+--shadow:0 1px 3px rgba(0,0,0,0.06);
+--shadow-md:0 4px 20px rgba(0,0,0,0.08);
+--r:6px;
+--rl:10px;
 --rs:6px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -45,32 +52,46 @@ flex-direction:column;
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#ced4da;border-radius:4px;}
 
-/* HEADER - Full width en haut */
+/* HEADER */
 .header{
-height:72px;
-padding:0 32px;
+height:64px;
+padding:0 24px;
 display:flex;
 align-items:center;
 justify-content:space-between;
-background:#ffffff;
-border-bottom:none;
+background:var(--header-bg);
+border-bottom:1px solid var(--border);
 box-shadow:var(--shadow);
 z-index:100;
 }
 .header-left{
 display:flex;
 align-items:center;
-gap:20px;
+gap:16px;
 }
 .header-logo img{
-height:55px;
+height:44px;
 width:auto;
 object-fit:contain;
+}
+.header-divider{
+width:1px;height:28px;
+background:var(--border);
+}
+.header-project{
+display:flex;flex-direction:column;gap:1px;
+}
+.header-project-name{
+font-size:.9rem;font-weight:600;color:var(--text);
+letter-spacing:-0.01em;
+}
+.header-project-sub{
+font-size:.75rem;color:var(--text3);
 }
 .header-right{
 display:flex;
 align-items:center;
-gap:16px;
+gap:12px;
 font-size:.8rem;
 color:var(--text3);
 }
@@ -83,46 +104,53 @@ width:100%;
 overflow:hidden;
 }
 
-/* SIDEBAR - Pleine hauteur sous le header */
+/* SIDEBAR */
 .sidebar{
-width:240px;
-background:var(--red);
-padding:24px 16px 18px;
+width:220px;
+background:var(--sidebar);
+padding:20px 12px 16px;
 display:flex;
 flex-direction:column;
 flex-shrink:0;
 overflow-y:auto;
 }
 .nav-label{
-font-size:.7rem;
+font-size:.68rem;
 text-transform:uppercase;
-letter-spacing:0.08em;
-color:rgba(255,255,255,0.5);
-margin:0 4px 18px;
+letter-spacing:0.1em;
+color:var(--sidebar-text-muted);
+margin:0 8px 12px;
 font-weight:600;
 }
 .nav-item{
 display:flex;
 align-items:center;
-padding:12px 16px;
+gap:10px;
+padding:10px 12px;
 border-radius:var(--r);
-color:#ffffff;
-font-size:.95rem;
+color:var(--sidebar-text);
+font-size:.88rem;
 font-weight:500;
 cursor:pointer;
 transition:background .15s;
-margin-bottom:4px;
+margin-bottom:2px;
 }
 .nav-item.active{
-background:rgba(255,255,255,0.2);
+background:var(--sidebar-active);
+color:#ffffff;
 font-weight:600;
 }
 .nav-item:hover{
-background:rgba(255,255,255,0.12);
+background:var(--sidebar-hover);
 }
+.nav-item-dot{
+width:7px;height:7px;border-radius:50%;
+background:currentColor;opacity:0.6;flex-shrink:0;
+}
+.nav-item.active .nav-item-dot{opacity:1;}
 .sidebar-footer{
 margin-top:auto;
-padding-top:18px;
+padding-top:16px;
 border-top:1px solid rgba(255,255,255,0.15);
 font-size:.75rem;
 color:rgba(255,255,255,0.6);
@@ -185,30 +213,33 @@ background:var(--card);
 border-radius:var(--rl);
 border:1px solid var(--border);
 box-shadow:var(--shadow);
-padding:20px;
+padding:16px 20px;
 display:flex;
 flex-direction:column;
-gap:8px;
+gap:6px;
+transition:box-shadow .15s;
 }
+.stat-card:hover{box-shadow:var(--shadow-md);}
 .stat-card-label{
-font-size:.7rem;
+font-size:.68rem;
 text-transform:uppercase;
-letter-spacing:0.06em;
+letter-spacing:0.08em;
 color:var(--text3);
 font-weight:600;
 }
 .stat-card-value{
-font-size:2rem;
+font-size:1.9rem;
 font-weight:700;
 color:var(--text);
-letter-spacing:-0.02em;
+letter-spacing:-0.03em;
+line-height:1;
 }
-.stat-card-value.accent{
-color:var(--red);
-}
+.stat-card-value.accent{color:var(--red);}
+.stat-card-value.green{color:#2b8a3e;}
 .stat-card-note{
-font-size:.8rem;
+font-size:.75rem;
 color:var(--text3);
+margin-top:2px;
 }
 
 /* PANEL */
@@ -831,6 +862,56 @@ th:nth-child(2),td:nth-child(2){display:none;}
   text-overflow:ellipsis;white-space:nowrap;
 }
 
+
+/* MOBILE CARDS */
+@media(max-width:768px){
+.layout{flex-direction:column;}
+.sidebar{
+  width:100%;min-height:auto;
+  padding:0;
+  flex-direction:row;
+  overflow-x:auto;
+  order:2;
+}
+.nav-label{display:none;}
+.nav-item{
+  flex-direction:column;gap:3px;
+  padding:10px 16px;
+  font-size:.7rem;border-radius:0;
+  margin-bottom:0;white-space:nowrap;
+  min-width:60px;text-align:center;
+}
+.nav-item-dot{display:none;}
+.nav-item.active{
+  background:rgba(255,255,255,0.15);
+  border-bottom:3px solid #fff;
+}
+.sidebar-footer{display:none;}
+.main{order:1;}
+.main-inner{padding:16px;}
+.stats-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+.tw{max-height:none;overflow:visible;}
+table{display:none;}
+.task-cards{display:flex;flex-direction:column;gap:8px;}
+.task-card{
+  background:#fff;
+  border-radius:var(--rl);
+  border:1px solid var(--border);
+  border-left:4px solid var(--red);
+  padding:12px 14px;
+  cursor:pointer;
+}
+.task-card.ec{border-left-color:#e67700;}
+.task-card.ok{border-left-color:#2b8a3e;}
+.task-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;}
+.task-card-name{font-size:.9rem;font-weight:500;color:var(--text);flex:1;line-height:1.3;}
+.task-card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.task-card-ref{font-size:.72rem;color:var(--text3);}
+}
+@media(min-width:769px){
+.task-cards{display:none;}
+}
+
 </style>
 </head>
 <body>
@@ -857,15 +938,20 @@ th:nth-child(2),td:nth-child(2){display:none;}
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- HEADER - Full width -->
+<!-- HEADER -->
 <header class="header">
 <div class="header-left">
 <div class="header-logo">
 <img src="technicombles_logo_small.jpg" alt="Technicombles">
 </div>
+<div class="header-divider"></div>
+<div class="header-project">
+<span class="header-project-name">Chantier Cléry</span>
+<span class="header-project-sub">Suivi interne Technicombles</span>
+</div>
 </div>
 <div class="header-right">
-<span id="lastUpdate">—</span>
+<span id="lastUpdate" style="font-size:.75rem;"></span>
 <span class="header-user" id="headerUserEmail"></span>
 <button id="exportPdfBtn" class="btn-export">📄 Export PDF</button>
 <button class="btn-logout" id="logoutBtn">Déconnexion</button>
@@ -874,16 +960,16 @@ th:nth-child(2),td:nth-child(2){display:none;}
 
 <!-- LAYOUT PRINCIPAL -->
 <div class="layout">
-<!-- SIDEBAR - Pleine hauteur -->
+<!-- SIDEBAR -->
 <aside class="sidebar">
 <div class="nav-label">Navigation</div>
-<div class="nav-item active" data-view-btn="taches">Tâches</div>
-<div class="nav-item" data-view-btn="intervenants">Intervenants</div>
-<div class="nav-item" data-view-btn="documents">Documents</div>
-<div class="nav-item" data-view-btn="photos">Photos</div>
+<div class="nav-item active" data-view-btn="taches"><span class="nav-item-dot"></span>Tâches</div>
+<div class="nav-item" data-view-btn="intervenants"><span class="nav-item-dot"></span>Intervenants</div>
+<div class="nav-item" data-view-btn="documents"><span class="nav-item-dot"></span>Documents</div>
+<div class="nav-item" data-view-btn="photos"><span class="nav-item-dot"></span>Photos</div>
 <div class="sidebar-footer">
-<span>Suivi chantier Cléry</span>
-<span>Technicombles – Interne</span>
+<span>Cléry</span>
+<span style="color:rgba(255,255,255,0.4);">Technicombles</span>
 </div>
 </aside>
 
@@ -916,7 +1002,7 @@ th:nth-child(2),td:nth-child(2){display:none;}
 </div>
 <div class="stat-card">
 <span class="stat-card-label">Terminées</span>
-<span class="stat-card-value" id="statTerminees">0</span>
+<span class="stat-card-value green" id="statTerminees">0</span>
 <span class="stat-card-note">Clôturées</span>
 </div>
 </section>
@@ -966,6 +1052,7 @@ th:nth-child(2),td:nth-child(2){display:none;}
 </table>
 </div>
 <div id="kanbanWrapper" class="kanban" style="display:none;"></div>
+<div class="task-cards" id="taskCardsContainer"></div>
 </section>
 </section>
 
@@ -1207,6 +1294,7 @@ function render(){
 const list=getFiltered(),tb=$("tableBody");
 tb.innerHTML="";
 updateStats(list);
+renderTaskCards(list);
 if(!list.length){
 tb.innerHTML=`<tr><td colspan="7"><div class="empty"><svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.4" style="margin:0 auto;display:block;opacity:.25"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p>Aucune tâche trouvée</p><span>Modifie les filtres ou importe ton DPGF</span></div></td></tr>`;
 return;
@@ -1238,6 +1326,30 @@ ci.addEventListener("blur",async e=>{t.commentaire=e.target.value;await save(t.i
 ci.addEventListener("keydown",async e=>{if(e.key==="Enter"){e.preventDefault();t.commentaire=e.target.value;await save(t.id,"commentaire",t.commentaire);ci.blur();if($("kanbanWrapper").style.display!=="none")renderKanban();}});
 td7.appendChild(ci);tr.appendChild(td7);
 tb.appendChild(tr);
+});
+}
+function renderTaskCards(list){
+const c=document.getElementById("taskCardsContainer");
+if(!c)return;
+c.innerHTML="";
+if(!list.length){c.innerHTML='<div class="empty"><p>Aucune tâche trouvée</p></div>';return;}
+list.forEach(t=>{
+const card=document.createElement("div");
+const cls=t.statut==="En cours"?"task-card ec":t.statut==="Terminée"?"task-card ok":"task-card";
+card.className=cls;
+card.addEventListener("click",()=>openDrawer(t));
+const top=document.createElement("div");top.className="task-card-top";
+const name=document.createElement("span");name.className="task-card-name";name.textContent=t.task;
+const pill=document.createElement("span");
+pill.className="ss "+sCls(t.statut);pill.textContent=t.statut;
+top.appendChild(name);top.appendChild(pill);
+const meta=document.createElement("div");meta.className="task-card-meta";
+const ref=document.createElement("span");ref.className="task-card-ref";ref.textContent=t.ref;
+const lot=document.createElement("span");lot.className="ss pm";lot.style.fontSize=".7rem";lot.textContent=t.lot.split("–")[0].trim();
+const who=document.createElement("span");who.className="task-card-ref";who.textContent=t.intervenant||"—";
+meta.appendChild(ref);meta.appendChild(lot);meta.appendChild(who);
+card.appendChild(top);card.appendChild(meta);
+c.appendChild(card);
 });
 }
 function renderKanban(){
