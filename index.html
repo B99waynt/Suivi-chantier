@@ -764,9 +764,97 @@ th:nth-child(2),td:nth-child(2){display:none;}
 .sidebar,.tbl-actions,.filterbar,.btn-export,.toast-container{display:none !important;}
 .tw{overflow:visible;max-height:none;border:none;}
 }
+
+/* ===== AUTH LOGIN SCREEN ===== */
+#loginScreen{
+  position:fixed;inset:0;background:#f8f9fa;
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+}
+#loginScreen.hidden{display:none;}
+.login-card{
+  background:#fff;border-radius:12px;
+  border:1px solid #dee2e6;
+  box-shadow:0 4px 24px rgba(0,0,0,0.08);
+  padding:40px 36px;width:100%;max-width:380px;
+}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo img{height:52px;width:auto;}
+.login-title{
+  font-size:1.25rem;font-weight:600;
+  color:#212529;text-align:center;
+  margin-bottom:6px;letter-spacing:-0.01em;
+}
+.login-sub{
+  font-size:.85rem;color:#868e96;
+  text-align:center;margin-bottom:28px;
+}
+.login-field{margin-bottom:16px;}
+.login-label{
+  display:block;font-size:.8rem;font-weight:500;
+  color:#495057;margin-bottom:6px;
+}
+.login-input{
+  width:100%;padding:10px 14px;
+  border:1px solid #dee2e6;border-radius:6px;
+  font-size:.95rem;font-family:inherit;
+  color:#212529;background:#fff;outline:none;
+  transition:border-color .15s;
+}
+.login-input:focus{border-color:#c92a2a;}
+.login-btn{
+  width:100%;padding:11px;margin-top:8px;
+  background:#c92a2a;color:#fff;border:none;
+  border-radius:6px;font-size:.95rem;font-weight:500;
+  font-family:inherit;cursor:pointer;
+  transition:background .15s;
+}
+.login-btn:hover{background:#b02525;}
+.login-btn:disabled{background:#868e96;cursor:not-allowed;}
+.login-error{
+  font-size:.82rem;color:#c92a2a;
+  text-align:center;margin-top:12px;
+  min-height:18px;
+}
+/* Bouton déconnexion dans le header */
+.btn-logout{
+  padding:7px 14px;background:transparent;
+  border:1px solid rgba(201,42,42,0.3);
+  border-radius:6px;color:#c92a2a;
+  font-size:.8rem;font-weight:500;cursor:pointer;
+  transition:all .15s;font-family:inherit;
+}
+.btn-logout:hover{background:#fff5f5;border-color:#c92a2a;}
+.header-user{
+  font-size:.8rem;color:#868e96;
+  max-width:180px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;
+}
+
 </style>
 </head>
 <body>
+<!-- ===== ÉCRAN DE LOGIN ===== -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="technicombles_logo_small.jpg" alt="Technicombles">
+    </div>
+    <div class="login-title">Suivi Chantier – Cléry</div>
+    <div class="login-sub">Accès réservé à l'équipe Technicombles</div>
+    <div class="login-field">
+      <label class="login-label" for="loginEmail">Adresse email</label>
+      <input class="login-input" type="email" id="loginEmail" placeholder="prenom@technicombles.fr" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label class="login-label" for="loginPassword">Mot de passe</label>
+      <input class="login-input" type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="loginBtn">Se connecter</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- HEADER - Full width -->
@@ -778,7 +866,9 @@ th:nth-child(2),td:nth-child(2){display:none;}
 </div>
 <div class="header-right">
 <span id="lastUpdate">—</span>
+<span class="header-user" id="headerUserEmail"></span>
 <button id="exportPdfBtn" class="btn-export">📄 Export PDF</button>
+<button class="btn-logout" id="logoutBtn">Déconnexion</button>
 </div>
 </header>
 
@@ -977,6 +1067,57 @@ th:nth-child(2),td:nth-child(2){display:none;}
 const SUPABASE_URL="https://ifhvgqvmwgtyzuoyjbby.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmaHZncXZtd2d0eXp1b3lqYmJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTkxOTYsImV4cCI6MjA4ODI5NTE5Nn0.y4JuWxVM8-r6VsCafPyIkwsawwHPa2FPqlxGzKIX580";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+/* ===== AUTH ===== */
+async function initAuth(){
+  // Vérifier si une session existe déjà
+  const{data:{session}}=await db.auth.getSession();
+  if(session){
+    showApp(session.user);
+  } else {
+    showLogin();
+  }
+  // Écouter les changements de session
+  db.auth.onAuthStateChange((event,session)=>{
+    if(event==="SIGNED_IN"&&session){showApp(session.user);}
+    if(event==="SIGNED_OUT"){showLogin();}
+  });
+}
+function showApp(user){
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("headerUserEmail").textContent=user.email;
+  loadIntervenants();loadDB();loadPhotos();
+}
+function showLogin(){
+  document.getElementById("loginScreen").classList.remove("hidden");
+}
+document.getElementById("loginBtn").addEventListener("click",async()=>{
+  const email=document.getElementById("loginEmail").value.trim();
+  const password=document.getElementById("loginPassword").value;
+  const errEl=document.getElementById("loginError");
+  const btn=document.getElementById("loginBtn");
+  errEl.textContent="";
+  if(!email||!password){errEl.textContent="Remplis tous les champs.";return;}
+  btn.disabled=true;btn.textContent="Connexion…";
+  const{error}=await db.auth.signInWithPassword({email,password});
+  btn.disabled=false;btn.textContent="Se connecter";
+  if(error){
+    if(error.message.includes("Invalid login")||error.message.includes("invalid")){
+      errEl.textContent="Email ou mot de passe incorrect.";
+    } else {
+      errEl.textContent="Erreur : "+error.message;
+    }
+  }
+});
+document.getElementById("loginPassword").addEventListener("keydown",e=>{
+  if(e.key==="Enter")document.getElementById("loginBtn").click();
+});
+document.getElementById("logoutBtn").addEventListener("click",async()=>{
+  await db.auth.signOut();
+  document.getElementById("headerUserEmail").textContent="";
+  showToast("Déconnecté","success");
+});
+
 let INTERVS=["Non assigné"];
 const STATUTS=["À faire","En cours","Terminée"];
 const PRIOS=["Basse","Moyenne","Haute"];
@@ -1241,7 +1382,8 @@ meta.appendChild(nameSpan);meta.appendChild(delBtn);card.appendChild(meta);photo
 }
 $("importPhotosBtn").addEventListener("click",()=>{$("photosInput").click();});
 $("photosInput").addEventListener("change",async e=>{const files=[...e.target.files];if(!files.length)return;for(const file of files){const safeName=file.name.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9.\-_]/g,"");const path=`${Date.now()}-${safeName||"photo"}`;const{error}=await db.storage.from(PHOTOS_BUCKET).upload(path,file,{upsert:false});if(error){console.error(error);alert("Erreur upload photo : "+error.message);return;}}e.target.value="";loadPhotos();showToast("Photos importées");});
-loadIntervenants();loadDB();loadPhotos();
+// Le chargement se fait après login via initAuth()
+initAuth();
 </script>
 </body>
 </html>
