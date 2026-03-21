@@ -912,6 +912,111 @@ table{display:none;}
 .task-cards{display:none;}
 }
 
+
+/* ===== KPI DASHBOARD ===== */
+.kpi-band{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--rl);
+  box-shadow:var(--shadow);
+  padding:18px 22px;
+}
+.kpi-global{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  gap:16px;margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.kpi-global-left{flex:1;min-width:200px;}
+.kpi-global-title{
+  font-size:.8rem;font-weight:600;
+  color:var(--text3);text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:6px;
+}
+.kpi-big-pct{
+  font-size:2.4rem;font-weight:700;
+  color:var(--red);letter-spacing:-0.03em;
+  line-height:1;margin-bottom:8px;
+}
+.kpi-big-pct span{font-size:1rem;font-weight:400;color:var(--text3);}
+.kpi-progress-wrap{
+  background:#f0f0f0;border-radius:20px;
+  height:10px;overflow:hidden;margin-bottom:6px;
+}
+.kpi-progress-fill{
+  height:100%;border-radius:20px;
+  background:var(--red);
+  transition:width .7s cubic-bezier(.4,0,.2,1);
+}
+.kpi-legend{
+  display:flex;gap:16px;flex-wrap:wrap;
+  font-size:.75rem;color:var(--text3);
+}
+.kpi-legend b{color:var(--text2);font-weight:500;}
+.kpi-global-stats{
+  display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;
+}
+.kpi-mini-stat{
+  background:var(--bg);border-radius:var(--rl);
+  border:1px solid var(--border);
+  padding:10px 14px;text-align:center;
+  min-width:72px;
+}
+.kpi-mini-label{
+  font-size:.68rem;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text3);
+  font-weight:600;margin-bottom:3px;
+}
+.kpi-mini-val{
+  font-size:1.4rem;font-weight:700;
+  color:var(--text);letter-spacing:-0.02em;
+}
+.kpi-mini-val.v-green{color:var(--green);}
+.kpi-mini-val.v-orange{color:var(--orange);}
+.kpi-mini-val.v-red{color:var(--red);}
+.kpi-divider{
+  height:1px;background:var(--border);
+  margin:14px 0;
+}
+.kpi-lots-title{
+  font-size:.72rem;font-weight:600;
+  color:var(--text3);text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:12px;
+}
+.kpi-lots-grid{
+  display:flex;flex-direction:column;gap:9px;
+}
+.kpi-lot-row{
+  display:flex;align-items:center;gap:10px;
+}
+.kpi-lot-name{
+  font-size:.8rem;color:var(--text2);
+  width:180px;flex-shrink:0;
+  white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;
+}
+.kpi-lot-bar-wrap{
+  flex:1;background:#f0f0f0;
+  border-radius:20px;height:7px;overflow:hidden;
+}
+.kpi-lot-bar-fill{
+  height:100%;border-radius:20px;
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+}
+.kpi-lot-pct{
+  font-size:.78rem;font-weight:600;
+  width:36px;text-align:right;flex-shrink:0;
+}
+.kpi-lot-count{
+  font-size:.72rem;color:var(--text3);
+  width:44px;text-align:right;flex-shrink:0;
+}
+@media(max-width:768px){
+  .kpi-global{flex-direction:column;gap:12px;}
+  .kpi-global-stats{width:100%;justify-content:space-between;}
+  .kpi-lot-name{width:120px;}
+}
+
 </style>
 </head>
 <body>
@@ -984,6 +1089,42 @@ table{display:none;}
 <div class="section-sub">Tableau de suivi & vue Kanban</div>
 </div>
 </div>
+<!-- KPI DASHBOARD -->
+<div class="kpi-band" id="kpiBand">
+  <div class="kpi-global">
+    <div class="kpi-global-left">
+      <div class="kpi-global-title">Avancement global — Chantier Cléry</div>
+      <div class="kpi-big-pct" id="kpiGlobalPct">0<span>%</span></div>
+      <div class="kpi-progress-wrap">
+        <div class="kpi-progress-fill" id="kpiProgressFill" style="width:0%"></div>
+      </div>
+      <div class="kpi-legend" id="kpiLegend">
+        <span><b id="kpiDone">0</b> terminées</span>
+        <span><b id="kpiInProgress">0</b> en cours</span>
+        <span><b id="kpiTodo">0</b> à faire</span>
+        <span><b id="kpiTotal">0</b> total</span>
+      </div>
+    </div>
+    <div class="kpi-global-stats">
+      <div class="kpi-mini-stat">
+        <div class="kpi-mini-label">Terminées</div>
+        <div class="kpi-mini-val v-green" id="kpiMiniDone">0</div>
+      </div>
+      <div class="kpi-mini-stat">
+        <div class="kpi-mini-label">En cours</div>
+        <div class="kpi-mini-val v-orange" id="kpiMiniProgress">0</div>
+      </div>
+      <div class="kpi-mini-stat">
+        <div class="kpi-mini-label">À faire</div>
+        <div class="kpi-mini-val v-red" id="kpiMiniTodo">0</div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-divider"></div>
+  <div class="kpi-lots-title">Avancement par lot</div>
+  <div class="kpi-lots-grid" id="kpiLotsGrid"></div>
+</div>
+
 <section class="stats-grid">
 <div class="stat-card">
 <span class="stat-card-label">Total tâches</span>
@@ -1261,6 +1402,49 @@ return(t.ref+t.lot+t.task+t.intervenant+t.statut+t.priorite+(t.commentaire||""))
 async function save(id,field,val){
 await db.from("taches_noe_clery").update({[field]:val,updated_at:new Date().toISOString()}).eq("id",id);
 setDate();
+if(field==="statut")updateKPI(tasks);
+}
+function updateKPI(allTasks){
+  if(!allTasks||!allTasks.length){
+    $("kpiGlobalPct").innerHTML='0<span>%</span>';
+    $("kpiProgressFill").style.width='0%';
+    $("kpiDone").textContent='0';$("kpiInProgress").textContent='0';
+    $("kpiTodo").textContent='0';$("kpiTotal").textContent='0';
+    $("kpiMiniDone").textContent='0';$("kpiMiniProgress").textContent='0';$("kpiMiniTodo").textContent='0';
+    $("kpiLotsGrid").innerHTML='<span style="font-size:.8rem;color:var(--text3);">Aucune tâche chargée</span>';
+    return;
+  }
+  const done=allTasks.filter(t=>t.statut==="Terminée").length;
+  const inprogress=allTasks.filter(t=>t.statut==="En cours").length;
+  const todo=allTasks.filter(t=>t.statut==="À faire").length;
+  const total=allTasks.length;
+  const pct=total>0?Math.round(done/total*100):0;
+  $("kpiGlobalPct").innerHTML=pct+'<span>%</span>';
+  $("kpiProgressFill").style.width=pct+'%';
+  $("kpiDone").textContent=done;$("kpiInProgress").textContent=inprogress;
+  $("kpiTodo").textContent=todo;$("kpiTotal").textContent=total;
+  $("kpiMiniDone").textContent=done;
+  $("kpiMiniProgress").textContent=inprogress;
+  $("kpiMiniTodo").textContent=todo;
+  // Barres par lot
+  const lotMap={};
+  allTasks.forEach(t=>{
+    if(!lotMap[t.lot])lotMap[t.lot]={done:0,total:0};
+    lotMap[t.lot].total++;
+    if(t.statut==="Terminée")lotMap[t.lot].done++;
+  });
+  const lots=Object.entries(lotMap).sort((a,b)=>a[0].localeCompare(b[0]));
+  const grid=$("kpiLotsGrid");grid.innerHTML="";
+  lots.forEach(([lot,data])=>{
+    const p=data.total>0?Math.round(data.done/data.total*100):0;
+    const color=p>=80?"#2b8a3e":p>=30?"#e67700":"#c92a2a";
+    const row=document.createElement("div");row.className="kpi-lot-row";
+    row.innerHTML=`<span class="kpi-lot-name" title="${lot}">${lot}</span>
+      <div class="kpi-lot-bar-wrap"><div class="kpi-lot-bar-fill" style="width:${p}%;background:${color};"></div></div>
+      <span class="kpi-lot-pct" style="color:${color};">${p}%</span>
+      <span class="kpi-lot-count">${data.done}/${data.total}</span>`;
+    grid.appendChild(row);
+  });
 }
 function updateStats(list){
 $("statTotal").textContent=list.length;
@@ -1385,6 +1569,7 @@ const{data,error}=await db.from("taches_noe_clery").select("*").order("ref",{asc
 if(error){console.error(error);return;}
 tasks=data||[];
 renderFilters();render();setDate();
+updateKPI(tasks);
 showToast("Tâches chargées");
 }
 async function pushDB(newTasks){
@@ -1433,7 +1618,7 @@ found.push({ref,lot:guessLot(ref),task:desc,intervenant:["à faire","faire",""].
 }
 });
 if(!found.length){alert("Aucune tâche trouvée dans ce fichier.");return;}
-await pushDB(found);await loadDB();alert("Import terminé.");showToast("Import DPGF terminé","success");
+await pushDB(found);await loadDB();updateKPI(tasks);alert("Import terminé.");showToast("Import DPGF terminé","success");
 }catch(err){console.error(err);alert("Erreur lors de la lecture du fichier Excel.");showToast("Erreur Excel","error");}
 };
 reader.readAsArrayBuffer(file);
